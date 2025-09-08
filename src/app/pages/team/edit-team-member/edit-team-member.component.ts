@@ -1,21 +1,21 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ComponentCardComponent } from "app/shared/components/common/component-card/component-card.component";
-import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
+import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
 import { LabelComponent } from "app/shared/components/form/label/label.component";
+import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
 import { FileInputComponent } from "app/shared/components/form/input/file-input.component";
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from "app/shared/components/ui/button/button.component";
 import { TeamApiService } from 'app/shared/services/team-api.service';
-import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
+import { Router } from '@angular/router';
 import { ImageUploadComponent } from "app/shared/components/form/image-upload/image-upload.component";
 
 @Component({
-  selector: 'app-add-team-member',
-  imports: [ComponentCardComponent, InputFieldComponent, LabelComponent, FileInputComponent, ReactiveFormsModule, ButtonComponent, AlertComponent, ImageUploadComponent],
-  templateUrl: './add-team-member.component.html',
-  styleUrl: './add-team-member.component.css'
+  selector: 'app-edit-team-member',
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, FileInputComponent, ButtonComponent, ImageUploadComponent],
+  templateUrl: './edit-team-member.component.html',
+  styleUrl: './edit-team-member.component.css'
 })
-export class AddTeamMemberComponent {
+export class EditTeamMemberComponent implements OnInit{
   
   teamMemberForm: {
     name: string | number;
@@ -35,10 +35,23 @@ export class AddTeamMemberComponent {
   disabled: boolean = false;
   success: any;
   error: any;
+  id : any;
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;
 
-  constructor(private teamApiService: TeamApiService) {}
+  constructor(private teamApiService: TeamApiService, private router: Router) {}
+
+  ngOnInit(){
+    const member = history.state.member;
+    if(!member){
+      this.router.navigate(['/team/listing']);
+    }else{
+      this.id = member.id;
+      this.teamMemberForm.name = member.name;
+      this.teamMemberForm.profile_image = member.profile_image;
+      this.teamMemberForm.position = member.position;
+    }
+  }
 
   onSubmit() {
     this.disabled = true;
@@ -46,17 +59,12 @@ export class AddTeamMemberComponent {
       let options: any = {
         name: this.teamMemberForm.name,
         profile_image: this.teamMemberForm.profile_image,
-        position: this.teamMemberForm.position
+        position: this.teamMemberForm.position,
+        updated_by: "donAdmin"
       }
-      this.teamApiService.createTeamMember(options).subscribe({
+      this.teamApiService.updateTeamMember(this.id, options).subscribe({
         next: (res) => {
           // ✅ Reset form after success
-          this.teamMemberForm = {
-            name: '',
-            profile_image: '',
-            position: ''
-          };
-          this.fileUpload.reset();
           this.success = true;
           this.error = null;
           this.disabled = false;

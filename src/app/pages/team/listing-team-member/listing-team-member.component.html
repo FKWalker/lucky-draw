@@ -1,0 +1,33 @@
+<div class="space-y-6">
+    @if (success) {
+            <div>
+                <app-alert
+                    variant="success"
+                    title="Success"
+                    message="Team member deleted successfully"
+                    [showLink]="false"
+                />
+            </div>
+        }
+    @if(error) {
+        <div>
+            <app-alert
+                variant="error"
+                title="Error"
+                message="Failed to delete team member"
+                [showLink]="false"
+            />
+        </div>
+    }
+    <app-basic-table-three
+    title="Listing Team Member"
+    [columns]="transactionColumns"
+    [data]="teamMembers"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [itemsPerPage]="itemsPerPage"
+    (pageChange)="loadPage($event)"
+    (searchChange)="onSearch($event)"
+    (action)="action($event)"
+    ></app-basic-table-three>
+</div>

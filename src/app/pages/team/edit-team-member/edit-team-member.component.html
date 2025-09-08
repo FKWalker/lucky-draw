@@ -1,11 +1,11 @@
-<app-component-card title="Add Team Member">
+<app-component-card title="Edit Team Member">
     <div class="space-y-6">
         @if (success) {
             <div>
                 <app-alert
                     variant="success"
                     title="Success"
-                    message="Team member created successfully"
+                    message="Team member updated successfully"
                     [showLink]="false"
                 />
             </div>
@@ -15,7 +15,7 @@
                 <app-alert
                     variant="error"
                     title="Error"
-                    message="Failed to create team member"
+                    message="Failed to update team member"
                     [showLink]="false"
                 />
             </div>
@@ -24,10 +24,6 @@
             <app-label for="input">Name</app-label>
             <app-input-field type="text" id="input" placeholder="Enter a name" [value]="teamMemberForm.name" (valueChange)="teamMemberForm.name = $event" [error]="errors.name" [hint]="errors.name ? 'This is an invalid name.' : ''"/>
         </div>
-        <!-- <div>
-            <app-label>Profile Image</app-label>
-            <app-file-input #fileUpload (change)="handleFileChange($event)" className="custom-class" [error]="errors.profile_image" [hint]="errors.profile_image ? 'This is an invalid file.' : ''"></app-file-input>
-        </div> -->
         <div>
             <app-label>Profile Image</app-label>
             <app-image-upload

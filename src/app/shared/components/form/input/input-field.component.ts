@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-input-field',
@@ -33,7 +34,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     </div>
   `,
 })
-export class InputFieldComponent {
+export class InputFieldComponent{
 
   @Input() type: string = 'text';
   @Input() id?: string = '';

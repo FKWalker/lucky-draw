@@ -19,6 +19,8 @@ import { SignInComponent } from './pages/auth-pages/sign-in/sign-in.component';
 import { SignUpComponent } from './pages/auth-pages/sign-up/sign-up.component';
 import { CalenderComponent } from './pages/calender/calender.component';
 import { AddTeamMemberComponent } from './pages/team/add-team-member/add-team-member.component';
+import { ListingTeamMemberComponent } from './pages/team/listing-team-member/listing-team-member.component';
+import { EditTeamMemberComponent } from './pages/team/edit-team-member/edit-team-member.component';
 
 export const routes: Routes = [
   {
@@ -104,8 +106,18 @@ export const routes: Routes = [
         title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
       },
       {
+        path:'team/listing',
+        component:ListingTeamMemberComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
         path:'team/add',
         component:AddTeamMemberComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'team/edit/:id',
+        component:EditTeamMemberComponent,
         title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
       },
     ]
