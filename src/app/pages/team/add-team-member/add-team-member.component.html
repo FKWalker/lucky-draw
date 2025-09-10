@@ -21,8 +21,12 @@
             </div>
         }
         <div>
-            <app-label for="input">Name</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a name" [value]="teamMemberForm.name" (valueChange)="teamMemberForm.name = $event" [error]="errors.name" [hint]="errors.name ? 'This is an invalid name.' : ''"/>
+            <app-label for="input">First Name</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a first name" [value]="teamMemberForm.first_name" (valueChange)="teamMemberForm.first_name = $event" [error]="errors.first_name" [hint]="errors.first_name ? 'This is an invalid first name.' : ''"/>
+        </div>
+        <div>
+            <app-label for="input">Last Name</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="teamMemberForm.last_name" (valueChange)="teamMemberForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
         </div>
         <!-- <div>
             <app-label>Profile Image</app-label>
@@ -32,7 +36,6 @@
             <app-label>Profile Image</app-label>
             <app-image-upload
                 #fileUpload
-                [imageUrl]="teamMemberForm.profile_image"   
                 (change)="handleFileChange($event)"
                 [error]="errors.profile_image"
                 [hint]="errors.profile_image ? 'This is an invalid file.' : ''"

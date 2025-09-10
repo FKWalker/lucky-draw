@@ -21,8 +21,12 @@
             </div>
         }
         <div>
-            <app-label for="input">Name</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a name" [value]="teamMemberForm.name" (valueChange)="teamMemberForm.name = $event" [error]="errors.name" [hint]="errors.name ? 'This is an invalid name.' : ''"/>
+            <app-label for="input">First Name</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a first name" [value]="teamMemberForm.first_name" (valueChange)="teamMemberForm.first_name = $event" [error]="errors.first_name" [hint]="errors.first_name ? 'This is an invalid first name.' : ''"/>
+        </div>
+        <div>
+            <app-label for="input">Last Name</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="teamMemberForm.first_name" (valueChange)="teamMemberForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
         </div>
         <div>
             <app-label>Profile Image</app-label>
@@ -39,7 +43,7 @@
             <app-input-field type="text" id="input" placeholder="Enter a position" [value]="teamMemberForm.position" (valueChange)="teamMemberForm.position = $event" [error]="errors.position" [hint]="errors.position ? 'This is an invalid position' : ''"/>
         </div>
         <div>
-            <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Create</app-button>
+            <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Update</app-button>
         </div>
     </div>
 </app-component-card>

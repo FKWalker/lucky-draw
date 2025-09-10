@@ -29,21 +29,16 @@ export class TeamApiService {
     return this.http.get<any>(`${this.baseUrl}/team`, { params });
   }
 
-  createTeamMember(options: { 
-    name: string; 
-    profile_image: string; 
-    position: string 
-  }): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/team`, options);
+  getTeamMemberById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/team/${id}`);
   }
 
-  updateTeamMember(id: number, options: { 
-    name: string; 
-    profile_image: string; 
-    position: string;
-    updated_by: string; 
-  }): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/team/${id}`, options);
+  createTeamMember(formData: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/team`, formData);
+  }
+
+  updateTeamMember(id: number, formData: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/team/${id}`, formData);
   }
 
   deleteTeamMember(id: number): Observable<any> {

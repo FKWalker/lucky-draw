@@ -15,76 +15,13 @@ export class ListingTeamMemberComponent implements OnInit{
   
   // Column definitions
   transactionColumns = [
-    { key: 'name', label: 'Name' },
+    { key: 'first_name', label: 'First Name' },
+    { key: 'last_name', label: 'Last Name' },
     { key: 'position', label: 'Position' },
   ];
 
   // Dummy data
-  teamMembers = [
-    {
-      "id": 1,
-      "name": "Angela",
-      "profile_image": "https://flashbang-s3id-bucket.s3.ap-southeast-1.amazonaws.com/homepage/homepage_team_1.png",
-      "position": "Business Director",
-      "created_at": "2025-09-02T17:31:08.000Z",
-      "updated_at": "2025-09-02T17:31:08.000Z",
-      "updated_by": "admin"
-    },
-    {
-      "id": 6,
-      "name": "Jocelyn Huang",
-      "profile_image": "https://flashbang-s3-bucket.s3.ap-southeast-1.amazonaws.com/homepage/homepage_team_6.png",
-      "position": "Executive",
-      "created_at": "2025-09-02T17:31:08.000Z",
-      "updated_at": "2025-09-02T17:31:08.000Z",
-      "updated_by": "admin"
-    },
-    {
-      "id": 2,
-      "name": "Jochen",
-      "profile_image": "https://flashbang-s3-bucket.s3.ap-southeast-1.amazonaws.com/homepage/homepage_team_2.png",
-      "position": "Project Manager & Recording Coordinator",
-      "created_at": "2025-09-02T17:31:08.000Z",
-      "updated_at": "2025-09-02T17:31:08.000Z",
-      "updated_by": "admin"
-    },
-    {
-      "id": 4,
-      "name": "Lily",
-      "profile_image": "https://flashbang-s3-bucket.s3.ap-southeast-1.amazonaws.com/homepage/homepage_team_4.png",
-      "position": "Project Manager & Multilingual Translator",
-      "created_at": "2025-09-02T17:31:08.000Z",
-      "updated_at": "2025-09-02T17:31:08.000Z",
-      "updated_by": "admin"
-    },
-    {
-      "id": 8,
-      "name": "new name",
-      "profile_image": "new profile image",
-      "position": "new position",
-      "created_at": "2025-09-02T17:53:28.000Z",
-      "updated_at": "2025-09-02T17:54:10.000Z",
-      "updated_by": "user02"
-    },
-    {
-      "id": 5,
-      "name": "Sijie Zhang",
-      "profile_image": "https://flashbang-s3-bucket.s3.ap-southeast-1.amazonaws.com/homepage/homepage_team_5.png",
-      "position": "Executive",
-      "created_at": "2025-09-02T17:31:08.000Z",
-      "updated_at": "2025-09-02T17:31:08.000Z",
-      "updated_by": "admin"
-    },
-    {
-      "id": 3,
-      "name": "Sisi",
-      "profile_image": "https://flashbang-s3-bucket.s3.ap-southeast-1.amazonaws.com/homepage/homepage_team_3.png",
-      "position": "Project Manager",
-      "created_at": "2025-09-02T17:31:08.000Z",
-      "updated_at": "2025-09-02T17:31:08.000Z",
-      "updated_by": "admin"
-    }
-  ];
+  teamMembers = [];
 
   // Pagination
   currentPage: number = 1;
@@ -135,7 +72,7 @@ export class ListingTeamMemberComponent implements OnInit{
 
   action(event: { action: string; row: any }) {
     if(event.action === 'update'){
-      this.router.navigate(['/team/edit', event.row.id], { state: { member: event.row } });
+      this.router.navigate(['/team/edit', event.row.id]);
     }
     if(event.action === 'delete'){
       this.deleteTeamMember(event.row.id);

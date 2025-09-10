@@ -18,23 +18,25 @@ import { ImageUploadComponent } from "app/shared/components/form/image-upload/im
 export class AddTeamMemberComponent {
   
   teamMemberForm: {
-    name: string | number;
-    profile_image: string | number;
+    first_name: string | number;
+    last_name: string | number;
     position: string | number;
   } = {
-    name: '',
-    profile_image: '',
+    first_name: '',
+    last_name: '',
     position: ''
   };
 
   errors = {
-    name: false,
+    first_name: false,
+    last_name: false,
     profile_image: false,
     position: false
   }
   disabled: boolean = false;
   success: any;
   error: any;
+  selectedFile: File | null = null;
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;
 
@@ -43,17 +45,26 @@ export class AddTeamMemberComponent {
   onSubmit() {
     this.disabled = true;
     if(this.validation()){
-      let options: any = {
-        name: this.teamMemberForm.name,
-        profile_image: this.teamMemberForm.profile_image,
-        position: this.teamMemberForm.position
+
+      const formData = new FormData();
+      formData.append('first_name', this.teamMemberForm.first_name.toString());
+      formData.append('last_name', this.teamMemberForm.first_name.toString());
+      formData.append('position', this.teamMemberForm.position.toString());
+      if (this.selectedFile) {
+        formData.append('profile_image', this.selectedFile); 
+        formData.append('profile_filename', this.selectedFile.name);
+        formData.append('profile_path', 'homepage');
       }
-      this.teamApiService.createTeamMember(options).subscribe({
+      console.log('--- FormData contents ---');
+        formData.forEach((value, key) => {
+        console.log(key, value);
+      });
+      this.teamApiService.createTeamMember(formData).subscribe({
         next: (res) => {
           // ✅ Reset form after success
           this.teamMemberForm = {
-            name: '',
-            profile_image: '',
+            first_name: '',
+            last_name: '',
             position: ''
           };
           this.fileUpload.reset();
@@ -68,6 +79,7 @@ export class AddTeamMemberComponent {
           this.disabled = false;
         }
       })
+      
     }else{
       this.disabled = false;
     }
@@ -77,27 +89,32 @@ export class AddTeamMemberComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      console.log("Selected file:", file.name);
-      this.teamMemberForm.profile_image = file.name;
+      this.selectedFile = file;
     }
   }
   
   validation(){
     // reset errors
     this.errors = {
-      name: false,
+      first_name: false,
+      last_name: false,
       profile_image: false,
       position: false
     };
 
     let valid = true;
 
-    if (!String(this.teamMemberForm.name).trim()) {
-      this.errors.name = true;
+    if (!String(this.teamMemberForm.first_name).trim()) {
+      this.errors.first_name = true;
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.profile_image).trim()) {
+    if (!String(this.teamMemberForm.last_name).trim()) {
+      this.errors.last_name = true;
+      valid = false;
+    }
+
+    if (!this.selectedFile) {
       this.errors.profile_image = true;
       valid = false;
     }
@@ -112,9 +129,5 @@ export class AddTeamMemberComponent {
     }
 
     return valid;
-  }
-  
-  createTeamMember(options: any){
-    
   }
 }

@@ -6,7 +6,7 @@ import { InputFieldComponent } from "app/shared/components/form/input/input-fiel
 import { FileInputComponent } from "app/shared/components/form/input/file-input.component";
 import { ButtonComponent } from "app/shared/components/ui/button/button.component";
 import { TeamApiService } from 'app/shared/services/team-api.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ImageUploadComponent } from "app/shared/components/form/image-upload/image-upload.component";
 
 @Component({
@@ -18,51 +18,68 @@ import { ImageUploadComponent } from "app/shared/components/form/image-upload/im
 export class EditTeamMemberComponent implements OnInit{
   
   teamMemberForm: {
-    name: string | number;
     profile_image: string | number;
+    first_name: string | number;
+    last_name: string | number;
     position: string | number;
   } = {
-    name: '',
     profile_image: '',
+    first_name: '',
+    last_name: '',
     position: ''
   };
 
   errors = {
-    name: false,
     profile_image: false,
+    first_name: false,
+    last_name: false,
     position: false
   }
   disabled: boolean = false;
   success: any;
   error: any;
   id : any;
+  selectedFile: File | null = null;
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;
 
-  constructor(private teamApiService: TeamApiService, private router: Router) {}
+  constructor(private teamApiService: TeamApiService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(){
-    const member = history.state.member;
-    if(!member){
-      this.router.navigate(['/team/listing']);
-    }else{
-      this.id = member.id;
-      this.teamMemberForm.name = member.name;
-      this.teamMemberForm.profile_image = member.profile_image;
-      this.teamMemberForm.position = member.position;
-    }
+    this.route.paramMap.subscribe(params => {
+      const idParam = params.get('id');
+
+      if (!idParam) {
+        // No ID provided, navigate away
+        this.router.navigate(['/team/listing']);
+        return;
+      }
+
+      this.id = Number(idParam);
+      if (isNaN(this.id)) {
+        // Invalid ID, redirect
+        this.router.navigate(['/team/listing']);
+        return;
+      }
+
+      // ✅ Call API to fetch by ID
+      this.getTeamMemberById(this.id);
+    });
   }
 
   onSubmit() {
     this.disabled = true;
     if(this.validation()){
-      let options: any = {
-        name: this.teamMemberForm.name,
-        profile_image: this.teamMemberForm.profile_image,
-        position: this.teamMemberForm.position,
-        updated_by: "donAdmin"
+      const formData = new FormData();
+      formData.append('first_name', this.teamMemberForm.first_name.toString());
+      formData.append('last_name', this.teamMemberForm.first_name.toString());
+      formData.append('position', this.teamMemberForm.position.toString());
+      if (this.selectedFile) {
+        formData.append('profile_image', this.selectedFile); 
+        formData.append('profile_filename', this.selectedFile.name);
+        formData.append('profile_path', 'homepage');
       }
-      this.teamApiService.updateTeamMember(this.id, options).subscribe({
+      this.teamApiService.updateTeamMember(this.id, formData).subscribe({
         next: (res) => {
           // ✅ Reset form after success
           this.success = true;
@@ -85,28 +102,28 @@ export class EditTeamMemberComponent implements OnInit{
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      console.log("Selected file:", file.name);
-      this.teamMemberForm.profile_image = file.name;
+      this.selectedFile = file;
     }
   }
   
   validation(){
     // reset errors
     this.errors = {
-      name: false,
+      first_name: false,
+      last_name: false,
       profile_image: false,
       position: false
     };
 
     let valid = true;
 
-    if (!String(this.teamMemberForm.name).trim()) {
-      this.errors.name = true;
+    if (!String(this.teamMemberForm.first_name).trim()) {
+      this.errors.first_name = true;
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.profile_image).trim()) {
-      this.errors.profile_image = true;
+    if (!String(this.teamMemberForm.last_name).trim()) {
+      this.errors.last_name = true;
       valid = false;
     }
 
@@ -121,8 +138,19 @@ export class EditTeamMemberComponent implements OnInit{
 
     return valid;
   }
-  
-  createTeamMember(options: any){
-    
+
+  getTeamMemberById(id: any){
+    this.teamApiService.getTeamMemberById(id).subscribe({
+      next: (res) => {
+        this.id = res.data.id;
+        this.teamMemberForm.first_name = res.data.first_name;
+        this.teamMemberForm.last_name = res.data.last_name;
+        this.teamMemberForm.profile_image = res.data.profile_image;
+        this.teamMemberForm.position = res.data.position;
+      },
+      error: (err) => {
+        this.router.navigate(['/team/listing']);
+      }
+    })
   }
 }
