@@ -1,11 +1,11 @@
-<app-component-card title="Add Team Member">
+<app-component-card title="Add Artist">
     <div class="space-y-6">
         @if (success) {
             <div>
                 <app-alert
                     variant="success"
                     title="Success"
-                    message="Team member created successfully"
+                    message="Artist created successfully"
                     [showLink]="false"
                 />
             </div>
@@ -15,18 +15,18 @@
                 <app-alert
                     variant="error"
                     title="Error"
-                    message="Failed to create team member"
+                    message="Failed to create artist"
                     [showLink]="false"
                 />
             </div>
         }
         <div>
             <app-label for="input">First Name</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a first name" [value]="teamMemberForm.first_name" (valueChange)="teamMemberForm.first_name = $event" [error]="errors.first_name" [hint]="errors.first_name ? 'This is an invalid first name.' : ''"/>
+            <app-input-field type="text" id="input" placeholder="Enter a first name" [value]="artistForm.first_name" (valueChange)="artistForm.first_name = $event" [error]="errors.first_name" [hint]="errors.first_name ? 'This is an invalid first name.' : ''"/>
         </div>
         <div>
             <app-label for="input">Last Name</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="teamMemberForm.last_name" (valueChange)="teamMemberForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
+            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="artistForm.last_name" (valueChange)="artistForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
         </div>
         <div>
             <app-label>Profile Image</app-label>
@@ -38,8 +38,8 @@
             ></app-image-upload>
         </div>
         <div>
-            <app-label for="input">Position</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a position" [value]="teamMemberForm.position" (valueChange)="teamMemberForm.position = $event" [error]="errors.position" [hint]="errors.position ? 'This is an invalid position' : ''"/>
+            <app-label for="input">Biography</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a position" [value]="artistForm.biography" (valueChange)="artistForm.biography = $event" [error]="errors.biography" [hint]="errors.biography ? 'This is an invalid biography' : ''"/>
         </div>
         <div>
             <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Create</app-button>

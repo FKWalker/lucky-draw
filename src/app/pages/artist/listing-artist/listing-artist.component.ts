@@ -1,27 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { ComponentCardComponent } from "../../../shared/components/common/component-card/component-card.component";
-import { CustomTableComponent } from "../../../shared/components/tables/basic-tables/custom-table/custom-table.component";
-import { TeamApiService } from 'app/shared/services/team-api.service';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { TeamApiService } from 'app/shared/services/team-api.service';
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
+import { CustomTableComponent } from "app/shared/components/tables/basic-tables/custom-table/custom-table.component";
+import { ArtistApiService } from 'app/shared/services/artist-api.service';
 
 @Component({
-  selector: 'app-listing-team-member',
-  imports: [CustomTableComponent, AlertComponent],
-  templateUrl: './listing-team-member.component.html',
-  styleUrl: './listing-team-member.component.css'
+  selector: 'app-listing-artist',
+  imports: [AlertComponent, CustomTableComponent],
+  templateUrl: './listing-artist.component.html',
+  styleUrl: './listing-artist.component.css'
 })
-export class ListingTeamMemberComponent implements OnInit{
+export class ListingArtistComponent {
   
   // Column definitions
   columns = [
     { key: 'first_name', label: 'First Name' },
     { key: 'last_name', label: 'Last Name' },
-    { key: 'position', label: 'Position' },
+    { key: 'biography', label: 'Biography' },
   ];
 
   // Dummy data
-  teamMembers = [];
+  artists = [];
 
   // Pagination
   currentPage: number = 1;
@@ -31,20 +31,20 @@ export class ListingTeamMemberComponent implements OnInit{
   success: any;
   error: any;
 
-  constructor(private teamApiService: TeamApiService, private router: Router) {}
+  constructor(private artistApiService: ArtistApiService, private router: Router) {}
 
   ngOnInit(): void {
     const options: any = {};
-    this.getAllTeamMembers(options);
+    this.getAllArtists(options);
   }
 
-  getAllTeamMembers(options: any){
-    this.teamApiService.getAllTeamMembers(options).subscribe({
+  getAllArtists(options: any){
+    this.artistApiService.getAllArtists(options).subscribe({
       next: (res) => {
         this.currentPage = res.data.pagination.currentPage;
         this.totalPages = res.data.pagination.totalPages;
         this.itemsPerPage = res.data.pagination.itemsPerPage;
-        this.teamMembers = res.data.teamMembers;
+        this.artists = res.data.artists;
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -59,7 +59,7 @@ export class ListingTeamMemberComponent implements OnInit{
     const options: any = {
       page: this.currentPage
     };
-    this.getAllTeamMembers(options);
+    this.getAllArtists(options);
   }
 
   // Handle search from table
@@ -67,12 +67,12 @@ export class ListingTeamMemberComponent implements OnInit{
     const options: any = {
       search: query
     };
-    this.getAllTeamMembers(options);
+    this.getAllArtists(options);
   }
 
   action(event: { action: string; row: any }) {
     if(event.action === 'update'){
-      this.router.navigate(['/team/edit', event.row.id]);
+      this.router.navigate(['/artist/edit', event.row.id]);
     }
     if(event.action === 'delete'){
       this.deleteTeamMember(event.row.id);
@@ -80,10 +80,10 @@ export class ListingTeamMemberComponent implements OnInit{
   }
 
   deleteTeamMember(id: number){
-    this.teamApiService.deleteTeamMember(id).subscribe({
+    this.artistApiService.deleteArtist(id).subscribe({
       next: (res) => {
         const options: any = {};
-        this.getAllTeamMembers(options);
+        this.getAllArtists(options);
         this.success = true;
         this.error = null;
       },
@@ -94,5 +94,4 @@ export class ListingTeamMemberComponent implements OnInit{
       }
     })
   }
-
 }

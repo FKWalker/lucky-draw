@@ -1,18 +1,18 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TeamApiService {
+export class ArtistApiService {
 
-  private baseUrl = environment.apiUrl + '/team'; // comes from environment file
+  private baseUrl = environment.apiUrl + '/artist'; // comes from environment file
 
   constructor(private http: HttpClient) {}
 
-  getAllTeamMembers(options: {
+  getAllArtists(options: {
     page?: number;
     limit?: number;
     search?: string;
@@ -30,20 +30,20 @@ export class TeamApiService {
     return this.http.get<any>(`${this.baseUrl}`, { params });
   }
 
-  getTeamMemberById(id: number): Observable<any> {
+  getArtistById(id: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/${id}`);
   }
 
-  createTeamMember(formData: any): Observable<any> {
+  createArtist(formData: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}`, formData);
   }
 
-  updateTeamMember(id: number, formData: any): Observable<any> {
+  updateArtist(id: number, formData: any): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/${id}`, formData);
   }
 
-  deleteTeamMember(id: number): Observable<any> {
+  deleteArtist(id: number): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/${id}`);
   }
-
+  
 }

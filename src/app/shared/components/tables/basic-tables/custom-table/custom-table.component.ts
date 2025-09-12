@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonComponent } from '../../../ui/button/button.component';
 import { TableDropdownComponent } from '../../../common/table-dropdown/table-dropdown.component';
-import { BadgeComponent } from '../../../ui/badge/badge.component';
+import { ModalComponent } from "app/shared/components/ui/modal/modal.component";
 
 interface Transaction {
   image: string;
@@ -14,20 +14,30 @@ interface Transaction {
 }
 
 @Component({
-  selector: 'app-basic-table-three',
+  selector: 'app-custom-table',
   imports: [
     CommonModule,
     ButtonComponent,
     TableDropdownComponent,
-    BadgeComponent,
-  ],
-  templateUrl: './basic-table-three.component.html',
+    ModalComponent
+],
+  templateUrl: './custom-table.component.html',
   styles: ``
 })
-export class BasicTableThreeComponent {
+export class CustomTableComponent {
 
-  // Type definition for the transaction data
+  @Input() title = ''; // ✅ title from parent
+  @Input() columns: { key: string, label: string }[] = [];
+  @Input() data: any[] = [];
+  @Input() currentPage = 1;
+  @Input() totalPages = 1;
+  @Input() itemsPerPage = 1;
 
+  @Output() pageChange = new EventEmitter<number>();   // number for pagination
+  @Output() searchChange = new EventEmitter<string>();
+  @Output() action = new EventEmitter<{ action: string; row: any }>();
+
+  searchValue = '';
 
   transactionData: Transaction[] = [
     {
@@ -152,21 +162,17 @@ export class BasicTableThreeComponent {
     },
   ]
 
-  currentPage = 1;
-  itemsPerPage = 5;
+  // currentPage = 1;
+  
 
-  get totalPages(): number {
-    return Math.ceil(this.transactionData.length / this.itemsPerPage);
-  }
-
-  get currentItems(): Transaction[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.transactionData.slice(start, start + this.itemsPerPage);
-  }
+  // get totalPages(): number {
+  //   return Math.ceil(this.transactionData.length / this.itemsPerPage);
+  // }
 
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
+      this.pageChange.emit(this.currentPage);
     }
   }
 
@@ -185,4 +191,46 @@ export class BasicTableThreeComponent {
     if (status === 'Pending') return 'warning';
     return 'error';
   }
+
+  onSearchChange(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchValue = value;
+    this.searchChange.emit(value);
+  }
+
+  getVisiblePages(): number[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const delta = 2; // how many pages to show before/after current
+
+    let start = Math.max(1, current - delta);
+    let end = Math.min(total, current + delta);
+
+    // Ensure we always show at least 5 numbers
+    if (end - start < delta * 2) {
+      if (start === 1) {
+        end = Math.min(total, start + delta * 2);
+      } else if (end === total) {
+        start = Math.max(1, end - delta * 2);
+      }
+    }
+
+    const pages: number[] = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  isModalOpen = false;
+
+  confirmAction() {
+    console.log('Action confirmed!');
+    this.isModalOpen = false;
+  }
+
+  isOpen = false;
+  openModal() { this.isOpen = true; }
+  closeModal() { this.isOpen = false; }
 }

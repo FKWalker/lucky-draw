@@ -1,0 +1,49 @@
+<app-component-card title="Edit Artist">
+    <div class="space-y-6">
+        @if (success) {
+            <div>
+                <app-alert
+                    variant="success"
+                    title="Success"
+                    message="Artist updated successfully"
+                    [showLink]="false"
+                />
+            </div>
+        }
+        @if(error) {
+            <div>
+                <app-alert
+                    variant="error"
+                    title="Error"
+                    message="Failed to update artist"
+                    [showLink]="false"
+                />
+            </div>
+        }
+        <div>
+            <app-label for="input">First Name</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a first name" [value]="artistForm.first_name" (valueChange)="artistForm.first_name = $event" [error]="errors.first_name" [hint]="errors.first_name ? 'This is an invalid first name.' : ''"/>
+        </div>
+        <div>
+            <app-label for="input">Last Name</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="artistForm.first_name" (valueChange)="artistForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
+        </div>
+        <div>
+            <app-label>Profile Image</app-label>
+            <app-image-upload
+                #fileUpload
+                [imageUrl]="artistForm.profile_image"   
+                (change)="handleFileChange($event)"
+                [error]="errors.profile_image"
+                [hint]="errors.profile_image ? 'This is an invalid file.' : ''"
+            ></app-image-upload>
+        </div>
+        <div>
+            <app-label for="input">Position</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a position" [value]="artistForm.biography" (valueChange)="artistForm.biography = $event" [error]="errors.biography" [hint]="errors.biography ? 'This is an invalid biography' : ''"/>
+        </div>
+        <div>
+            <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Update</app-button>
+        </div>
+    </div>
+</app-component-card>

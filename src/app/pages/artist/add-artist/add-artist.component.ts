@@ -1,37 +1,36 @@
 import { Component, ViewChild } from '@angular/core';
+import { FileInputComponent } from 'app/shared/components/form/input/file-input.component';
+import { ArtistApiService } from 'app/shared/services/artist-api.service';
 import { ComponentCardComponent } from "app/shared/components/common/component-card/component-card.component";
-import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
-import { LabelComponent } from "app/shared/components/form/label/label.component";
-import { FileInputComponent } from "app/shared/components/form/input/file-input.component";
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ButtonComponent } from "app/shared/components/ui/button/button.component";
-import { TeamApiService } from 'app/shared/services/team-api.service';
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
+import { LabelComponent } from "app/shared/components/form/label/label.component";
+import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
 import { ImageUploadComponent } from "app/shared/components/form/image-upload/image-upload.component";
+import { ButtonComponent } from "app/shared/components/ui/button/button.component";
 
 @Component({
-  selector: 'app-add-team-member',
-  imports: [ComponentCardComponent, InputFieldComponent, LabelComponent, ReactiveFormsModule, ButtonComponent, AlertComponent, ImageUploadComponent],
-  templateUrl: './add-team-member.component.html',
-  styleUrl: './add-team-member.component.css'
+  selector: 'app-add-artist',
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ImageUploadComponent, ButtonComponent],
+  templateUrl: './add-artist.component.html',
+  styleUrl: './add-artist.component.css'
 })
-export class AddTeamMemberComponent {
-  
-  teamMemberForm: {
+export class AddArtistComponent {
+
+  artistForm: {
     first_name: string | number;
     last_name: string | number;
-    position: string | number;
+    biography: string | number;
   } = {
     first_name: '',
     last_name: '',
-    position: ''
+    biography: ''
   };
 
   errors = {
     first_name: false,
     last_name: false,
     profile_image: false,
-    position: false
+    biography: false
   }
   disabled: boolean = false;
   success: any;
@@ -40,32 +39,32 @@ export class AddTeamMemberComponent {
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;
 
-  constructor(private teamApiService: TeamApiService) {}
+  constructor(private artistApiService: ArtistApiService) {}
 
   onSubmit() {
     this.disabled = true;
     if(this.validation()){
 
       const formData = new FormData();
-      formData.append('first_name', this.teamMemberForm.first_name.toString());
-      formData.append('last_name', this.teamMemberForm.first_name.toString());
-      formData.append('position', this.teamMemberForm.position.toString());
+      formData.append('first_name', this.artistForm.first_name.toString());
+      formData.append('last_name', this.artistForm.first_name.toString());
+      formData.append('biography', this.artistForm.biography.toString());
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
         formData.append('profile_filename', this.selectedFile.name);
-        formData.append('profile_path', 'homepage');
+        formData.append('profile_path', 'artist');
       }
       console.log('--- FormData contents ---');
         formData.forEach((value, key) => {
         console.log(key, value);
       });
-      this.teamApiService.createTeamMember(formData).subscribe({
+      this.artistApiService.createArtist(formData).subscribe({
         next: (res) => {
           // ✅ Reset form after success
-          this.teamMemberForm = {
+          this.artistForm = {
             first_name: '',
             last_name: '',
-            position: ''
+            biography: ''
           };
           this.fileUpload.reset();
           this.success = true;
@@ -99,17 +98,17 @@ export class AddTeamMemberComponent {
       first_name: false,
       last_name: false,
       profile_image: false,
-      position: false
+      biography: false
     };
 
     let valid = true;
 
-    if (!String(this.teamMemberForm.first_name).trim()) {
+    if (!String(this.artistForm.first_name).trim()) {
       this.errors.first_name = true;
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.last_name).trim()) {
+    if (!String(this.artistForm.last_name).trim()) {
       this.errors.last_name = true;
       valid = false;
     }
@@ -119,8 +118,8 @@ export class AddTeamMemberComponent {
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.position).trim()) {
-      this.errors.position = true;
+    if (!String(this.artistForm.biography).trim()) {
+      this.errors.biography = true;
       valid = false;
     }
 
@@ -130,4 +129,5 @@ export class AddTeamMemberComponent {
 
     return valid;
   }
+
 }

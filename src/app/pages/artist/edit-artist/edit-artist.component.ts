@@ -1,39 +1,39 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ComponentCardComponent } from "app/shared/components/common/component-card/component-card.component";
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
 import { LabelComponent } from "app/shared/components/form/label/label.component";
 import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
-import { FileInputComponent } from "app/shared/components/form/input/file-input.component";
-import { ButtonComponent } from "app/shared/components/ui/button/button.component";
-import { TeamApiService } from 'app/shared/services/team-api.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { ImageUploadComponent } from "app/shared/components/form/image-upload/image-upload.component";
+import { ButtonComponent } from "app/shared/components/ui/button/button.component";
+import { FileInputComponent } from 'app/shared/components/form/input/file-input.component';
+import { ArtistApiService } from 'app/shared/services/artist-api.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-edit-team-member',
-  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ButtonComponent, ImageUploadComponent],
-  templateUrl: './edit-team-member.component.html',
-  styleUrl: './edit-team-member.component.css'
+  selector: 'app-edit-artist',
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ImageUploadComponent, ButtonComponent],
+  templateUrl: './edit-artist.component.html',
+  styleUrl: './edit-artist.component.css'
 })
-export class EditTeamMemberComponent implements OnInit{
-  
-  teamMemberForm: {
+export class EditArtistComponent {
+
+  artistForm: {
     profile_image: string | number;
     first_name: string | number;
     last_name: string | number;
-    position: string | number;
+    biography: string | number;
   } = {
     profile_image: '',
     first_name: '',
     last_name: '',
-    position: ''
+    biography: ''
   };
 
   errors = {
     profile_image: false,
     first_name: false,
     last_name: false,
-    position: false
+    biography: false
   }
   disabled: boolean = false;
   success: any;
@@ -43,7 +43,7 @@ export class EditTeamMemberComponent implements OnInit{
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;
 
-  constructor(private teamApiService: TeamApiService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private artistApiService: ArtistApiService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(){
     this.route.paramMap.subscribe(params => {
@@ -71,15 +71,15 @@ export class EditTeamMemberComponent implements OnInit{
     this.disabled = true;
     if(this.validation()){
       const formData = new FormData();
-      formData.append('first_name', this.teamMemberForm.first_name.toString());
-      formData.append('last_name', this.teamMemberForm.first_name.toString());
-      formData.append('position', this.teamMemberForm.position.toString());
+      formData.append('first_name', this.artistForm.first_name.toString());
+      formData.append('last_name', this.artistForm.first_name.toString());
+      formData.append('position', this.artistForm.biography.toString());
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
         formData.append('profile_filename', this.selectedFile.name);
-        formData.append('profile_path', 'homepage');
+        formData.append('profile_path', 'artist');
       }
-      this.teamApiService.updateTeamMember(this.id, formData).subscribe({
+      this.artistApiService.updateArtist(this.id, formData).subscribe({
         next: (res) => {
           // ✅ Reset form after success
           this.success = true;
@@ -112,23 +112,23 @@ export class EditTeamMemberComponent implements OnInit{
       first_name: false,
       last_name: false,
       profile_image: false,
-      position: false
+      biography: false
     };
 
     let valid = true;
 
-    if (!String(this.teamMemberForm.first_name).trim()) {
+    if (!String(this.artistForm.first_name).trim()) {
       this.errors.first_name = true;
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.last_name).trim()) {
+    if (!String(this.artistForm.last_name).trim()) {
       this.errors.last_name = true;
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.position).trim()) {
-      this.errors.position = true;
+    if (!String(this.artistForm.biography).trim()) {
+      this.errors.biography = true;
       valid = false;
     }
 
@@ -140,17 +140,18 @@ export class EditTeamMemberComponent implements OnInit{
   }
 
   getTeamMemberById(id: any){
-    this.teamApiService.getTeamMemberById(id).subscribe({
+    this.artistApiService.getArtistById(id).subscribe({
       next: (res) => {
         this.id = res.data.id;
-        this.teamMemberForm.first_name = res.data.first_name;
-        this.teamMemberForm.last_name = res.data.last_name;
-        this.teamMemberForm.profile_image = res.data.profile_image;
-        this.teamMemberForm.position = res.data.position;
+        this.artistForm.first_name = res.data.first_name;
+        this.artistForm.last_name = res.data.last_name;
+        this.artistForm.profile_image = res.data.profile_image;
+        this.artistForm.biography = res.data.biography;
       },
       error: (err) => {
-        this.router.navigate(['/team/listing']);
+        this.router.navigate(['/artist/listing']);
       }
     })
   }
+
 }

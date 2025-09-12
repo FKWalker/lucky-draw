@@ -21,6 +21,9 @@ import { CalenderComponent } from './pages/calender/calender.component';
 import { AddTeamMemberComponent } from './pages/team/add-team-member/add-team-member.component';
 import { ListingTeamMemberComponent } from './pages/team/listing-team-member/listing-team-member.component';
 import { EditTeamMemberComponent } from './pages/team/edit-team-member/edit-team-member.component';
+import { ListingArtistComponent } from './pages/artist/listing-artist/listing-artist.component';
+import { AddArtistComponent } from './pages/artist/add-artist/add-artist.component';
+import { EditArtistComponent } from './pages/artist/edit-artist/edit-artist.component';
 
 export const routes: Routes = [
   {
@@ -118,6 +121,21 @@ export const routes: Routes = [
       {
         path:'team/edit/:id',
         component:EditTeamMemberComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'artist/listing',
+        component:ListingArtistComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'artist/add',
+        component:AddArtistComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'artist/edit/:id',
+        component:EditArtistComponent,
         title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
       },
     ]

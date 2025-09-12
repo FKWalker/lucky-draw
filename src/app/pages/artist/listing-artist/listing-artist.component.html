@@ -4,7 +4,7 @@
                 <app-alert
                     variant="success"
                     title="Success"
-                    message="Team member deleted successfully"
+                    message="Artist deleted successfully"
                     [showLink]="false"
                 />
             </div>
@@ -14,15 +14,15 @@
             <app-alert
                 variant="error"
                 title="Error"
-                message="Failed to delete team member"
+                message="Failed to delete artist"
                 [showLink]="false"
             />
         </div>
     }
     <app-custom-table
-    title="Listing Team Member"
+    title="Listing Artist"
     [columns]="columns"
-    [data]="teamMembers"
+    [data]="artists"
     [currentPage]="currentPage"
     [totalPages]="totalPages"
     [itemsPerPage]="itemsPerPage"
