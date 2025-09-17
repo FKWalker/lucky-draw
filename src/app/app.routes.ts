@@ -24,6 +24,9 @@ import { EditTeamMemberComponent } from './pages/team/edit-team-member/edit-team
 import { ListingArtistComponent } from './pages/artist/listing-artist/listing-artist.component';
 import { AddArtistComponent } from './pages/artist/add-artist/add-artist.component';
 import { EditArtistComponent } from './pages/artist/edit-artist/edit-artist.component';
+import { ListingDiscographyComponent } from './pages/discography/listing-discography/listing-discography.component';
+import { AddDiscographyComponent } from './pages/discography/add-discography/add-discography.component';
+import { EditDiscographyComponent } from './pages/discography/edit-discography/edit-discography.component';
 
 export const routes: Routes = [
   {
@@ -138,6 +141,22 @@ export const routes: Routes = [
         component:EditArtistComponent,
         title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
       },
+      {
+        path:'discography/listing',
+        component:ListingDiscographyComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'discography/add',
+        component:AddDiscographyComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'discography/edit/:id',
+        component:EditDiscographyComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+
     ]
   },
   // auth pages

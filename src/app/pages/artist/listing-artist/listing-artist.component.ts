@@ -75,11 +75,11 @@ export class ListingArtistComponent {
       this.router.navigate(['/artist/edit', event.row.id]);
     }
     if(event.action === 'delete'){
-      this.deleteTeamMember(event.row.id);
+      this.deleteArtist(event.row.id);
     }
   }
 
-  deleteTeamMember(id: number){
+  deleteArtist(id: number){
     this.artistApiService.deleteArtist(id).subscribe({
       next: (res) => {
         const options: any = {};

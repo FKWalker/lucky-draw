@@ -1,0 +1,185 @@
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { DiscographyApiService } from 'app/shared/services/discography-api.service';
+import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
+import { CustomTableComponent } from "app/shared/components/tables/basic-tables/custom-table/custom-table.component";
+import { LabelComponent } from "app/shared/components/form/label/label.component";
+import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
+import { ComponentCardComponent } from "app/shared/components/common/component-card/component-card.component";
+import { SelectComponent } from "app/shared/components/form/select/select.component";
+import { ButtonComponent } from "app/shared/components/ui/button/button.component";
+import { ArtistApiService } from 'app/shared/services/artist-api.service';
+
+@Component({
+  selector: 'app-listing-discography',
+  imports: [AlertComponent, CustomTableComponent, LabelComponent, InputFieldComponent, ComponentCardComponent, SelectComponent, ButtonComponent],
+  templateUrl: './listing-discography.component.html',
+  styleUrl: './listing-discography.component.css'
+})
+export class ListingDiscographyComponent {
+
+  discographyForm: {
+    artist_id: string | number;
+    active: string | number;
+    release_year: string | number;
+    filter: string | number;
+    search: string | number;
+  } = {
+    artist_id: 0,
+    active: '',
+    release_year: '',
+    filter: '',
+    search: ''
+  };
+
+  // Column definitions
+  columns = [
+    { key: 'name', label: 'Name' },
+    { key: 'release_year', label: 'Release Year' },
+    { key: 'filter', label: 'Filter' },
+    { key: 'description', label: 'description' },
+    { key: 'active', label: 'Active' },
+  ];
+
+  // Dummy data
+  discographies = [];
+
+  // Pagination
+  currentPage: number = 1;
+  totalPages: number = 1;
+  itemsPerPage = 10;
+
+  success: any;
+  error: any;
+
+  artistOptions:any = [];
+
+  selectedValue = '';
+  disabled: boolean = false;
+
+  activeOptions = [
+    { value: 'true', label: 'true' },
+    { value: 'false', label: 'false' }
+  ];
+
+  constructor(private discographyApiService: DiscographyApiService, private router: Router, private artistApiService: ArtistApiService) {}
+
+  ngOnInit(): void {
+    const discographiesOptions: any = {};
+    this.getAllDiscographies(discographiesOptions);
+     const artistsOptions: any = {
+      limit: 100
+     };
+    this.getAllArtists(artistsOptions);
+  }
+
+  getAllDiscographies(options: any){
+    this.discographyApiService.getAllDiscographies(options).subscribe({
+      next: (res) => {
+        this.currentPage = res.data.pagination.currentPage;
+        this.totalPages = res.data.pagination.totalPages;
+        this.itemsPerPage = res.data.pagination.itemsPerPage;
+        this.discographies = res.data.discographies;
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+      }
+    })
+  }
+
+  // Handle page change from table
+  loadPage(page: number) {
+    this.currentPage = page;
+    const options: any = {
+      page: this.currentPage
+    };
+
+    Object.entries(this.discographyForm).forEach(([key, value]) => {
+      if (
+        value !== '' &&              // not empty string
+        value !== null &&            // not null
+        value !== undefined &&       // not undefined
+        !(typeof value === 'number' && value === 0) // skip 0 for numbers
+      ) {
+        options[key] = value;
+      }
+    });
+    this.getAllDiscographies(options);
+  }
+
+  // Handle search from table
+  onSearch(query: string) {
+    const options: any = {
+      search: query
+    };
+    this.getAllDiscographies(options);
+  }
+
+  action(event: { action: string; row: any }) {
+    if(event.action === 'update'){
+      this.router.navigate(['/discography/edit', event.row.id]);
+    }
+    if(event.action === 'delete'){
+      this.deleteDiscography(event.row.id);
+    }
+  }
+
+  deleteDiscography(id: number){
+    this.discographyApiService.deleteDiscography(id).subscribe({
+      next: (res) => {
+        const options: any = {};
+        this.getAllDiscographies(options);
+        this.success = true;
+        this.error = null;
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+        this.error = true;
+        this.success = null;
+      }
+    })
+  }
+
+  handleArtistSelectChange(value: string) {
+    this.discographyForm.artist_id = value;
+  }
+
+  handleActiveSelectChange(value: string) {
+    this.discographyForm.active = value;
+  }
+
+  onSubmit() {
+    const options: any = {
+      page: this.currentPage
+    };
+
+    Object.entries(this.discographyForm).forEach(([key, value]) => {
+      if (
+        value !== '' &&              // not empty string
+        value !== null &&            // not null
+        value !== undefined &&       // not undefined
+        !(typeof value === 'number' && value === 0) // skip 0 for numbers
+      ) {
+        options[key] = value;
+      }
+    });
+    this.getAllDiscographies(options);
+  }
+
+  getAllArtists(options: any){
+    this.artistApiService.getAllArtists(options).subscribe({
+      next: (res) => {
+       for(let artist of res.data.artists){
+          let artistOption: any = {};
+          artistOption.value = artist.id;
+          artistOption.label = artist.first_name + ' ' + artist.last_name;
+          this.artistOptions.push(artistOption);
+       }
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+      }
+    })
+  }
+  
+}

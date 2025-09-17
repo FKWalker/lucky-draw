@@ -18,8 +18,7 @@ interface Transaction {
   imports: [
     CommonModule,
     ButtonComponent,
-    TableDropdownComponent,
-    ModalComponent
+    TableDropdownComponent
 ],
   templateUrl: './custom-table.component.html',
   styles: ``
@@ -32,6 +31,7 @@ export class CustomTableComponent {
   @Input() currentPage = 1;
   @Input() totalPages = 1;
   @Input() itemsPerPage = 1;
+  @Input() enableSearch: boolean = true;
 
   @Output() pageChange = new EventEmitter<number>();   // number for pagination
   @Output() searchChange = new EventEmitter<string>();

@@ -17,6 +17,8 @@ export class SelectComponent implements OnInit {
   @Input() className: string = '';
   @Input() defaultValue: string = '';
   @Input() value: string = '';
+  @Input() error: boolean = false;  
+  @Input() hint: string = '';      
 
   @Output() valueChange = new EventEmitter<string>();
 
