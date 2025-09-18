@@ -27,6 +27,9 @@ import { EditArtistComponent } from './pages/artist/edit-artist/edit-artist.comp
 import { ListingDiscographyComponent } from './pages/discography/listing-discography/listing-discography.component';
 import { AddDiscographyComponent } from './pages/discography/add-discography/add-discography.component';
 import { EditDiscographyComponent } from './pages/discography/edit-discography/edit-discography.component';
+import { ListingNewsComponent } from './pages/news/listing-news/listing-news.component';
+import { AddNewsComponent } from './pages/news/add-news/add-news.component';
+import { EditNewsComponent } from './pages/news/edit-news/edit-news.component';
 
 export const routes: Routes = [
   {
@@ -156,7 +159,21 @@ export const routes: Routes = [
         component:EditDiscographyComponent,
         title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
       },
-
+      {
+        path:'news/listing',
+        component:ListingNewsComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'news/add',
+        component:AddNewsComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'news/edit/:id',
+        component:EditNewsComponent,
+        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
     ]
   },
   // auth pages

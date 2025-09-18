@@ -4,7 +4,7 @@
                 <app-alert
                     variant="success"
                     title="Success"
-                    message="Discography deleted successfully"
+                    message="News deleted successfully"
                     [showLink]="false"
                 />
             </div>
@@ -14,7 +14,7 @@
             <app-alert
                 variant="error"
                 title="Error"
-                message="Failed to delete discography"
+                message="Failed to delete news"
                 [showLink]="false"
             />
         </div>
@@ -22,15 +22,6 @@
     <div>
         <app-component-card title="Advance Search">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                    <app-label>Artist</app-label>
-                    <app-select
-                        [options]="artistOptions"
-                        placeholder="Select Option"
-                        (valueChange)="handleArtistSelectChange($event)"
-                        className="dark:bg-dark-900"
-                    ></app-select>
-                </div>
                 <div>
                     <app-label>Active</app-label>
                     <app-select
@@ -41,16 +32,12 @@
                     ></app-select>
                 </div>
                 <div>
-                    <app-label for="input">Release Year</app-label>
-                    <app-input-field type="text" id="input" placeholder="Enter a release year" [value]="discographyForm.release_year" (valueChange)="discographyForm.release_year = $event"/>
-                </div>
-                <div>
                     <app-label for="input">Filter</app-label>
-                    <app-input-field type="text" id="input" placeholder="Enter a filter" [value]="discographyForm.filter" (valueChange)="discographyForm.filter = $event"/>
+                    <app-input-field type="text" id="input" placeholder="Enter a filter" [value]="newsForm.filter" (valueChange)="newsForm.filter = $event"/>
                 </div>
                 <div>
                     <app-label for="input">Search</app-label>
-                    <app-input-field type="text" id="input" placeholder="Enter a word" [value]="discographyForm.search" (valueChange)="discographyForm.search = $event"/>
+                    <app-input-field type="text" id="input" placeholder="Enter a word" [value]="newsForm.search" (valueChange)="newsForm.search = $event"/>
                 </div>
             </div>
             <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Search</app-button>
@@ -58,9 +45,9 @@
     </div>
     
     <app-custom-table
-    title="Listing Discography"
+    title="Listing News"
     [columns]="columns"
-    [data]="discographies"
+    [data]="news"
     [currentPage]="currentPage"
     [totalPages]="totalPages"
     [itemsPerPage]="itemsPerPage"

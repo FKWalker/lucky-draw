@@ -274,7 +274,7 @@ export class EditDiscographyComponent {
         this.discographyForm.artist_id = res.data.artist_id;
       },
       error: (err) => {
-        this.router.navigate(['/artist/listing']);
+        this.router.navigate(['/discography/listing']);
       }
     })
   }

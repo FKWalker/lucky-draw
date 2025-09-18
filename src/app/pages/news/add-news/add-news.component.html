@@ -1,0 +1,76 @@
+<app-component-card title="Add News">
+    <div class="space-y-6">
+        @if (success) {
+            <div>
+                <app-alert
+                    variant="success"
+                    title="Success"
+                    message="News created successfully"
+                    [showLink]="false"
+                />
+            </div>
+        }
+        @if(error) {
+            <div>
+                <app-alert
+                    variant="error"
+                    title="Error"
+                    message="Failed to create news"
+                    [showLink]="false"
+                />
+            </div>
+        }
+        <div>
+            <app-label for="input">Headline</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a first name" [value]="newsForm.headline" (valueChange)="newsForm.headline = $event" [error]="errors.headline" [hint]="errors.headline ? 'This is an invalid headline.' : ''"/>
+        </div>
+        <div>
+            <app-label for="input">Filter</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="newsForm.filter" (valueChange)="newsForm.filter = $event" [error]="errors.filter" [hint]="errors.filter ? 'This is an invalid filter.' : ''"/>
+        </div>
+        <div>
+            <app-label for="input">Title</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a position" [value]="newsForm.title" (valueChange)="newsForm.title = $event" [error]="errors.title" [hint]="errors.title ? 'This is an invalid title' : ''"/>
+        </div>
+        <div>
+            <app-label for="input">Description</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a position" [value]="newsForm.description" (valueChange)="newsForm.description = $event" [error]="errors.description" [hint]="errors.description ? 'This is an invalid description' : ''"/>
+        </div>
+        <div>
+            <app-date-picker
+                id="date-picker"
+                label="Published At"
+                placeholder="Select a date"
+                [enableTime]="true"
+                [time24hr]="false"
+                [enableSeconds]="true"
+                [defaultDate]="currentDate"
+                (dateChange)="handleDateChange($event)"
+            />
+        </div>
+        <div>
+            <app-label>Active</app-label>
+            <app-select
+                [options]="activeOptions"
+                placeholder="Select Option"
+                [value]="this.newsForm.active.toString()"
+                (valueChange)="handleActiveSelectChange($event)"
+                className="dark:bg-dark-900"
+                [error]="errors.active"
+                [hint]="errors.active ? 'Please select an active.' : ''"
+            ></app-select>
+        </div>
+        <div>
+            <app-label>News Image</app-label>
+            <app-image-upload
+                #fileUpload
+                (change)="handleFileChange($event)"
+                [error]="errors.news_image"
+                [hint]="errors.news_image ? 'This is an invalid file.' : ''"
+            ></app-image-upload>
+        </div>
+        <div>
+            <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Create</app-button>
+        </div>
+    </div>
+</app-component-card>
