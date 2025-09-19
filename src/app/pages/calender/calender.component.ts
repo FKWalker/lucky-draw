@@ -10,6 +10,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { ModalComponent } from '../../shared/components/ui/modal/modal.component';
 
 interface CalendarEvent extends EventInput {
+  id: string;
   extendedProps: {
     calendar: string;
   };

@@ -30,11 +30,13 @@ import { EditDiscographyComponent } from './pages/discography/edit-discography/e
 import { ListingNewsComponent } from './pages/news/listing-news/listing-news.component';
 import { AddNewsComponent } from './pages/news/add-news/add-news.component';
 import { EditNewsComponent } from './pages/news/edit-news/edit-news.component';
+import { AuthGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
   {
     path:'',
     component:AppLayoutComponent,
+    canActivate: [AuthGuard],
     children:[
       {
         path: '',
@@ -178,12 +180,12 @@ export const routes: Routes = [
   },
   // auth pages
   {
-    path:'signin',
+    path:'sign-in',
     component:SignInComponent,
     title:'Angular Sign In Dashboard | TailAdmin - Angular Admin Dashboard Template'
   },
   {
-    path:'signup',
+    path:'sign-up',
     component:SignUpComponent,
     title:'Angular Sign Up Dashboard | TailAdmin - Angular Admin Dashboard Template'
   },
