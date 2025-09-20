@@ -77,12 +77,37 @@ export class SigninFormComponent {
         console.error('API Error:', err);
         this.isLoading = false;
 
-        // Show error toast
-        const errorMessage = err.error?.message || err.message || 'Login failed. Please try again.';
-        this.toastService.error(
-          'Login Failed',
-          errorMessage
-        );
+        // Unified error handler
+        if (err.error?.errors && Array.isArray(err.error.errors)) {
+          // Case 1: Validation errors array
+          err.error.errors.forEach((error: any) => {
+            this.toastService.error(
+              'Validation Error',
+              `${error.path}: ${error.msg}`
+            );
+          });
+        } else {
+          // Case 2: General errors (different response shapes)
+          let errorMessage = null;
+
+          if (typeof err.error === 'string') {
+            // API returned a plain string
+            errorMessage = err.error;
+          } else if (err.error) {
+            // API returned an object → check known keys
+            errorMessage =
+              err.error.error ||      // detailed error
+              err.error.message ||    // general message
+              null;
+          }
+
+          // Final fallback
+          if (!errorMessage) {
+            errorMessage = err.message || 'Login failed. Please try again.';
+          }
+
+          this.toastService.error('Login Failed', errorMessage);
+        }
       }
     })
 
