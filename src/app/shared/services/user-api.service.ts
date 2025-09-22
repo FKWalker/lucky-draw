@@ -30,8 +30,20 @@ export class UserApiService {
     return this.http.get<any>(`${this.baseUrl}`, { params });
   }
 
-  getUserById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  createUser(formData: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}`, formData);
+  }
+
+  updateUserById(id: number, formData: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}`, formData);
+  }
+
+  deleteUserById(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/${id}`);
+  }
+
+  updatePassword(id: number, formData: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}`, formData);
   }
 
   login(loginData: { identifier: string; password: string }): Observable<any> {

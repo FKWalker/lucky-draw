@@ -8,7 +8,8 @@ export interface User {
   firstName: string;
   lastName: string;
   role: string;
-  isActive: boolean;
+  status: string | number;
+  active: number;
   lastLogin: string;
   createdAt: string;
   updatedAt: string;
@@ -100,6 +101,14 @@ export class AuthService {
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
+  }
+
+  updateCurrentUser(updatedUser: User): void {
+    // Update the user data in localStorage
+    localStorage.setItem(this.USER_KEY, JSON.stringify(updatedUser));
+    
+    // Update the current user subject to notify all subscribers
+    this.currentUserSubject.next(updatedUser);
   }
 
   hasRole(role: string): boolean {

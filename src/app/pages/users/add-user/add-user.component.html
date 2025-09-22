@@ -1,0 +1,105 @@
+<app-component-card title="Add User">
+    <div class="space-y-6">
+        @if (success) {
+            <div>
+                <app-alert
+                    variant="success"
+                    title="Success"
+                    message="User created successfully"
+                    [showLink]="false"
+                />
+            </div>
+        }
+        @if(error) {
+            <div>
+                <app-alert
+                    variant="error"
+                    title="Error"
+                    message="Failed to create user"
+                    [showLink]="false"
+                />
+            </div>
+        }
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div>
+                <app-label for="username">Username</app-label>
+                <app-input-field 
+                    type="text" 
+                    id="username" 
+                    placeholder="Enter username" 
+                    [value]="userForm.username" 
+                    (valueChange)="userForm.username = String($event)" 
+                    [error]="errors.username" 
+                    [hint]="errors.username ? 'Username is required.' : ''"/>
+            </div>
+            <div>
+                <app-label for="email">Email Address</app-label>
+                <app-input-field 
+                    type="email" 
+                    id="email" 
+                    placeholder="Enter email address" 
+                    [value]="userForm.email" 
+                    (valueChange)="userForm.email = String($event)" 
+                    [error]="errors.email" 
+                    [hint]="errors.email ? 'Email is required.' : ''"/>
+            </div>
+            <div>
+                <app-label for="firstName">First Name</app-label>
+                <app-input-field 
+                    type="text" 
+                    id="firstName" 
+                    placeholder="Enter first name" 
+                    [value]="userForm.firstName" 
+                    (valueChange)="userForm.firstName = String($event)" 
+                    [error]="errors.firstName" 
+                    [hint]="errors.firstName ? 'First name is required.' : ''"/>
+            </div>
+            <div>
+                <app-label for="lastName">Last Name</app-label>
+                <app-input-field 
+                    type="text" 
+                    id="lastName" 
+                    placeholder="Enter last name" 
+                    [value]="userForm.lastName" 
+                    (valueChange)="userForm.lastName = String($event)" 
+                    [error]="errors.lastName" 
+                    [hint]="errors.lastName ? 'Last name is required.' : ''"/>
+            </div>
+            <div>
+                <app-label for="password">Password</app-label>
+                <app-input-field 
+                    type="password" 
+                    id="password" 
+                    placeholder="Enter password" 
+                    [value]="userForm.password" 
+                    (valueChange)="userForm.password = String($event)" 
+                    [error]="errors.password" 
+                    [hint]="errors.password ? 'Password is required.' : ''"/>
+            </div>
+            <div>
+                <app-label for="role">Role</app-label>
+                <app-select 
+                    id="role"
+                    [options]="roleOptions"
+                    [value]="userForm.role"
+                    placeholder="Select role"
+                    (valueChange)="userForm.role = $event" />
+                @if (errors.role) {
+                    <p class="mt-1 text-xs text-red-500">Role is required.</p>
+                }
+            </div>
+            <div>
+                <app-label for="status">Status</app-label>
+                <app-select 
+                    id="status"
+                    [options]="statusOptions"
+                    [value]="userForm.status"
+                    placeholder="Select status"
+                    (valueChange)="userForm.status = $event" />
+            </div>
+        </div>
+        <div>
+            <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Create User</app-button>
+        </div>
+    </div>
+</app-component-card>

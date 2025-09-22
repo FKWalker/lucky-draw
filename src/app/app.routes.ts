@@ -30,6 +30,8 @@ import { EditDiscographyComponent } from './pages/discography/edit-discography/e
 import { ListingNewsComponent } from './pages/news/listing-news/listing-news.component';
 import { AddNewsComponent } from './pages/news/add-news/add-news.component';
 import { EditNewsComponent } from './pages/news/edit-news/edit-news.component';
+import { ListingUserComponent } from './pages/users/listing-user/listing-user.component';
+import { AddUserComponent } from './pages/users/add-user/add-user.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
@@ -50,11 +52,11 @@ export const routes: Routes = [
       //   component:CalenderComponent,
       //   title:'Angular Calender | TailAdmin - Angular Admin Dashboard Template'
       // },
-      // {
-      //   path:'profile',
-      //   component:ProfileComponent,
-      //   title:'Angular Profile Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      // },
+      {
+        path:'profile',
+        component:ProfileComponent,
+        title:'Angular Profile Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
       // {
       //   path:'form-elements',
       //   component:FormElementsComponent,
@@ -180,6 +182,16 @@ export const routes: Routes = [
         path:'news/edit/:id',
         component:EditNewsComponent,
         title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'users/listing',
+        component:ListingUserComponent,
+        title:'User Listing | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path:'users/add',
+        component:AddUserComponent,
+        title:'Add User | TailAdmin - Angular Admin Dashboard Template'
       },
     ]
   },
