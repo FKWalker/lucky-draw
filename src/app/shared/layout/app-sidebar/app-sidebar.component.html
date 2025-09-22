@@ -38,6 +38,7 @@
         width="150"
         height="40"
       />
+      
       } @else {
       <img src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
       }
@@ -247,7 +248,7 @@
         <!-- end support section -->
 
         <!-- Others Section -->
-        <div>
+        <!-- <div>
           <h2
             class="mb-4 text-xs uppercase flex leading-[20px] text-gray-400"
             [ngClass]="{
@@ -446,12 +447,12 @@
             </li>
             }
           </ul>
-        </div>
+        </div> -->
         <!-- end other section -->
       </div>
     </nav>
     @if ((isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)) {
-    <app-sidebar-widget />
+    <!-- <app-sidebar-widget /> -->
     }
   </div>
 </aside>

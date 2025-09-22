@@ -26,7 +26,7 @@
         </div>
         <div>
             <app-label for="input">Last Name</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="teamMemberForm.first_name" (valueChange)="teamMemberForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
+            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="teamMemberForm.last_name" (valueChange)="teamMemberForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
         </div>
         <div>
             <app-label>Profile Image</app-label>

@@ -72,7 +72,7 @@ export class EditTeamMemberComponent implements OnInit{
     if(this.validation()){
       const formData = new FormData();
       formData.append('first_name', this.teamMemberForm.first_name.toString());
-      formData.append('last_name', this.teamMemberForm.first_name.toString());
+      formData.append('last_name', this.teamMemberForm.last_name.toString());
       formData.append('position', this.teamMemberForm.position.toString());
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
