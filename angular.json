@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/flashbangadmin",
+            "outputPath": "dist/flashbang-admin",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -53,7 +53,7 @@
               ],
               "outputHashing": "all"
             },
-            "development": {
+            "staging": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -67,11 +67,11 @@
             "production": {
               "buildTarget": "flashbangadmin:build:production"
             },
-            "development": {
-              "buildTarget": "flashbangadmin:build:development"
+            "staging": {
+              "buildTarget": "flashbangadmin:build:staging"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "staging"
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"

@@ -45,78 +45,78 @@ export const routes: Routes = [
       //   component: EcommerceComponent,
       //   pathMatch: 'full',
       //   title:
-      //     'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+      //     'Angular Ecommerce Dashboard | Flashbang',
       // },
       // {
       //   path:'calendar',
       //   component:CalenderComponent,
-      //   title:'Angular Calender | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Calender | Flashbang'
       // },
       {
         path:'profile',
         component:ProfileComponent,
-        title:'Angular Profile Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Profile Dashboard | Flashbang'
       },
       // {
       //   path:'form-elements',
       //   component:FormElementsComponent,
-      //   title:'Angular Form Elements Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Form Elements Dashboard | Flashbang'
       // },
       // {
       //   path:'basic-tables',
       //   component:BasicTablesComponent,
-      //   title:'Angular Basic Tables Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Basic Tables Dashboard | Flashbang'
       // },
       // {
       //   path:'blank',
       //   component:BlankComponent,
-      //   title:'Angular Blank Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Blank Dashboard | Flashbang'
       // },
       // // support tickets
       // {
       //   path:'invoice',
       //   component:InvoicesComponent,
-      //   title:'Angular Invoice Details Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Invoice Details Dashboard | Flashbang'
       // },
       // {
       //   path:'line-chart',
       //   component:LineChartComponent,
-      //   title:'Angular Line Chart Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Line Chart Dashboard | Flashbang'
       // },
       // {
       //   path:'bar-chart',
       //   component:BarChartComponent,
-      //   title:'Angular Bar Chart Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Bar Chart Dashboard | Flashbang'
       // },
       // {
       //   path:'alerts',
       //   component:AlertsComponent,
-      //   title:'Angular Alerts Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Alerts Dashboard | Flashbang'
       // },
       // {
       //   path:'avatars',
       //   component:AvatarElementComponent,
-      //   title:'Angular Avatars Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Avatars Dashboard | Flashbang'
       // },
       // {
       //   path:'badge',
       //   component:BadgesComponent,
-      //   title:'Angular Badges Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Badges Dashboard | Flashbang'
       // },
       // {
       //   path:'buttons',
       //   component:ButtonsComponent,
-      //   title:'Angular Buttons Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Buttons Dashboard | Flashbang'
       // },
       // {
       //   path:'images',
       //   component:ImagesComponent,
-      //   title:'Angular Images Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Images Dashboard | Flashbang'
       // },
       // {
       //   path:'videos',
       //   component:VideosComponent,
-      //   title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      //   title:'Angular Videos Dashboard | Flashbang'
       // },
       {
         path: '',
@@ -126,72 +126,72 @@ export const routes: Routes = [
       {
         path:'team/listing',
         component:ListingTeamMemberComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'team/add',
         component:AddTeamMemberComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'team/edit/:id',
         component:EditTeamMemberComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'artist/listing',
         component:ListingArtistComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'artist/add',
         component:AddArtistComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'artist/edit/:id',
         component:EditArtistComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'discography/listing',
         component:ListingDiscographyComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'discography/add',
         component:AddDiscographyComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'discography/edit/:id',
         component:EditDiscographyComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'news/listing',
         component:ListingNewsComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'news/add',
         component:AddNewsComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'news/edit/:id',
         component:EditNewsComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+        title:'Angular Videos Dashboard | Flashbang'
       },
       {
         path:'users/listing',
         component:ListingUserComponent,
-        title:'User Listing | TailAdmin - Angular Admin Dashboard Template'
+        title:'User Listing | Flashbang'
       },
       {
         path:'users/add',
         component:AddUserComponent,
-        title:'Add User | TailAdmin - Angular Admin Dashboard Template'
+        title:'Add User | Flashbang'
       },
     ]
   },
@@ -199,17 +199,17 @@ export const routes: Routes = [
   {
     path:'sign-in',
     component:SignInComponent,
-    title:'Angular Sign In Dashboard | TailAdmin - Angular Admin Dashboard Template'
+    title:'Sign In Dashboard | Flashbang'
   },
   {
     path:'sign-up',
     component:SignUpComponent,
-    title:'Angular Sign Up Dashboard | TailAdmin - Angular Admin Dashboard Template'
+    title:'Sign Up Dashboard | Flashbang'
   },
   // error pages
   {
     path:'**',
     component:NotFoundComponent,
-    title:'Angular NotFound Dashboard | TailAdmin - Angular Admin Dashboard Template'
+    title:'NotFound Dashboard | Flashbang'
   },
 ];
