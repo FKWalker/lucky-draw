@@ -32,6 +32,7 @@ import { AddNewsComponent } from './pages/news/add-news/add-news.component';
 import { EditNewsComponent } from './pages/news/edit-news/edit-news.component';
 import { ListingUserComponent } from './pages/users/listing-user/listing-user.component';
 import { AddUserComponent } from './pages/users/add-user/add-user.component';
+import { EditUserComponent } from './pages/users/edit-user/edit-user.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
@@ -192,6 +193,11 @@ export const routes: Routes = [
         path:'users/add',
         component:AddUserComponent,
         title:'Add User | Flashbang'
+      },
+      {
+        path:'users/edit/:id',
+        component:EditUserComponent,
+        title:'Edit User | Flashbang'
       },
     ]
   },

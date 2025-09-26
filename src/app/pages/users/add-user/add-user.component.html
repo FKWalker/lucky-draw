@@ -28,7 +28,7 @@
                     id="username" 
                     placeholder="Enter username" 
                     [value]="userForm.username" 
-                    (valueChange)="userForm.username = String($event)" 
+                    (valueChange)="onFieldChange('username', $event)" 
                     [error]="errors.username" 
                     [hint]="errors.username ? 'Username is required.' : ''"/>
             </div>
@@ -39,7 +39,7 @@
                     id="email" 
                     placeholder="Enter email address" 
                     [value]="userForm.email" 
-                    (valueChange)="userForm.email = String($event)" 
+                    (valueChange)="onFieldChange('email', $event)" 
                     [error]="errors.email" 
                     [hint]="errors.email ? 'Email is required.' : ''"/>
             </div>
@@ -50,7 +50,7 @@
                     id="firstName" 
                     placeholder="Enter first name" 
                     [value]="userForm.firstName" 
-                    (valueChange)="userForm.firstName = String($event)" 
+                    (valueChange)="onFieldChange('firstName', $event)" 
                     [error]="errors.firstName" 
                     [hint]="errors.firstName ? 'First name is required.' : ''"/>
             </div>
@@ -61,7 +61,7 @@
                     id="lastName" 
                     placeholder="Enter last name" 
                     [value]="userForm.lastName" 
-                    (valueChange)="userForm.lastName = String($event)" 
+                    (valueChange)="onFieldChange('lastName', $event)" 
                     [error]="errors.lastName" 
                     [hint]="errors.lastName ? 'Last name is required.' : ''"/>
             </div>
@@ -72,7 +72,7 @@
                     id="password" 
                     placeholder="Enter password" 
                     [value]="userForm.password" 
-                    (valueChange)="userForm.password = String($event)" 
+                    (valueChange)="onFieldChange('password', $event)" 
                     [error]="errors.password" 
                     [hint]="errors.password ? 'Password is required.' : ''"/>
             </div>
@@ -83,7 +83,7 @@
                     [options]="roleOptions"
                     [value]="userForm.role"
                     placeholder="Select role"
-                    (valueChange)="userForm.role = $event" />
+                    (valueChange)="onFieldChange('role', $event)"  />
                 @if (errors.role) {
                     <p class="mt-1 text-xs text-red-500">Role is required.</p>
                 }
@@ -95,7 +95,7 @@
                     [options]="statusOptions"
                     [value]="userForm.status"
                     placeholder="Select status"
-                    (valueChange)="userForm.status = $event" />
+                    (valueChange)="onFieldChange('status', $event)"  />
             </div>
         </div>
         <div>

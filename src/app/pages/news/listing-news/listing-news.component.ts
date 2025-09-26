@@ -56,8 +56,8 @@ export class ListingNewsComponent {
   disabled: boolean = false;
 
   activeOptions = [
-    { value: 'true', label: 'true' },
-    { value: 'false', label: 'false' }
+    { value: 'true', label: 'Yes' },
+    { value: 'false', label: 'No' }
   ];
 
   constructor(private newsApiService: NewsApiService, private router: Router) {}
@@ -73,7 +73,11 @@ export class ListingNewsComponent {
         this.currentPage = res.data.pagination.currentPage;
         this.totalPages = res.data.pagination.totalPages;
         this.itemsPerPage = res.data.pagination.itemsPerPage;
-        this.news = res.data.news;
+
+        this.news = res.data.news.map((news: any) => ({
+          ...news,
+          active: this.getActiveLabel(news.active)
+        }));
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -154,5 +158,12 @@ export class ListingNewsComponent {
       }
     });
     this.getAllNews(options);
+  }
+
+  getActiveLabel(status: boolean): string {
+    switch (status) {
+      case true: return 'Active';
+      default: return 'Inactive';
+    }
   }
 }

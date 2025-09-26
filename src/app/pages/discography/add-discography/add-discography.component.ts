@@ -57,8 +57,8 @@ export class AddDiscographyComponent {
   socialMediasErrors: { platform?: string; url?: string }[] = [];
 
   activeOptions = [
-    { value: 'true', label: 'true' },
-    { value: 'false', label: 'false' }
+    { value: 'true', label: 'Active' },
+    { value: 'false', label: 'Inactive' }
   ];
 
   constructor(private discographyApiService: DiscographyApiService, private router: Router, private artistApiService: ArtistApiService) {}

@@ -1,0 +1,115 @@
+<app-component-card title="Edit User">
+    <div class="space-y-6">
+        @if (loading) {
+            <div class="flex justify-center items-center py-8">
+                <div class="text-gray-500">Loading user data...</div>
+            </div>
+        }
+        
+        @if (success) {
+            <div>
+                <app-alert
+                    variant="success"
+                    title="Success"
+                    message="User updated successfully"
+                    [showLink]="false"
+                />
+            </div>
+        }
+        @if(error) {
+            <div>
+                <app-alert
+                    variant="error"
+                    title="Error"
+                    message="Failed to update user"
+                    [showLink]="false"
+                />
+            </div>
+        }
+        
+        @if (!loading) {
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div>
+                    <app-label for="username">Username</app-label>
+                    <app-input-field 
+                        type="text" 
+                        id="username" 
+                        placeholder="Enter username" 
+                        [value]="userForm.username" 
+                        (valueChange)="onFieldChange('username', $event)" 
+                        [error]="errors.username" 
+                        [hint]="errors.username ? 'Username is required.' : ''"/>
+                </div>
+                <div>
+                    <app-label for="email">Email Address</app-label>
+                    <app-input-field 
+                        type="email" 
+                        id="email" 
+                        placeholder="Enter email address" 
+                        [value]="userForm.email" 
+                        (valueChange)="onFieldChange('email', $event)" 
+                        [error]="errors.email" 
+                        [hint]="errors.email ? 'Email is required.' : ''"/>
+                </div>
+                <div>
+                    <app-label for="firstName">First Name</app-label>
+                    <app-input-field 
+                        type="text" 
+                        id="firstName" 
+                        placeholder="Enter first name" 
+                        [value]="userForm.firstName" 
+                        (valueChange)="onFieldChange('firstName', $event)" 
+                        [error]="errors.firstName" 
+                        [hint]="errors.firstName ? 'First name is required.' : ''"/>
+                </div>
+                <div>
+                    <app-label for="lastName">Last Name</app-label>
+                    <app-input-field 
+                        type="text" 
+                        id="lastName" 
+                        placeholder="Enter last name" 
+                        [value]="userForm.lastName" 
+                        (valueChange)="onFieldChange('lastName', $event)" 
+                        [error]="errors.lastName" 
+                        [hint]="errors.lastName ? 'Last name is required.' : ''"/>
+                </div>
+                <div>
+                    <app-label for="password">Password</app-label>
+                    <app-input-field 
+                        type="password" 
+                        id="password" 
+                        placeholder="Enter new password (leave blank to keep current)" 
+                        [value]="userForm.password" 
+                        (valueChange)="onFieldChange('password', $event)" 
+                        [error]="errors.password" 
+                        [hint]="errors.password ? 'Password is required.' : 'Leave blank to keep current password'"/>
+                </div>
+                <div>
+                    <app-label for="role">Role</app-label>
+                    <app-select 
+                        id="role"
+                        [options]="roleOptions"
+                        [value]="userForm.role"
+                        placeholder="Select role"
+                        (valueChange)="onFieldChange('role', $event)"  />
+                    @if (errors.role) {
+                        <p class="mt-1 text-xs text-red-500">Role is required.</p>
+                    }
+                </div>
+                <div>
+                    <app-label for="status">Status</app-label>
+                    <app-select 
+                        id="status"
+                        [options]="statusOptions"
+                        [value]="userForm.status"
+                        placeholder="Select status"
+                        (valueChange)="onFieldChange('status', $event)"  />
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Update User</app-button>
+                <app-button type="button" size="sm" variant="outline" (btnClick)="router.navigate(['/users/listing'])" [disabled]="disabled">Cancel</app-button>
+            </div>
+        }
+    </div>
+</app-component-card>

@@ -37,8 +37,8 @@ export class ListingDiscographyComponent {
     { key: 'name', label: 'Name' },
     { key: 'release_year', label: 'Release Year' },
     { key: 'filter', label: 'Filter' },
-    { key: 'description', label: 'description' },
-    { key: 'active', label: 'Active' },
+    { key: 'description', label: 'Description' },
+    { key: 'active', label: 'Status' },
   ];
 
   // Dummy data
@@ -58,8 +58,8 @@ export class ListingDiscographyComponent {
   disabled: boolean = false;
 
   activeOptions = [
-    { value: 'true', label: 'true' },
-    { value: 'false', label: 'false' }
+    { value: 'true', label: 'Yes' },
+    { value: 'false', label: 'No' }
   ];
 
   constructor(private discographyApiService: DiscographyApiService, private router: Router, private artistApiService: ArtistApiService) {}
@@ -79,7 +79,12 @@ export class ListingDiscographyComponent {
         this.currentPage = res.data.pagination.currentPage;
         this.totalPages = res.data.pagination.totalPages;
         this.itemsPerPage = res.data.pagination.itemsPerPage;
-        this.discographies = res.data.discographies;
+
+        this.discographies = res.data.discographies.map((discography: any) => ({
+          ...discography,
+          active: this.getActiveLabel(discography.active)
+        }));
+
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -180,6 +185,13 @@ export class ListingDiscographyComponent {
         console.error('API Error:', err);
       }
     })
+  }
+
+  getActiveLabel(status: boolean): string {
+    switch (status) {
+      case true: return 'Active';
+      default: return 'Inactive';
+    }
   }
   
 }

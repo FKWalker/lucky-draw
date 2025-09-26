@@ -52,8 +52,8 @@ export class EditNewsComponent {
   currentDate: any;
 
   activeOptions = [
-    { value: 'true', label: 'true' },
-    { value: 'false', label: 'false' }
+    { value: 'true', label: 'Active' },
+    { value: 'false', label: 'Inactive' }
   ];
 
   id : any;

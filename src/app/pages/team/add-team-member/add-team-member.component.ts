@@ -109,11 +109,6 @@ export class AddTeamMemberComponent {
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.last_name).trim()) {
-      this.errors.last_name = true;
-      valid = false;
-    }
-
     if (!this.selectedFile) {
       this.errors.profile_image = true;
       valid = false;

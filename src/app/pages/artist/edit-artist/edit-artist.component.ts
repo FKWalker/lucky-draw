@@ -8,6 +8,7 @@ import { ButtonComponent } from "app/shared/components/ui/button/button.componen
 import { FileInputComponent } from 'app/shared/components/form/input/file-input.component';
 import { ArtistApiService } from 'app/shared/services/artist-api.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from 'app/shared/services/auth.service';
 
 @Component({
   selector: 'app-edit-artist',
@@ -43,7 +44,11 @@ export class EditArtistComponent {
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;
 
-  constructor(private artistApiService: ArtistApiService, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private artistApiService: ArtistApiService, 
+    private authService: AuthService,
+    private router: Router, 
+    private route: ActivatedRoute) {}
 
   ngOnInit(){
     this.route.paramMap.subscribe(params => {
@@ -72,13 +77,18 @@ export class EditArtistComponent {
     if(this.validation()){
       const formData = new FormData();
       formData.append('first_name', this.artistForm.first_name.toString());
-      formData.append('last_name', this.artistForm.first_name.toString());
-      formData.append('position', this.artistForm.biography.toString());
+      formData.append('last_name', this.artistForm.last_name ? this.artistForm.last_name.toString() : '');
+      formData.append('biography', this.artistForm.biography.toString());
+
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
         formData.append('profile_filename', this.selectedFile.name);
         formData.append('profile_path', 'artist');
       }
+
+      const currentUser = this.authService.getCurrentUser();
+      formData.append('updated_by', currentUser ? currentUser.username.toString() : '');
+
       this.artistApiService.updateArtist(this.id, formData).subscribe({
         next: (res) => {
           // ✅ Reset form after success
@@ -119,11 +129,6 @@ export class EditArtistComponent {
 
     if (!String(this.artistForm.first_name).trim()) {
       this.errors.first_name = true;
-      valid = false;
-    }
-
-    if (!String(this.artistForm.last_name).trim()) {
-      this.errors.last_name = true;
       valid = false;
     }
 

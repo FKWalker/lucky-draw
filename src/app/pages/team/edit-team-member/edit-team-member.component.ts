@@ -8,6 +8,7 @@ import { ButtonComponent } from "app/shared/components/ui/button/button.componen
 import { TeamApiService } from 'app/shared/services/team-api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ImageUploadComponent } from "app/shared/components/form/image-upload/image-upload.component";
+import { AuthService } from 'app/shared/services/auth.service';
 
 @Component({
   selector: 'app-edit-team-member',
@@ -43,7 +44,11 @@ export class EditTeamMemberComponent implements OnInit{
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;
 
-  constructor(private teamApiService: TeamApiService, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private teamApiService: TeamApiService,
+    private authService: AuthService, 
+    private router: Router, 
+    private route: ActivatedRoute) {}
 
   ngOnInit(){
     this.route.paramMap.subscribe(params => {
@@ -72,13 +77,18 @@ export class EditTeamMemberComponent implements OnInit{
     if(this.validation()){
       const formData = new FormData();
       formData.append('first_name', this.teamMemberForm.first_name.toString());
-      formData.append('last_name', this.teamMemberForm.last_name.toString());
+      formData.append('last_name', this.teamMemberForm.last_name ? this.teamMemberForm.last_name.toString() : '');
       formData.append('position', this.teamMemberForm.position.toString());
+      
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
         formData.append('profile_filename', this.selectedFile.name);
         formData.append('profile_path', 'homepage');
       }
+
+      const currentUser = this.authService.getCurrentUser();
+      formData.append('updated_by', currentUser ? currentUser.username.toString() : '');
+
       this.teamApiService.updateTeamMember(this.id, formData).subscribe({
         next: (res) => {
           // ✅ Reset form after success
@@ -119,11 +129,6 @@ export class EditTeamMemberComponent implements OnInit{
 
     if (!String(this.teamMemberForm.first_name).trim()) {
       this.errors.first_name = true;
-      valid = false;
-    }
-
-    if (!String(this.teamMemberForm.last_name).trim()) {
-      this.errors.last_name = true;
       valid = false;
     }
 

@@ -53,7 +53,13 @@ export class ListingUserComponent {
         this.currentPage = res.data.pagination.currentPage;
         this.totalPages = res.data.pagination.totalPages;
         this.itemsPerPage = res.data.pagination.itemsPerPage;
-        this.users = res.data.users;
+        // Transform the data to display readable labels
+        this.users = res.data.users.map((user: any) => ({
+          ...user,
+          status: this.getStatusLabel(user.status),
+          role: this.getRoleLabel(user.role)
+        }));
+        
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -106,11 +112,11 @@ export class ListingUserComponent {
     })
   }
 
-  getStatusLabel(status: string | number): string {
+  getStatusLabel(status: number): string {
     switch (status) {
-      case '0': return 'Inactive';
-      case '1': return 'Active';
-      case '2': return 'Locked';
+      case 0: return 'Inactive';
+      case 1: return 'Active';
+      case 2: return 'Locked';
       default: return 'Unknown';
     }
   }

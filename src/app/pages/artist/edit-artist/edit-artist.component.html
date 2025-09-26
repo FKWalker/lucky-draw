@@ -26,7 +26,7 @@
         </div>
         <div>
             <app-label for="input">Last Name</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="artistForm.first_name" (valueChange)="artistForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
+            <app-input-field type="text" id="input" placeholder="Enter a last name" [value]="artistForm.last_name" (valueChange)="artistForm.last_name = $event" [error]="errors.last_name" [hint]="errors.last_name ? 'This is an invalid last name.' : ''"/>
         </div>
         <div>
             <app-label>Profile Image</app-label>
@@ -39,8 +39,8 @@
             ></app-image-upload>
         </div>
         <div>
-            <app-label for="input">Position</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a position" [value]="artistForm.biography" (valueChange)="artistForm.biography = $event" [error]="errors.biography" [hint]="errors.biography ? 'This is an invalid biography' : ''"/>
+            <app-label for="input">Biography</app-label>
+            <app-input-field type="text" id="input" placeholder="Enter a biography" [value]="artistForm.biography" (valueChange)="artistForm.biography = $event" [error]="errors.biography" [hint]="errors.biography ? 'This is an invalid biography' : ''"/>
         </div>
         <div>
             <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Update</app-button>

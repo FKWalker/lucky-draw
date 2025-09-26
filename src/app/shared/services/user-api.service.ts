@@ -30,8 +30,12 @@ export class UserApiService {
     return this.http.get<any>(`${this.baseUrl}`, { params });
   }
 
+  getUserById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  }
+
   createUser(formData: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}`, formData);
+    return this.http.post<any>(`${this.baseUrl}/register`, formData);
   }
 
   updateUserById(id: number, formData: any): Observable<any> {
