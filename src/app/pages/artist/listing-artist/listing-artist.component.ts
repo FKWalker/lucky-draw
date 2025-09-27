@@ -45,6 +45,10 @@ export class ListingArtistComponent {
         this.totalPages = res.data.pagination.totalPages;
         this.itemsPerPage = res.data.pagination.itemsPerPage;
         this.artists = res.data.artists;
+        this.artists = res.data.artists.map((artist: any) => ({
+          ...artist,
+          biography : this.getBiography(artist.biography),
+        }));
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -93,5 +97,9 @@ export class ListingArtistComponent {
         this.success = null;
       }
     })
+  }
+
+  getBiography(biography: any) {
+    return biography.en;
   }
 }

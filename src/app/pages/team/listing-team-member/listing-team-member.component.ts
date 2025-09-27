@@ -45,6 +45,10 @@ export class ListingTeamMemberComponent implements OnInit{
         this.totalPages = res.data.pagination.totalPages;
         this.itemsPerPage = res.data.pagination.itemsPerPage;
         this.teamMembers = res.data.teamMembers;
+        this.teamMembers = res.data.teamMembers.map((teamMember: any) => ({
+          ...teamMember,
+          position : this.getPosition(teamMember.position),
+        }));
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -93,6 +97,10 @@ export class ListingTeamMemberComponent implements OnInit{
         this.success = null;
       }
     })
+  }
+
+  getPosition(position: any): string {
+    return position.en;
   }
 
 }

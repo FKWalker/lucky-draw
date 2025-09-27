@@ -22,19 +22,25 @@ export class EditArtistComponent {
     profile_image: string | number;
     first_name: string | number;
     last_name: string | number;
-    biography: string | number;
+    biography: any;
   } = {
     profile_image: '',
     first_name: '',
     last_name: '',
-    biography: ''
+    biography: {
+      en: '',
+      ja: '',
+      zh: ''
+    }
   };
 
   errors = {
     profile_image: false,
     first_name: false,
     last_name: false,
-    biography: false
+    biography: {
+      en: false
+    }
   }
   disabled: boolean = false;
   success: any;
@@ -78,7 +84,7 @@ export class EditArtistComponent {
       const formData = new FormData();
       formData.append('first_name', this.artistForm.first_name.toString());
       formData.append('last_name', this.artistForm.last_name ? this.artistForm.last_name.toString() : '');
-      formData.append('biography', this.artistForm.biography.toString());
+      formData.append('biography', JSON.stringify(this.artistForm.biography));
 
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
@@ -95,12 +101,14 @@ export class EditArtistComponent {
           this.success = true;
           this.error = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err) => {
           console.error('API Error:', err);
           this.error = true;
           this.success = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       })
     }else{
@@ -122,7 +130,9 @@ export class EditArtistComponent {
       first_name: false,
       last_name: false,
       profile_image: false,
-      biography: false
+      biography: {
+        en: false
+      }
     };
 
     let valid = true;
@@ -132,8 +142,8 @@ export class EditArtistComponent {
       valid = false;
     }
 
-    if (!String(this.artistForm.biography).trim()) {
-      this.errors.biography = true;
+    if (!String(this.artistForm.biography.en).trim()) {
+      this.errors.biography.en = true;
       valid = false;
     }
 

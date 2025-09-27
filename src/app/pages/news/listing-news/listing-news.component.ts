@@ -76,6 +76,10 @@ export class ListingNewsComponent {
 
         this.news = res.data.news.map((news: any) => ({
           ...news,
+          headline: this.getHeadline(news.headline),
+          filter: this.getFilter(news.filter),
+          title: this.getTitle(news.title),
+          description: this.getDescription(news.description),
           active: this.getActiveLabel(news.active)
         }));
       },
@@ -165,5 +169,21 @@ export class ListingNewsComponent {
       case true: return 'Active';
       default: return 'Inactive';
     }
+  }
+  
+  getHeadline(headline: any) {
+    return headline.en;
+  }
+
+  getFilter(filter: any) {
+    return filter.en;
+  }
+
+  getTitle(title: any) {
+    return title.en;
+  }
+
+  getDescription(description: any) {
+    return description.en;
   }
 }

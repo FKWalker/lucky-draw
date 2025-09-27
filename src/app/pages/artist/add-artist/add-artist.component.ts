@@ -19,18 +19,24 @@ export class AddArtistComponent {
   artistForm: {
     first_name: string | number;
     last_name: string | number;
-    biography: string | number;
+    biography: any;
   } = {
     first_name: '',
     last_name: '',
-    biography: ''
+    biography: {
+      en: '',
+      ja: '',
+      zh: ''
+    }
   };
 
   errors = {
     first_name: false,
     last_name: false,
     profile_image: false,
-    biography: false
+    biography: {
+      en: false
+    }
   }
   disabled: boolean = false;
   success: any;
@@ -48,7 +54,7 @@ export class AddArtistComponent {
       const formData = new FormData();
       formData.append('first_name', this.artistForm.first_name.toString());
       formData.append('last_name', this.artistForm.first_name.toString());
-      formData.append('biography', this.artistForm.biography.toString());
+      formData.append('biography', JSON.stringify(this.artistForm.biography));
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
         formData.append('profile_filename', this.selectedFile.name);
@@ -64,18 +70,24 @@ export class AddArtistComponent {
           this.artistForm = {
             first_name: '',
             last_name: '',
-            biography: ''
+            biography: {
+              en: '',
+              ja: '',
+              zh: ''
+            }
           };
           this.fileUpload.reset();
           this.success = true;
           this.error = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err) => {
           console.error('API Error:', err);
           this.error = true;
           this.success = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       })
       
@@ -98,7 +110,9 @@ export class AddArtistComponent {
       first_name: false,
       last_name: false,
       profile_image: false,
-      biography: false
+      biography: {
+        en: false
+      }
     };
 
     let valid = true;
@@ -118,8 +132,8 @@ export class AddArtistComponent {
       valid = false;
     }
 
-    if (!String(this.artistForm.biography).trim()) {
-      this.errors.biography = true;
+    if (!String(this.artistForm.biography.en).trim()) {
+      this.errors.biography.en = true;
       valid = false;
     }
 

@@ -82,6 +82,8 @@ export class ListingDiscographyComponent {
 
         this.discographies = res.data.discographies.map((discography: any) => ({
           ...discography,
+          name : this.getName(discography.name),
+          description: this.getDescription(discography.description),
           active: this.getActiveLabel(discography.active)
         }));
 
@@ -192,6 +194,14 @@ export class ListingDiscographyComponent {
       case true: return 'Active';
       default: return 'Inactive';
     }
+  }
+
+  getName(name: any): string {
+    return name.en;
+  }
+
+  getDescription(description: any): string {
+    return description.en;
   }
   
 }

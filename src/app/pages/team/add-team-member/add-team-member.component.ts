@@ -20,18 +20,24 @@ export class AddTeamMemberComponent {
   teamMemberForm: {
     first_name: string | number;
     last_name: string | number;
-    position: string | number;
+    position: any;
   } = {
     first_name: '',
     last_name: '',
-    position: ''
+    position: {
+      en: '',
+      ja: '',
+      zh: ''
+    }
   };
 
   errors = {
     first_name: false,
     last_name: false,
     profile_image: false,
-    position: false
+    position: {
+      en: false
+    }
   }
   disabled: boolean = false;
   success: any;
@@ -49,7 +55,7 @@ export class AddTeamMemberComponent {
       const formData = new FormData();
       formData.append('first_name', this.teamMemberForm.first_name.toString());
       formData.append('last_name', this.teamMemberForm.first_name.toString());
-      formData.append('position', this.teamMemberForm.position.toString());
+      formData.append('position', JSON.stringify(this.teamMemberForm.position));
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
         formData.append('profile_filename', this.selectedFile.name);
@@ -65,18 +71,24 @@ export class AddTeamMemberComponent {
           this.teamMemberForm = {
             first_name: '',
             last_name: '',
-            position: ''
+            position: {
+              en: '',
+              ja: '',
+              zh: ''
+            }
           };
           this.fileUpload.reset();
           this.success = true;
           this.error = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err) => {
           console.error('API Error:', err);
           this.error = true;
           this.success = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       })
       
@@ -99,7 +111,9 @@ export class AddTeamMemberComponent {
       first_name: false,
       last_name: false,
       profile_image: false,
-      position: false
+      position: {
+        en: false
+      }
     };
 
     let valid = true;
@@ -114,8 +128,8 @@ export class AddTeamMemberComponent {
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.position).trim()) {
-      this.errors.position = true;
+    if (!String(this.teamMemberForm.position.en).trim()) {
+      this.errors.position.en = true;
       valid = false;
     }
 

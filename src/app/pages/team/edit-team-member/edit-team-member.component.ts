@@ -22,19 +22,25 @@ export class EditTeamMemberComponent implements OnInit{
     profile_image: string | number;
     first_name: string | number;
     last_name: string | number;
-    position: string | number;
+    position: any;
   } = {
     profile_image: '',
     first_name: '',
     last_name: '',
-    position: ''
+    position: {
+      en: '',
+      ja: '',
+      zh: ''
+    }
   };
 
   errors = {
     profile_image: false,
     first_name: false,
     last_name: false,
-    position: false
+    position: {
+      en: false
+    }
   }
   disabled: boolean = false;
   success: any;
@@ -78,7 +84,7 @@ export class EditTeamMemberComponent implements OnInit{
       const formData = new FormData();
       formData.append('first_name', this.teamMemberForm.first_name.toString());
       formData.append('last_name', this.teamMemberForm.last_name ? this.teamMemberForm.last_name.toString() : '');
-      formData.append('position', this.teamMemberForm.position.toString());
+      formData.append('position', JSON.stringify(this.teamMemberForm.position));
       
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
@@ -95,12 +101,14 @@ export class EditTeamMemberComponent implements OnInit{
           this.success = true;
           this.error = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err) => {
           console.error('API Error:', err);
           this.error = true;
           this.success = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       })
     }else{
@@ -122,7 +130,9 @@ export class EditTeamMemberComponent implements OnInit{
       first_name: false,
       last_name: false,
       profile_image: false,
-      position: false
+      position: {
+      en: false
+    }
     };
 
     let valid = true;
@@ -132,8 +142,8 @@ export class EditTeamMemberComponent implements OnInit{
       valid = false;
     }
 
-    if (!String(this.teamMemberForm.position).trim()) {
-      this.errors.position = true;
+    if (!String(this.teamMemberForm.position.en).trim()) {
+      this.errors.position.en = true;
       valid = false;
     }
 

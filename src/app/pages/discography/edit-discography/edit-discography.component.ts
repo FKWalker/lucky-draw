@@ -21,28 +21,40 @@ export class EditDiscographyComponent {
 
   discographyForm: {
     profile_image: string | number;
-    name: string | number;
+    name: any;
     release_year: string | number;
     filter: string | number;
-    description: string | number;
+    description: any;
     active: string | number;
     artist_id: string | number;
   } = {
     profile_image: '',
-    name: '',
+    name: {
+      en: '',
+      ja: '',
+      zh: '',
+    },
     release_year: '',
     filter: '',
-    description: '',
+    description: {
+      en: '',
+      ja: '',
+      zh: '',
+    },
     active: '',
     artist_id: ''
   };
 
   errors = {
     profile_image: false,
-    name: false,
+    name:  {
+      en: false
+    },
     release_year: false,
     filter: false,
-    description: false,
+    description: {
+      en: false
+    },
     active: false,
     artist_id: false
   }
@@ -116,10 +128,10 @@ export class EditDiscographyComponent {
     if(this.validation()){
 
       const formData = new FormData();
-      formData.append('name', this.discographyForm.name.toString());
+      formData.append('name', JSON.stringify(this.discographyForm.name));
       formData.append('release_year', this.discographyForm.release_year.toString());
       formData.append('filter', this.discographyForm.filter.toString());
-      formData.append('description', this.discographyForm.description.toString());
+      formData.append('description', JSON.stringify(this.discographyForm.description));
       formData.append('social_media', JSON.stringify(this.socialMediaObject));
       formData.append('active', this.discographyForm.active.toString());
       formData.append('artist_id', this.discographyForm.artist_id.toString());
@@ -138,12 +150,14 @@ export class EditDiscographyComponent {
           this.success = true;
           this.error = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err) => {
           console.error('API Error:', err);
           this.error = true;
           this.success = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       })
       
@@ -209,18 +223,22 @@ export class EditDiscographyComponent {
     // reset errors
     this.errors = {
       profile_image: false,
-      name: false,
+      name:  {
+        en: false
+      },
       release_year: false,
       filter: false,
-      description: false,
+      description: {
+        en: false
+      },
       active: false,
       artist_id: false
     }
 
     let valid = true;
 
-    if (!String(this.discographyForm.name).trim()) {
-      this.errors.name = true;
+    if (!String(this.discographyForm.name.en).trim()) {
+      this.errors.name.en = true;
       valid = false;
     }
 
@@ -234,8 +252,8 @@ export class EditDiscographyComponent {
       valid = false;
     }
 
-    if (!String(this.discographyForm.description).trim()) {
-      this.errors.description = true;
+    if (!String(this.discographyForm.description.en).trim()) {
+      this.errors.description.en = true;
       valid = false;
     }
 

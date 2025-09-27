@@ -19,27 +19,51 @@ import { SelectComponent } from "app/shared/components/form/select/select.compon
 export class AddNewsComponent {
 
   newsForm: {
-    headline: string | number;
-    filter: string | number;
-    title: string | number;
-    description: string | number;
+    headline: any;
+    filter: any;
+    title: any;
+    description: any;
     published_at: string | number;
     active: string | number;
   } = {
-    headline: '',
-    filter: '',
-    title: '',
-    description: '',
+    headline: {
+      en: '',
+      ja: '',
+      zh: ''
+    },
+    filter: {
+      en: '',
+      ja: '',
+      zh: ''
+    },
+    title: {
+      en: '',
+      ja: '',
+      zh: ''
+    },
+    description: {
+      en: '',
+      ja: '',
+      zh: ''
+    },
     published_at: '',
     active: ''
   };
 
   errors = {
     news_image: false,
-    headline: false,
-    filter: false,
-    title: false,
-    description: false,
+    headline: {
+      en: false,
+    },
+    filter: {
+      en: false
+    },
+    title: {
+      en: false
+    },
+    description: {
+      en: false
+    },
     active: false
   }
   disabled: boolean = false;
@@ -62,10 +86,10 @@ export class AddNewsComponent {
     if(this.validation()){
 
       const formData = new FormData();
-      formData.append('headline', this.newsForm.headline.toString());
-      formData.append('filter', this.newsForm.filter.toString());
-      formData.append('title', this.newsForm.title.toString());
-      formData.append('description', this.newsForm.description.toString());
+      formData.append('headline', JSON.stringify(this.newsForm.headline));
+      formData.append('filter', JSON.stringify(this.newsForm.filter));
+      formData.append('title', JSON.stringify(this.newsForm.title));
+      formData.append('description', JSON.stringify(this.newsForm.description));
       formData.append('published_at', this.newsForm.published_at.toString());
       formData.append('active', this.newsForm.active.toString());
       if (this.selectedFile) {
@@ -81,10 +105,26 @@ export class AddNewsComponent {
         next: (res) => {
           // ✅ Reset form after success
           this.newsForm = {
-            headline: '',
-            filter: '',
-            title: '',
-            description: '',
+            headline: {
+              en: '',
+              ja: '',
+              zh: ''
+            },
+            filter: {
+              en: '',
+              ja: '',
+              zh: ''
+            },
+            title: {
+              en: '',
+              ja: '',
+              zh: ''
+            },
+            description: {
+              en: '',
+              ja: '',
+              zh: ''
+            },
             published_at: '',
             active: '',
           };
@@ -92,12 +132,14 @@ export class AddNewsComponent {
           this.success = true;
           this.error = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err) => {
           console.error('API Error:', err);
           this.error = true;
           this.success = null;
           this.disabled = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       })
       
@@ -118,10 +160,18 @@ export class AddNewsComponent {
     // reset errors
     this.errors = {
       news_image: false,
-      headline: false,
-      filter: false,
-      title: false,
-      description: false,
+      headline: {
+        en: false,
+      },
+      filter: {
+        en: false
+      },
+      title: {
+        en: false
+      },
+      description: {
+        en: false
+      },
       active: false
     };
 
@@ -132,23 +182,23 @@ export class AddNewsComponent {
       valid = false;
     }
 
-    if (!String(this.newsForm.headline).trim()) {
-      this.errors.headline = true;
+    if (!String(this.newsForm.headline.en).trim()) {
+      this.errors.headline.en = true;
       valid = false;
     }
 
-    if (!String(this.newsForm.filter).trim()) {
-      this.errors.filter = true;
+    if (!String(this.newsForm.filter.en).trim()) {
+      this.errors.filter.en = true;
       valid = false;
     }
 
-    if (!String(this.newsForm.title).trim()) {
-      this.errors.title = true;
+    if (!String(this.newsForm.title.en).trim()) {
+      this.errors.title.en = true;
       valid = false;
     }
 
-    if (!String(this.newsForm.description).trim()) {
-      this.errors.description = true;
+    if (!String(this.newsForm.description.en).trim()) {
+      this.errors.description.en = true;
       valid = false;
     }
 
