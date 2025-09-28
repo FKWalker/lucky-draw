@@ -12,8 +12,8 @@ export class TeamApiService {
 
   constructor(private http: HttpClient) {}
 
-  getAllTeamMembers(formData: any): Observable<any> {    
-    return this.http.get<any>(`${this.baseUrl}`, formData);
+  getAllTeamMembers(options: any): Observable<any> {
+    return this.http.get(`${this.baseUrl}`, { params: options });
   }
 
   getTeamMemberById(id: number): Observable<any> {

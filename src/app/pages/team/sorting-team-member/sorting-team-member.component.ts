@@ -26,24 +26,23 @@ export class SortingTeamMemberComponent {
     const options: any = {
       sortBy: 'sort_number',
       sortOrder: 'asc',
-      limi: 100
+      limit: 100
     };
     this.getAllArtists(options);
   }
-
-  getAllArtists(options: any){
+  
+  getAllArtists(options: any) {
     this.teamApiService.getAllTeamMembers(options).subscribe({
       next: (res) => {
-        this.teamMembers = res.data.teamMembers;
         this.teamMembers = res.data.teamMembers.map((teamMember: any) => ({
           ...teamMember,
-          position : this.getBiography(teamMember.position),
+          position: this.getBiography(teamMember.position),
         }));
       },
       error: (err) => {
         console.error('API Error:', err);
       }
-    })
+    });
   }
 
   getBiography(biography: any) {
