@@ -37,6 +37,7 @@ export class AppSidebarComponent {
       subItems: [
         { name: "Add Team Member", path: "/team/add", pro: false },
         { name: "Listing Team Member", path: "/team/listing", pro: false },
+        { name: "Sorting Team Member", path: "/team/sorting", pro: false },
       ],
     },
     {
@@ -45,6 +46,7 @@ export class AppSidebarComponent {
       subItems: [
         { name: "Add Artist", path: "/artist/add", pro: false },
         { name: "Listing Artist", path: "/artist/listing", pro: false },
+        { name: "Sorting Artist", path: "/artist/sorting", pro: false },
       ],
     },
     {

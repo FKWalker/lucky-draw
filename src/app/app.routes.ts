@@ -34,6 +34,8 @@ import { ListingUserComponent } from './pages/users/listing-user/listing-user.co
 import { AddUserComponent } from './pages/users/add-user/add-user.component';
 import { EditUserComponent } from './pages/users/edit-user/edit-user.component';
 import { AuthGuard } from './shared/guards/auth.guard';
+import { SortingArtistComponent } from './pages/artist/sorting-artist/sorting-artist.component';
+import { SortingTeamMemberComponent } from './pages/team/sorting-team-member/sorting-team-member.component';
 
 export const routes: Routes = [
   {
@@ -140,6 +142,11 @@ export const routes: Routes = [
         title:'Angular Videos Dashboard | Flashbang'
       },
       {
+        path:'team/sorting',
+        component:SortingTeamMemberComponent,
+        title:'Angular Videos Dashboard | Flashbang'
+      },
+      {
         path:'artist/listing',
         component:ListingArtistComponent,
         title:'Angular Videos Dashboard | Flashbang'
@@ -152,6 +159,11 @@ export const routes: Routes = [
       {
         path:'artist/edit/:id',
         component:EditArtistComponent,
+        title:'Angular Videos Dashboard | Flashbang'
+      },
+      {
+        path:'artist/sorting',
+        component:SortingArtistComponent,
         title:'Angular Videos Dashboard | Flashbang'
       },
       {

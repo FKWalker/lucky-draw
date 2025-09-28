@@ -34,7 +34,10 @@ export class ListingTeamMemberComponent implements OnInit{
   constructor(private teamApiService: TeamApiService, private router: Router) {}
 
   ngOnInit(): void {
-    const options: any = {};
+    const options: any = {
+      sortBy: 'sort_number',
+      sortOrder: 'asc'
+    };
     this.getAllTeamMembers(options);
   }
 

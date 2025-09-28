@@ -20,7 +20,6 @@ export class ListingArtistComponent {
     { key: 'biography', label: 'Biography' },
   ];
 
-  // Dummy data
   artists = [];
 
   // Pagination
@@ -34,7 +33,10 @@ export class ListingArtistComponent {
   constructor(private artistApiService: ArtistApiService, private router: Router) {}
 
   ngOnInit(): void {
-    const options: any = {};
+    const options: any = {
+      sortBy: 'sort_number',
+      sortOrder: 'asc'
+    };
     this.getAllArtists(options);
   }
 
