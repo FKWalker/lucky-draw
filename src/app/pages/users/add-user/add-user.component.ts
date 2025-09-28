@@ -53,10 +53,14 @@ export class AddUserComponent {
     firstName: false,
     lastName: false,
     password: false,
+    confirmPassword: '',
     role: false
   }
 
+  confirmPassword: string = '';
   disabled: boolean = false;
+  showPassword = false;
+  showConfirmPassword = false;
   success: any;
   error: any;
   String: any;
@@ -69,12 +73,8 @@ export class AddUserComponent {
   onSubmit() {
     this.disabled = true;
     if(this.validation()){
-      console.log("creating new user...");
-      console.log("Form data being sent:", this.userForm);
       this.userApiService.createUser(this.userForm).subscribe({
         next: (res) => {
-          console.log("user created successfully.");
-
           // Reset form after success
           this.userForm = {
             username: '',
@@ -114,6 +114,7 @@ export class AddUserComponent {
       firstName: false,
       lastName: false,
       password: false,
+      confirmPassword: '',
       role: false
     };
   
@@ -143,21 +144,32 @@ export class AddUserComponent {
       this.errors.password = true;
       valid = false;
     }
-  
+
     if (!this.userForm.role.trim()) {
       this.errors.role = true;
       valid = false;
     }
-  
-    if (!valid) {
-      console.warn('Form invalid:', this.errors);
+
+    if (!this.confirmPassword.trim()) {
+      this.errors.confirmPassword = 'Password is required.';
+      return false;
+    }
+
+    if (this.userForm.password !== this.confirmPassword) {
+      this.errors.confirmPassword = 'Password not match.';
+      valid = false;
     }
   
     return valid;
   }
   
-
   onFieldChange(field: keyof typeof this.userForm, value: string | number) {
     (this.userForm as any)[field] = String(value);
   }
+
+  togglePasswordVisibility(type: 'password' | 'confirmPassword') {
+    const prop = type === 'password' ? 'showPassword' : 'showConfirmPassword';
+    this[prop] = !this[prop as keyof this] as boolean;
+  }
+
 }
