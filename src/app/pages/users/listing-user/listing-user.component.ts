@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { UserApiService } from 'app/shared/services/user-api.service';
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
 import { CustomTableComponent } from "app/shared/components/tables/basic-tables/custom-table/custom-table.component";
+import { LoadingSpinnerComponent } from "app/shared/components/ui/loading-spinner/loading-spinner.component";
 import { AuthService } from 'app/shared/services/auth.service';
 
 @Component({
   selector: 'app-listing-user',
-  imports: [AlertComponent, CustomTableComponent],
+  imports: [AlertComponent, CustomTableComponent, LoadingSpinnerComponent],
   templateUrl: './listing-user.component.html',
   styleUrl: './listing-user.component.css'
 })
@@ -34,6 +35,7 @@ export class ListingUserComponent {
   success: any;
   error: any;
   isAdmin: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private userApiService: UserApiService, 
@@ -48,6 +50,7 @@ export class ListingUserComponent {
   }
 
   getAllUsers(options: any){
+    this.isLoading = true;
     this.userApiService.getAllUsers(options).subscribe({
       next: (res) => {
         this.currentPage = res.data.pagination.currentPage;
@@ -59,12 +62,13 @@ export class ListingUserComponent {
           status: this.getStatusLabel(user.status),
           role: this.getRoleLabel(user.role)
         }));
-        
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('API Error:', err);
         this.error = true;
         this.success = null;
+        this.isLoading = false;
       }
     })
   }

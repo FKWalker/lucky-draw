@@ -19,15 +19,26 @@
             />
         </div>
     }
-    <app-custom-table
-        title="Listing User"
-        [columns]="columns"
-        [data]="users"
-        [currentPage]="currentPage"
-        [totalPages]="totalPages"
-        [itemsPerPage]="itemsPerPage"
-        (pageChange)="loadPage($event)"
-        (searchChange)="onSearch($event)"
-        (action)="action($event)"
-    ></app-custom-table>
+    @if (isLoading) {
+        <div class="flex justify-center items-center py-12">
+            <app-loading-spinner 
+                size="lg" 
+                [showText]="true" 
+                text="Loading users..."
+                containerClass="flex-col"
+            ></app-loading-spinner>
+        </div>
+    } @else {
+        <app-custom-table
+            title="Listing User"
+            [columns]="columns"
+            [data]="users"
+            [currentPage]="currentPage"
+            [totalPages]="totalPages"
+            [itemsPerPage]="itemsPerPage"
+            (pageChange)="loadPage($event)"
+            (searchChange)="onSearch($event)"
+            (action)="action($event)"
+        ></app-custom-table>
+    }
 </div>

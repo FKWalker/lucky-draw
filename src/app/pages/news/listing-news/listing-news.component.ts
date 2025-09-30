@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ArtistApiService } from 'app/shared/services/artist-api.service';
-import { DiscographyApiService } from 'app/shared/services/discography-api.service';
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
 import { ComponentCardComponent } from "app/shared/components/common/component-card/component-card.component";
 import { LabelComponent } from "app/shared/components/form/label/label.component";
@@ -9,11 +7,12 @@ import { SelectComponent } from "app/shared/components/form/select/select.compon
 import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
 import { ButtonComponent } from "app/shared/components/ui/button/button.component";
 import { CustomTableComponent } from "app/shared/components/tables/basic-tables/custom-table/custom-table.component";
+import { LoadingSpinnerComponent } from "app/shared/components/ui/loading-spinner/loading-spinner.component";
 import { NewsApiService } from 'app/shared/services/news-api.service';
 
 @Component({
   selector: 'app-listing-news',
-  imports: [AlertComponent, ComponentCardComponent, LabelComponent, SelectComponent, InputFieldComponent, ButtonComponent, CustomTableComponent],
+  imports: [AlertComponent, ComponentCardComponent, LabelComponent, SelectComponent, InputFieldComponent, ButtonComponent, CustomTableComponent, LoadingSpinnerComponent],
   templateUrl: './listing-news.component.html',
   styleUrl: './listing-news.component.css'
 })
@@ -49,6 +48,7 @@ export class ListingNewsComponent {
 
   success: any;
   error: any;
+  isLoading: boolean = false;
 
   artistOptions:any = [];
 
@@ -68,6 +68,7 @@ export class ListingNewsComponent {
   }
 
   getAllNews(options: any){
+    this.isLoading = true;
     this.newsApiService.getAllNews(options).subscribe({
       next: (res) => {
         this.currentPage = res.data.pagination.currentPage;
@@ -82,9 +83,11 @@ export class ListingNewsComponent {
           description: this.getDescription(news.description),
           active: this.getActiveLabel(news.active)
         }));
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('API Error:', err);
+        this.isLoading = false;
       }
     })
   }

@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { TeamApiService } from 'app/shared/services/team-api.service';
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
 import { CustomTableComponent } from "app/shared/components/tables/basic-tables/custom-table/custom-table.component";
+import { LoadingSpinnerComponent } from "app/shared/components/ui/loading-spinner/loading-spinner.component";
 import { ArtistApiService } from 'app/shared/services/artist-api.service';
 
 @Component({
   selector: 'app-listing-artist',
-  imports: [AlertComponent, CustomTableComponent],
+  imports: [AlertComponent, CustomTableComponent, LoadingSpinnerComponent],
   templateUrl: './listing-artist.component.html',
   styleUrl: './listing-artist.component.css'
 })
@@ -29,6 +30,7 @@ export class ListingArtistComponent {
 
   success: any;
   error: any;
+  isLoading: boolean = false;
 
   constructor(private artistApiService: ArtistApiService, private router: Router) {}
 
@@ -41,6 +43,7 @@ export class ListingArtistComponent {
   }
 
   getAllArtists(options: any){
+    this.isLoading = true;
     this.artistApiService.getAllArtists(options).subscribe({
       next: (res) => {
         this.currentPage = res.data.pagination.currentPage;
@@ -51,9 +54,11 @@ export class ListingArtistComponent {
           ...artist,
           biography : this.getBiography(artist.biography),
         }));
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('API Error:', err);
+        this.isLoading = false;
       }
     })
   }

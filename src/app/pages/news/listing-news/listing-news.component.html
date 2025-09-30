@@ -44,16 +44,27 @@
         </app-component-card>
     </div>
     
-    <app-custom-table
-    title="Listing News"
-    [columns]="columns"
-    [data]="news"
-    [currentPage]="currentPage"
-    [totalPages]="totalPages"
-    [itemsPerPage]="itemsPerPage"
-    [enableSearch]="false"
-    (pageChange)="loadPage($event)"
-    (searchChange)="onSearch($event)"
-    (action)="action($event)"
-    ></app-custom-table>
+    @if (isLoading) {
+        <div class="flex justify-center items-center py-12">
+            <app-loading-spinner 
+                size="lg" 
+                [showText]="true" 
+                text="Loading news..."
+                containerClass="flex-col"
+            ></app-loading-spinner>
+        </div>
+    } @else {
+        <app-custom-table
+        title="Listing News"
+        [columns]="columns"
+        [data]="news"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [itemsPerPage]="itemsPerPage"
+        [enableSearch]="false"
+        (pageChange)="loadPage($event)"
+        (searchChange)="onSearch($event)"
+        (action)="action($event)"
+        ></app-custom-table>
+    }
 </div>

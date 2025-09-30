@@ -4,10 +4,11 @@ import { CustomTableComponent } from "../../../shared/components/tables/basic-ta
 import { TeamApiService } from 'app/shared/services/team-api.service';
 import { Router } from '@angular/router';
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
+import { LoadingSpinnerComponent } from "app/shared/components/ui/loading-spinner/loading-spinner.component";
 
 @Component({
   selector: 'app-listing-team-member',
-  imports: [CustomTableComponent, AlertComponent],
+  imports: [CustomTableComponent, AlertComponent, LoadingSpinnerComponent],
   templateUrl: './listing-team-member.component.html',
   styleUrl: './listing-team-member.component.css'
 })
@@ -30,6 +31,7 @@ export class ListingTeamMemberComponent implements OnInit{
 
   success: any;
   error: any;
+  isLoading: boolean = false;
 
   constructor(private teamApiService: TeamApiService, private router: Router) {}
 
@@ -42,6 +44,7 @@ export class ListingTeamMemberComponent implements OnInit{
   }
 
   getAllTeamMembers(options: any){
+    this.isLoading = true;
     this.teamApiService.getAllTeamMembers(options).subscribe({
       next: (res) => {
         this.currentPage = res.data.pagination.currentPage;
@@ -52,9 +55,11 @@ export class ListingTeamMemberComponent implements OnInit{
           ...teamMember,
           position : this.getPosition(teamMember.position),
         }));
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('API Error:', err);
+        this.isLoading = false;
       }
     })
   }

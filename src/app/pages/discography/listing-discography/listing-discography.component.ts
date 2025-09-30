@@ -8,11 +8,12 @@ import { InputFieldComponent } from "app/shared/components/form/input/input-fiel
 import { ComponentCardComponent } from "app/shared/components/common/component-card/component-card.component";
 import { SelectComponent } from "app/shared/components/form/select/select.component";
 import { ButtonComponent } from "app/shared/components/ui/button/button.component";
+import { LoadingSpinnerComponent } from "app/shared/components/ui/loading-spinner/loading-spinner.component";
 import { ArtistApiService } from 'app/shared/services/artist-api.service';
 
 @Component({
   selector: 'app-listing-discography',
-  imports: [AlertComponent, CustomTableComponent, LabelComponent, InputFieldComponent, ComponentCardComponent, SelectComponent, ButtonComponent],
+  imports: [AlertComponent, CustomTableComponent, LabelComponent, InputFieldComponent, ComponentCardComponent, SelectComponent, ButtonComponent, LoadingSpinnerComponent],
   templateUrl: './listing-discography.component.html',
   styleUrl: './listing-discography.component.css'
 })
@@ -51,6 +52,7 @@ export class ListingDiscographyComponent {
 
   success: any;
   error: any;
+  isLoading: boolean = false;
 
   artistOptions:any = [];
 
@@ -74,6 +76,7 @@ export class ListingDiscographyComponent {
   }
 
   getAllDiscographies(options: any){
+    this.isLoading = true;
     this.discographyApiService.getAllDiscographies(options).subscribe({
       next: (res) => {
         this.currentPage = res.data.pagination.currentPage;
@@ -86,10 +89,11 @@ export class ListingDiscographyComponent {
           description: this.getDescription(discography.description),
           active: this.getActiveLabel(discography.active)
         }));
-
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('API Error:', err);
+        this.isLoading = false;
       }
     })
   }
