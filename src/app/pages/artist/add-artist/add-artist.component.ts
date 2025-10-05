@@ -53,7 +53,7 @@ export class AddArtistComponent {
 
       const formData = new FormData();
       formData.append('first_name', this.artistForm.first_name.toString());
-      formData.append('last_name', this.artistForm.first_name.toString());
+      formData.append('last_name', this.artistForm.last_name.toString());
       formData.append('biography', JSON.stringify(this.artistForm.biography));
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
@@ -119,11 +119,6 @@ export class AddArtistComponent {
 
     if (!String(this.artistForm.first_name).trim()) {
       this.errors.first_name = true;
-      valid = false;
-    }
-
-    if (!String(this.artistForm.last_name).trim()) {
-      this.errors.last_name = true;
       valid = false;
     }
 

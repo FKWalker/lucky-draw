@@ -54,7 +54,7 @@ export class AddTeamMemberComponent {
 
       const formData = new FormData();
       formData.append('first_name', this.teamMemberForm.first_name.toString());
-      formData.append('last_name', this.teamMemberForm.first_name.toString());
+      formData.append('last_name', this.teamMemberForm.last_name.toString());
       formData.append('position', JSON.stringify(this.teamMemberForm.position));
       if (this.selectedFile) {
         formData.append('profile_image', this.selectedFile); 
