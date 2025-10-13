@@ -35,7 +35,7 @@ export class ListingNewsComponent {
     { key: 'title', label: 'Title' },
     { key: 'description', label: 'Description' },
     { key: 'published_at', label: 'Published At' },
-    { key: 'active', label: 'Active' },
+    { key: 'active', label: 'Status' },
   ];
 
   // Dummy data

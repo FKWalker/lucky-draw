@@ -3,6 +3,7 @@ import { ComponentCardComponent } from "app/shared/components/common/component-c
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
 import { LabelComponent } from "app/shared/components/form/label/label.component";
 import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
+import { TextAreaComponent } from "app/shared/components/form/input/text-area.component";
 import { DatePickerComponent } from "app/shared/components/form/date-picker/date-picker.component";
 import { ImageUploadComponent } from "app/shared/components/form/image-upload/image-upload.component";
 import { ButtonComponent } from "app/shared/components/ui/button/button.component";
@@ -13,7 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-news',
-  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, DatePickerComponent, ImageUploadComponent, ButtonComponent, SelectComponent],
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, TextAreaComponent, DatePickerComponent, ImageUploadComponent, ButtonComponent, SelectComponent],
   templateUrl: './edit-news.component.html',
   styleUrl: './edit-news.component.css'
 })

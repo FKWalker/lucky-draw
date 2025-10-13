@@ -5,6 +5,7 @@ import { ComponentCardComponent } from "app/shared/components/common/component-c
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
 import { LabelComponent } from "app/shared/components/form/label/label.component";
 import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
+import { TextAreaComponent } from "app/shared/components/form/input/text-area.component";
 import { ImageUploadComponent } from "app/shared/components/form/image-upload/image-upload.component";
 import { ButtonComponent } from "app/shared/components/ui/button/button.component";
 import { DatePickerComponent } from "app/shared/components/form/date-picker/date-picker.component";
@@ -12,7 +13,7 @@ import { SelectComponent } from "app/shared/components/form/select/select.compon
 
 @Component({
   selector: 'app-add-news',
-  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ImageUploadComponent, ButtonComponent, DatePickerComponent, SelectComponent],
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, TextAreaComponent, ImageUploadComponent, ButtonComponent, DatePickerComponent, SelectComponent],
   templateUrl: './add-news.component.html',
   styleUrl: './add-news.component.css'
 })
@@ -73,8 +74,8 @@ export class AddNewsComponent {
   currentDate = new Date();
 
   activeOptions = [
-    { value: 'true', label: 'true' },
-    { value: 'false', label: 'false' }
+    { value: 'true', label: 'Active' },
+    { value: 'false', label: 'Inactive' }
   ];
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;

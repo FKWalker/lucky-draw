@@ -5,12 +5,13 @@ import { ComponentCardComponent } from "app/shared/components/common/component-c
 import { AlertComponent } from "app/shared/components/ui/alert/alert.component";
 import { LabelComponent } from "app/shared/components/form/label/label.component";
 import { InputFieldComponent } from "app/shared/components/form/input/input-field.component";
+import { TextAreaComponent } from "app/shared/components/form/input/text-area.component";
 import { ImageUploadComponent } from "app/shared/components/form/image-upload/image-upload.component";
 import { ButtonComponent } from "app/shared/components/ui/button/button.component";
 
 @Component({
   selector: 'app-add-artist',
-  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ImageUploadComponent, ButtonComponent],
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, TextAreaComponent, ImageUploadComponent, ButtonComponent],
   templateUrl: './add-artist.component.html',
   styleUrl: './add-artist.component.css'
 })
