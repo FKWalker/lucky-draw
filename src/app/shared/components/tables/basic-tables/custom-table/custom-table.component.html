@@ -42,45 +42,23 @@
               @for (col of columns; track $index) {
                 <td class="px-4 py-4 text-gray-700 text-theme-sm dark:text-gray-400">{{ row[col.key] }}</td>
               }
-              <td class="px-4 py-4 text-gray-700 text-theme-sm dark:text-gray-400">
-                <div class="relative inline-block">
-                  <app-table-dropdown>
-                    <div dropdown-button>
-                      <button class="text-gray-500 dark:text-gray-400">
-                        <svg
-                          class="fill-current"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M5.99902 10.245C6.96552 10.245 7.74902 11.0285 7.74902 11.995V12.005C7.74902 12.9715 6.96552 13.755 5.99902 13.755C5.03253 13.755 4.24902 12.9715 4.24902 12.005V11.995C4.24902 11.0285 5.03253 10.245 5.99902 10.245ZM17.999 10.245C18.9655 10.245 19.749 11.0285 19.749 11.995V12.005C19.749 12.9715 18.9655 13.755 17.999 13.755C17.0325 13.755 16.249 12.9715 16.249 12.005V11.995C16.249 11.0285 17.0325 10.245 17.999 10.245ZM13.749 11.995C13.749 11.0285 12.9655 10.245 11.999 10.245C11.0325 10.245 10.249 11.0285 10.249 11.995V12.005C10.249 12.9715 11.0325 13.755 11.999 13.755C12.9655 13.755 13.749 12.9715 13.749 12.005V11.995Z"
-                            fill=""
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                    <div dropdown-content>
-                      <button
-                        (click)="this.action.emit({ action: 'update', row })"
-                        class="text-xs flex w-full rounded-lg px-3 py-2 text-left font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-                      >
-                        Update
-                      </button>
-                      <button
-                        (click)="this.action.emit({ action: 'delete', row })"
-                        class="text-xs flex w-full rounded-lg px-3 py-2 text-left font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </app-table-dropdown>
-                </div>
+              @if (needAction) {
+              <td class="px-4 py-4 text-gray-700 text-theme-sm dark:text-gray-400" >
+                <button
+                  (click)="this.action.emit({ action: 'view', row })"
+                  class="text-xs flex w-full justify-center rounded-lg px-3 py-2 text-center font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                >
+                  View
+                </button>
               </td>
+              <td class="px-4 py-4 text-gray-700 text-theme-sm dark:text-gray-400">
+                <button
+                  (click)="this.action.emit({ action: 'edit', row })"
+                  class="text-xs flex w-full justify-center rounded-lg px-3 py-2 text-center font-medium text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-500/10 dark:hover:text-blue-300"
+                >
+                  Edit
+                </button>
+              </td>}
             </tr>
           }
         </tbody>

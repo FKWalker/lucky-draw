@@ -32,6 +32,7 @@ export class CustomTableComponent {
   @Input() totalPages = 1;
   @Input() itemsPerPage = 1;
   @Input() enableSearch: boolean = true;
+  @Input() needAction: boolean = true;
 
   @Output() pageChange = new EventEmitter<number>();   // number for pagination
   @Output() searchChange = new EventEmitter<string>();

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "flashbangadmin": {
+    "luckydraw": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,8 +13,8 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "baseHref": "/admin/",
-            "outputPath": "dist/flashbang-admin",
+            "baseHref": "/",
+            "outputPath": "dist/lucky-draw",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -67,10 +67,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "flashbangadmin:build:production"
+              "buildTarget": "luckydraw:build:production"
             },
             "staging": {
-              "buildTarget": "flashbangadmin:build:staging"
+              "buildTarget": "luckydraw:build:staging"
             }
           },
           "defaultConfiguration": "staging"

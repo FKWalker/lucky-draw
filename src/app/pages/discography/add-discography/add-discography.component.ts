@@ -7,8 +7,6 @@ import { ImageUploadComponent } from "app/shared/components/form/image-upload/im
 import { ButtonComponent } from "app/shared/components/ui/button/button.component";
 import { SelectComponent } from "app/shared/components/form/select/select.component";
 import { FileInputComponent } from 'app/shared/components/form/input/file-input.component';
-import { DiscographyApiService } from 'app/shared/services/discography-api.service';
-import { ArtistApiService } from 'app/shared/services/artist-api.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -73,7 +71,7 @@ export class AddDiscographyComponent {
     { value: 'false', label: 'Inactive' }
   ];
 
-  constructor(private discographyApiService: DiscographyApiService, private router: Router, private artistApiService: ArtistApiService) {}
+  //constructor(private discographyApiService: DiscographyApiService, private router: Router, private artistApiService: ArtistApiService) {}
 
   ngOnInit(): void {
     const artistsOptions: any = {
@@ -120,40 +118,40 @@ export class AddDiscographyComponent {
         formData.forEach((value, key) => {
         console.log(key, value);
       });
-      this.discographyApiService.createDiscography(formData).subscribe({
-        next: (res) => {
-          // ✅ Reset form after success
-          this.discographyForm = {
-            name: {
-              en: '',
-              ja: '',
-              zh: ''
-            },
-            release_year: '',
-            filter: '',
-            description: {
-              en: '',
-              ja: '',
-              zh: ''
-            },
-            active: '',
-            artist_id: ''
-          };
-          this.socialMedias = [];
-          this.fileUpload.reset();
-          this.success = true;
-          this.error = null;
-          this.disabled = false;
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-        error: (err) => {
-          console.error('API Error:', err);
-          this.error = true;
-          this.success = null;
-          this.disabled = false;
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      })
+      // this.discographyApiService.createDiscography(formData).subscribe({
+      //   next: (res) => {
+      //     // ✅ Reset form after success
+      //     this.discographyForm = {
+      //       name: {
+      //         en: '',
+      //         ja: '',
+      //         zh: ''
+      //       },
+      //       release_year: '',
+      //       filter: '',
+      //       description: {
+      //         en: '',
+      //         ja: '',
+      //         zh: ''
+      //       },
+      //       active: '',
+      //       artist_id: ''
+      //     };
+      //     this.socialMedias = [];
+      //     this.fileUpload.reset();
+      //     this.success = true;
+      //     this.error = null;
+      //     this.disabled = false;
+      //     window.scrollTo({ top: 0, behavior: 'smooth' });
+      //   },
+      //   error: (err) => {
+      //     console.error('API Error:', err);
+      //     this.error = true;
+      //     this.success = null;
+      //     this.disabled = false;
+      //     window.scrollTo({ top: 0, behavior: 'smooth' });
+      //   }
+      // })
       
     }else{
       this.disabled = false;
@@ -170,19 +168,19 @@ export class AddDiscographyComponent {
   }
   
   getAllArtists(options: any){
-    this.artistApiService.getAllArtists(options).subscribe({
-      next: (res) => {
-       for(let artist of res.data.artists){
-          let artistOption: any = {};
-          artistOption.value = artist.id;
-          artistOption.label = artist.first_name + ' ' + artist.last_name;
-          this.artistOptions.push(artistOption);
-       }
-      },
-      error: (err) => {
-        console.error('API Error:', err);
-      }
-    })
+    // this.artistApiService.getAllArtists(options).subscribe({
+    //   next: (res) => {
+    //    for(let artist of res.data.artists){
+    //       let artistOption: any = {};
+    //       artistOption.value = artist.id;
+    //       artistOption.label = artist.first_name + ' ' + artist.last_name;
+    //       this.artistOptions.push(artistOption);
+    //    }
+    //   },
+    //   error: (err) => {
+    //     console.error('API Error:', err);
+    //   }
+    // })
   }
 
   addSocialMedia() {

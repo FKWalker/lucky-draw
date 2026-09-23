@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/pages/users/edit-user/edit-user.component.css"],
+  "sourcesContent": ["/* Edit User Component Styles */\n.space-y-6 > * + * {\n  margin-top: 1.5rem;\n}\n\n.grid {\n  display: grid;\n}\n\n.grid-cols-1 {\n  grid-template-columns: repeat(1, minmax(0, 1fr));\n}\n\n.gap-6 {\n  gap: 1.5rem;\n}\n\n.lg\\:grid-cols-2 {\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n}\n\n@media (min-width: 1024px) {\n  .lg\\:grid-cols-2 {\n    grid-template-columns: repeat(2, minmax(0, 1fr));\n  }\n}\n\n.flex {\n  display: flex;\n}\n\n.justify-center {\n  justify-content: center;\n}\n\n.items-center {\n  align-items: center;\n}\n\n.py-8 {\n  padding-top: 2rem;\n  padding-bottom: 2rem;\n}\n\n.text-gray-500 {\n  color: rgb(107 114 128);\n}\n\n.gap-4 {\n  gap: 1rem;\n}\n\n@media (min-width: 640px) {\n  .sm\\:flex {\n    display: flex;\n  }\n}\n\n@media (min-width: 768px) {\n  .md\\:gap-6 {\n    gap: 1.5rem;\n  }\n}\n"],
+  "mappings": ";AACA,CAAA,UAAA,EAAA,EAAA,EAAA;AACE,cAAA;AACF;AAEA,CAAA;AACE,WAAA;AACF;AAEA,CAAA;AACE,yBAAA,OAAA,CAAA,EAAA,OAAA,CAAA,EAAA;AACF;AAEA,CAAA;AACE,OAAA;AACF;AAEA,CAAA;AACE,yBAAA,OAAA,CAAA,EAAA,OAAA,CAAA,EAAA;AACF;AAEA,OAAA,CAAA,SAAA,EAAA;AACE,GALF;AAMI,2BAAA,OAAA,CAAA,EAAA,OAAA,CAAA,EAAA;AACF;AACF;AAEA,CAAA;AACE,WAAA;AACF;AAEA,CAAA;AACE,mBAAA;AACF;AAEA,CAAA;AACE,eAAA;AACF;AAEA,CAAA;AACE,eAAA;AACA,kBAAA;AACF;AAEA,CAAA;AACE,SAAA,IAAA,IAAA,IAAA;AACF;AAEA,CAAA;AACE,OAAA;AACF;AAEA,OAAA,CAAA,SAAA,EAAA;AACE,GAAA;AACE,aAAA;AACF;AACF;AAEA,OAAA,CAAA,SAAA,EAAA;AACE,GAAA;AACE,SAAA;AACF;AACF;",
+  "names": []
+}

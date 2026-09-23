@@ -1,0 +1,111 @@
+<div class="draw-page">
+
+  <!-- =========================
+       ANIMATED BACKGROUND
+       ========================= -->
+  <div class="background">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+    <div class="particle" *ngFor="let p of [1,2,3,4,5,6,7,8]"></div>
+  </div>
+
+  <!-- =========================
+       CONTENT
+       ========================= -->
+  <div class="content">
+
+    <div class="title">
+      <h1>LUCKY DRAW</h1>
+      <p>GOOD LUCK EVERYONE!</p>
+    </div>
+
+    <!-- =========================
+         DRUM / BARREL CONTAINER
+         ========================= -->
+    <div class="drum-container">
+      
+      <!-- Selection Pointer Indicators -->
+      <div class="pointer-left">▶</div>
+      <div class="pointer-right">◀</div>
+
+      <!-- Drum Frame (Horizontal Barrel Look) -->
+      <div class="drum-frame">
+        <div class="drum-bars top-bar"></div>
+        
+        <!-- Scrolling Window -->
+        <div class="drum-viewport">
+            <div class="drum-strip" id="drumStrip">
+                <ng-container *ngFor="let round of [1,2,3,4,5,6]">
+                <div 
+                    *ngFor="let participant of participants; let i = index"
+                    class="drum-item"
+                >
+                    {{ participant.name }}
+                </div>
+                </ng-container>
+            </div>
+        </div>
+
+        <div class="drum-bars bottom-bar"></div>
+      </div>
+    </div>
+
+    <!-- =========================
+         BUTTONS
+         ========================= -->
+    <div class="buttons">
+      <button
+        class="spin-button"
+        [disabled]="isSpinning || participants.length === 0"
+        (click)="spin()"
+      >
+        {{ isSpinning ? 'SPINNING...' : 'SPIN' }}
+      </button>
+
+      <button
+        class="reset-button"
+        [disabled]="isSpinning"
+        (click)="reset()"
+      >
+        RESET
+      </button>
+
+      <button
+        class="admin-toggle-button"
+        (click)="toggleAdmin()"
+      >
+        ⚙ ADMIN
+      </button>
+    </div>
+
+    <div style="margin-top: 15px; opacity: .7; font-size: 14px;">
+      {{ participants.length }} participants remaining
+    </div>
+
+  </div>
+
+  <!-- =========================
+       WINNER POPUP
+       ========================= -->
+  <div class="winner-overlay" *ngIf="showWinner">
+    <div class="winner-box">
+      <div class="winner-icon">🏆</div>
+      <h2>CONGRATULATIONS!</h2>
+      <div class="winner-name">{{ winner?.name }}</div>
+      <p>You are the lucky winner!</p>
+      <button class="close-button" (click)="closeWinner()">CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- =========================
+       CONFETTI
+       ========================= -->
+  <div
+    *ngFor="let item of confetti"
+    class="confetti"
+    [style.left.%]="(item * 37) % 100"
+    [style.animationDelay.ms]="(item * 13) % 800"
+  ></div>
+
+</div>

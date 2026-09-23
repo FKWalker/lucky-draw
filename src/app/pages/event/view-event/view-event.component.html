@@ -1,0 +1,81 @@
+<div class="space-y-6">
+
+    <div>
+        <app-component-card title="Winners">
+            @for (w of this.winners; track $index) {
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                
+                <!-- Draw Round Header -->
+                <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-3 mb-4">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                    {{ w.name }}
+                    </h3>
+                    <span class="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-medium">
+                    {{ w.winnersList?.length || 0 }} Winners
+                    </span>
+                </div>
+
+                <!-- Winners Grid / List -->
+                @if (w.winnersList && w.winnersList.length > 0) {
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    @for (wl of w.winnersList; track $index) {
+                        <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-500/30 transition-all">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs shrink-0">
+                            🏆
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{{ wl.name }} - {{ wl.member_code }}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">Winner #{{ $index + 1 }}</p>
+                        </div>
+                        </div>
+                    }
+                    </div>
+                } @else {
+                    <p class="text-sm text-gray-400 dark:text-gray-500 italic py-2">No winners drawn for this round yet.</p>
+                }
+
+                </div>
+            }
+        </app-component-card>
+        <div class="pt-4"></div>
+        <app-component-card title="Advance Search">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <app-label for="input">Name</app-label>
+                    <app-input-field type="text" id="input" placeholder="Enter a release year" [value]="participantForm.name" (valueChange)="participantForm.name = $event"/>
+                </div>
+                <div>
+                    <app-label for="input">Member Code</app-label>
+                    <app-input-field type="text" id="input" placeholder="Enter a filter" [value]="participantForm.member_code" (valueChange)="participantForm.member_code = $event"/>
+                </div>
+            </div>
+            <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Search</app-button>
+        </app-component-card>
+    </div>
+    
+    @if (isLoading) {
+        <div class="flex justify-center items-center py-12">
+            <app-loading-spinner 
+                size="lg" 
+                [showText]="true" 
+                text="Loading discographies..."
+                containerClass="flex-col"
+            ></app-loading-spinner>
+        </div>
+    } @else {
+        <app-custom-table
+        title="Participants"
+        [columns]="columns"
+        [data]="participants"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [itemsPerPage]="itemsPerPage"
+        [enableSearch]="false"
+        (pageChange)="loadPage($event)"
+        (searchChange)="onSearch($event)"
+        [needAction]="false"
+        ></app-custom-table>
+    }
+</div>
+

@@ -11,23 +11,8 @@ import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@
       #fileInput
       type="file"
       [ngClass]="inputClasses"
-      (change)="onChange($event)"
+      (change)="onFileSelected($event)"
     />
-    <div class="flex w-full text-sm">
-      <button 
-        type="button" 
-        class="px-4 py-2 bg-gray-200 border border-gray-300 rounded-l-md hover:bg-gray-300 transition"
-        (click)="fileInput.click()"
-      >
-        Choose File
-      </button>
-      <input
-        type="text"
-        class="flex-1 border border-l-0 border-gray-300 rounded-r-md px-2 text-gray-800"
-        [value]="fileName || 'No file selected'"
-        readonly
-      />
-    </div>
     @if (hint) {
       <p class="mt-1.5 text-xs"
         [ngClass]="{
@@ -48,7 +33,7 @@ export class FileInputComponent {
   @Input() error: boolean = false;
   @Input() hint?: string;
   @Input() fileName?: string | number;
-  @Output() change = new EventEmitter<Event>();
+  @Output() fileSelected = new EventEmitter<Event>();
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -68,10 +53,6 @@ export class FileInputComponent {
     return inputClasses;
   }
 
-  onChange(event: Event) {
-    this.change.emit(event);
-  }
-
   reset() {
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';
@@ -82,7 +63,7 @@ export class FileInputComponent {
     const file = event.target.files[0];
     if (file) {
       this.fileName = file.name;
-      this.change.emit(file);
+      this.fileSelected.emit(file);
     }
   }
 }
