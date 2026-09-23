@@ -1,111 +1,93 @@
-<div class="draw-page">
+<div class="relative flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 text-white overflow-hidden p-6 select-none">
+  
+  <!-- Background Ambient Glow Effects -->
+  <div class="absolute w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none -top-32 -left-32 animate-pulse"></div>
+  <div class="absolute w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none -bottom-32 -right-32 animate-pulse"></div>
 
-  <!-- =========================
-       ANIMATED BACKGROUND
-       ========================= -->
-  <div class="background">
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
-    <div class="glow glow-3"></div>
-    <div class="particle" *ngFor="let p of [1,2,3,4,5,6,7,8]"></div>
+  <!-- Header Section -->
+  <div class="z-10 text-center mb-8">
+    <span class="px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-lg shadow-purple-500/10">
+      Live Display Screen
+    </span>
+    <h1 class="text-4xl md:text-6xl font-black tracking-tight mt-4 bg-gradient-to-r from-white via-indigo-200 to-purple-300 bg-clip-text text-transparent">
+      Lucky Draw Live
+    </h1>
+    <p class="text-gray-400 text-sm md:text-base mt-2">
+      Waiting for the admin to spin the wheel...
+    </p>
   </div>
 
-  <!-- =========================
-       CONTENT
-       ========================= -->
-  <div class="content">
-
-    <div class="title">
-      <h1>LUCKY DRAW</h1>
-      <p>GOOD LUCK EVERYONE!</p>
-    </div>
-
-    <!-- =========================
-         DRUM / BARREL CONTAINER
-         ========================= -->
-    <div class="drum-container">
-      
-      <!-- Selection Pointer Indicators -->
-      <div class="pointer-left">▶</div>
-      <div class="pointer-right">◀</div>
-
-      <!-- Drum Frame (Horizontal Barrel Look) -->
-      <div class="drum-frame">
-        <div class="drum-bars top-bar"></div>
+  <!-- Animated Lucky Wheel Container -->
+  <div class="z-10 relative flex items-center justify-center my-6">
+    <!-- Outer Glowing Ring -->
+    <div class="absolute w-72 h-72 md:w-96 md:h-96 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 opacity-30 blur-xl animate-spin-slow"></div>
+    
+    <!-- Wheel Component -->
+    <div 
+        [class.animate-spin]="isSpinning"
+        class="relative w-64 h-64 md:w-80 md:h-80 rounded-full border-8 border-indigo-500/30 bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-300">
         
-        <!-- Scrolling Window -->
-        <div class="drum-viewport">
-            <div class="drum-strip" id="drumStrip">
-                <ng-container *ngFor="let round of [1,2,3,4,5,6]">
-                <div 
-                    *ngFor="let participant of participants; let i = index"
-                    class="drum-item"
-                >
-                    {{ participant.name }}
-                </div>
-                </ng-container>
-            </div>
+        <!-- Wheel Slices / Visual Accents -->
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-500 via-transparent to-transparent"></div>
+        
+        <!-- Center Core Badge -->
+        <div class="z-20 w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 border-4 border-white/20 flex flex-col items-center justify-center shadow-xl shadow-purple-500/50">
+            <span class="text-2xl">🎁</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase mt-0.5">Spinning</span>
         </div>
-
-        <div class="drum-bars bottom-bar"></div>
-      </div>
     </div>
 
-    <!-- =========================
-         BUTTONS
-         ========================= -->
-    <div class="buttons">
-      <button
-        class="spin-button"
-        [disabled]="isSpinning || participants.length === 0"
-        (click)="spin()"
-      >
-        {{ isSpinning ? 'SPINNING...' : 'SPIN' }}
-      </button>
-
-      <button
-        class="reset-button"
-        [disabled]="isSpinning"
-        (click)="reset()"
-      >
-        RESET
-      </button>
-
-      <button
-        class="admin-toggle-button"
-        (click)="toggleAdmin()"
-      >
-        ⚙ ADMIN
-      </button>
-    </div>
-
-    <div style="margin-top: 15px; opacity: .7; font-size: 14px;">
-      {{ participants.length }} participants remaining
-    </div>
-
+    <!-- Top Pointer / Indicator -->
+    <div class="absolute -top-4 z-30 w-8 h-8 bg-gradient-to-b from-purple-500 to-indigo-600 rotate-45 border-2 border-white/30 shadow-lg"></div>
   </div>
 
-  <!-- =========================
-       WINNER POPUP
-       ========================= -->
-  <div class="winner-overlay" *ngIf="showWinner">
-    <div class="winner-box">
-      <div class="winner-icon">🏆</div>
-      <h2>CONGRATULATIONS!</h2>
-      <div class="winner-name">{{ winner?.name }}</div>
-      <p>You are the lucky winner!</p>
-      <button class="close-button" (click)="closeWinner()">CONTINUE</button>
-    </div>
+  <!-- Status / Event Info Footer -->
+  <div class="z-10 mt-6 text-xs text-gray-500 font-mono tracking-wider">
+    ROOM ID: <span class="text-gray-400">{{ eventId || 'Connecting...' }}</span>
   </div>
-
-  <!-- =========================
-       CONFETTI
-       ========================= -->
-  <div
-    *ngFor="let item of confetti"
-    class="confetti"
-    [style.left.%]="(item * 37) % 100"
-    [style.animationDelay.ms]="(item * 13) % 800"
-  ></div>
 
 </div>
+
+
+<!-- ========================================== -->
+<!-- WINNER POPUP MODAL                         -->
+<!-- ========================================== -->
+@if (showWinnerModal && currentWinners) {
+  <div class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+    <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-10 max-w-lg w-full shadow-2xl text-center relative overflow-hidden">
+      
+      <!-- Modal Ambient Glow Accents -->
+      <div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/20 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-600/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Celebration Icon / Badge -->
+      <div class="mx-auto w-20 h-20 bg-gradient-to-tr from-amber-500 to-purple-600 rounded-3xl flex items-center justify-center text-4xl shadow-xl shadow-purple-500/30 mb-5 animate-bounce">
+        🎉
+      </div>
+      
+      <span class="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+        Round Winner Revealed!
+      </span>
+      
+      <h3 class="text-3xl font-extrabold text-white tracking-tight mt-3">Congratulations!</h3>
+      <p class="text-gray-400 text-sm mt-1">The lucky winner(s) selected for this round:</p>
+
+      <!-- Winners List Container -->
+      <div class="my-6 max-h-72 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
+        @for (winner of currentWinners; track winner.id) {
+          <div class="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-gray-800/80 to-indigo-950/40 border border-indigo-500/30 text-left shadow-lg">
+            <div>
+              <p class="font-bold text-lg text-white">{{ winner.name || 'Participant #' + winner.id }}</p>
+              @if (winner.member_code) {
+                <p class="text-xs text-indigo-300 font-mono mt-0.5">Code: {{ winner.member_code }}</p>
+              }
+            </div>
+            <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm">
+              Winner 🏆
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

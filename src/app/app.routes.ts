@@ -75,7 +75,7 @@ export const routes: Routes = [
   },
 
   {
-    path:'draw',
+    path:'draw/:id',
     component:DrawComponent,
     title:'Draw | Flashbang'
   },

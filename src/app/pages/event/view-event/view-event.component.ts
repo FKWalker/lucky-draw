@@ -159,4 +159,8 @@ export class ViewEventComponent {
     this.fetchParticipants(this.eventId);
   }
 
+  goSpin() {
+    this.router.navigate(['/spin/', this.eventId]); 
+  }
+
 }

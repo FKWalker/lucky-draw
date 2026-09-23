@@ -1,12 +1,8 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SupabaseService } from 'app/shared/services/supabase.service';
-
-interface Participant {
-  id: number;
-  name: string;
-}
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-draw',
@@ -15,121 +11,52 @@ interface Participant {
   templateUrl: './draw.component.html',
   styleUrl: './draw.component.css'
 })
-export class DrawComponent implements OnInit {
-  participants: Participant[] = [];
-
-  originalParticipants: Participant[] = [];
+export class DrawComponent implements OnInit, OnDestroy {
+  drawChannel: any;
+  eventId: string | null = null;
   
-  itemHeight = 50; 
-  isSpinning = false;
-  winner: Participant | null = null;
-  pendingWinner: Participant | null = null;
-  showWinner = false;
-  showAdmin = false;
-  newParticipantName = '';
-  confetti: number[] = [];
-  isBrowser = false;
+  // State variables for animation and modals
+  currentWinners: any[] = [];
+  draws: any[] = [];
+  isSpinning: boolean = false;
+  showWinnerModal: boolean = false;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object,
-     private supabaseService: SupabaseService) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-  }
+  constructor(
+    private supabaseService: SupabaseService, 
+    private route: ActivatedRoute
+  ) {}
 
-  async ngOnInit() {
-    await this.loadParticipants();
-  }
+  ngOnInit() {
+    this.eventId = this.route.snapshot.paramMap.get('id');
 
-  // Get participant names from Supabase
-  async loadParticipants() {
-    this.participants = await this.supabaseService.getParticipants();
-    console.log(this.participants);
-  }
+    if (this.eventId) {
+      // 🎧 Listen for broadcasts coming from the admin page
+      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, (payload) => {
+        console.log('Broadcast received on display page:', payload);
+        this.showWinnerModal = false;
+        // Safe extraction using bracket notation
+        const data = payload?.['payload'] || payload;
 
-  spin(): void {
-    if (this.isSpinning || this.participants.length === 0) return;
+        if (data && data.type === 'NEW_WINNERS') {
+          // 1. Trigger the spinning wheel animation
+          this.isSpinning = true;
 
-    if (this.pendingWinner) {
-      this.participants = this.participants.filter(p => p.id !== this.pendingWinner!.id);
-      this.pendingWinner = null;
-      //this.saveToStorage();
+          // 2. Wait 2.5 seconds for the spin effect, then stop wheel & show modal
+          setTimeout(() => {
+            this.isSpinning = false;
+            this.currentWinners = data.winners || [];
+            this.draws = data.draws || [];
+            this.showWinnerModal = true;
+          }, 2500); 
+        }
+      });
     }
-
-    if (this.participants.length === 0) return;
-
-    this.isSpinning = true;
-    this.winner = null;
-    this.showWinner = false;
-
-    const strip = document.getElementById('drumStrip');
-    if (strip) {
-      // Step A: Instantly snap back to top without transition to reset the roll
-      strip.style.transition = 'none';
-      strip.style.transform = `translateY(35px)`;
+  }
+  
+  // Clean up channel subscription when leaving the page
+  ngOnDestroy() {
+    if (this.drawChannel) {
+      this.supabaseService.leaveChannel(this.drawChannel);
     }
-
-    // Step B: Calculate the target winner
-    const winnerIndex = Math.floor(Math.random() * this.participants.length);
-    const selected = this.participants[winnerIndex];
-
-    const targetLoop = 3;
-    const totalItems = this.participants.length;
-    const targetItemIndex = (targetLoop * totalItems) + winnerIndex;
-    const targetOffset = 35 - (targetItemIndex * this.itemHeight);
-
-    // Step C: Force browser reflow/tick, then re-enable transition and apply target transform
-    setTimeout(() => {
-      if (strip) {
-        strip.style.transition = 'transform 4.5s cubic-bezier(0.15, 0.85, 0.15, 1)';
-        strip.style.transform = `translateY(${targetOffset}px)`;
-      }
-
-      // Step D: Wait for the rolling animation to finish before showing the popup
-      setTimeout(() => {
-        this.winner = selected;
-        this.pendingWinner = selected; 
-        this.isSpinning = false;
-        this.showWinner = true;
-        this.startConfetti();
-      }, 4600);
-
-    }, 50);
-  }
-
-  closeWinner(): void {
-    if (this.pendingWinner) {
-      this.participants = this.participants.filter(p => p.id !== this.pendingWinner!.id);
-      this.pendingWinner = null;
-      //this.saveToStorage();
-    }
-    this.showWinner = false;
-  }
-
-  reset(): void {
-    this.participants = [...this.originalParticipants];
-    const strip = document.getElementById('drumStrip');
-    if (strip) {
-      strip.style.transition = 'none';
-      strip.style.transform = `translateY(35px)`;
-    }
-    this.winner = null;
-    this.pendingWinner = null;
-    this.showWinner = false;
-    this.isSpinning = false;
-    //this.saveToStorage();
-  }
-
-  toggleAdmin(): void {
-    this.showAdmin = !this.showAdmin;
-  }
-
-  isWinnerIndex(index: number): boolean {
-    return false;
-  }
-
-  startConfetti(): void {
-    this.confetti = Array.from({ length: 100 }, (_, i) => i);
-    setTimeout(() => {
-      this.confetti = [];
-    }, 3500);
   }
 }

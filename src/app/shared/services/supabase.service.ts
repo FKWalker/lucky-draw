@@ -172,8 +172,6 @@ export class SupabaseService {
       .select('*')
       .eq('event_id', eventId)
       .eq('won', won);
-
-    console.log(data);
     
     if (error) {
       console.error('Error fetching participants:', error);
@@ -182,13 +180,12 @@ export class SupabaseService {
     return data;
   }
 
-  async getEligibleParticipants() {
+  async getEligibleParticipants(eventId: string | number) {
     const { data, error } = await this.supabase
       .from('participants') // Replace with your actual Supabase table name
       .select('*')
+      .eq('event_id', eventId)
       .eq('eligible', true);
-
-    console.log(data);
     
     if (error) {
       console.error('Error fetching participants:', error);
@@ -212,22 +209,76 @@ export class SupabaseService {
     return data;
   }
 
-  async updateParticipantWon(participant: any, won: number) {
+  async updateParticipantWon(id: number, won: number) {
     const { data, error } = await this.supabase
       .from('participants') // Replace with your actual Supabase table name
       .update({
-        won: won,
-        eligible: false
+        won: won
       })
-      .eq('eligible', true);
-
-    console.log(data);
+      .eq('id', id);
     
     if (error) {
       console.error('Error fetching participants:', error);
       return [];
     }
     return data;
+  }
+
+  async updateParticipantEligible(memberCode: string) {
+    const { data, error } = await this.supabase
+      .from('participants') // Replace with your actual Supabase table name
+      .update({
+        eligible: false
+      })
+      .eq('member_code', memberCode)
+    
+    if (error) {
+      console.error('Error fetching participants:', error);
+      return [];
+    }
+    return data;
+  }
+
+ joinDrawChannel(eventId: string, onReceive: (payload: any) => void) {
+    const channelName = `room:lucky-draw-${eventId}`;
+
+    const channel = this.supabase.channel(channelName, {
+      config: {
+        broadcast: { self: false },
+      },
+    });
+
+    channel
+      .on('broadcast', { event: 'draw-state-update' }, (event) => {
+        // Automatically pass the inner data using bracket notation right here
+        onReceive(event['payload']); 
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(`Connected to broadcast channel: ${channelName}`);
+        }
+      });
+
+    return channel;
+  }
+
+  async sendDrawBroadcast(channel: any, eventData: any) {
+    if (!channel) return;
+    
+    await channel.send({
+      type: 'broadcast',
+      event: 'draw-state-update',
+      payload: eventData,
+    });
+  }
+
+  /**
+   * Leave/close the broadcast channel when component destroys.
+   */
+  leaveChannel(channel: any) {
+    if (channel) {
+      this.supabase.removeChannel(channel);
+    }
   }
 
 }

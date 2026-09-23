@@ -1,6 +1,6 @@
 <div class="space-y-6">
-
     <div>
+        <div class="pb-3 flex justify-end"><app-button type="submit" size="sm" variant="primary" (btnClick)="goSpin()" [disabled]="disabled">Go Spin</app-button></div>
         <app-component-card title="Winners">
             @for (w of this.winners; track $index) {
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
