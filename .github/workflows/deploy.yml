@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Build Angular
-        run: npm run build -- --configuration staging
+        run: npm run build -- --configuration staging --base-href /lucky-draw/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
