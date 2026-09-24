@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/pages/team/sorting-team-member/sorting-team-member.component.css"],
-  "sourcesContent": [".cdk-drag-preview {\n  display: table;\n  border-spacing: 0; /* removes extra gaps between cells */\n  background: white; /* match table bg */\n  border: 1px solid #ddd; /* optional, mimic table borders */\n}\n\n.cdk-drag-preview td {\n  display: table-cell;\n  padding: 0.5rem 1rem; /* match your table cell padding */\n  vertical-align: middle;\n  color: inherit;\n}\n\n.cdk-drag-placeholder {\n  opacity: 0;\n}\n\n.cdk-drag-animating {\n  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);\n}"],
-  "mappings": ";AAAA,CAAA;AACE,WAAA;AACA,kBAAA;AACA,cAAA;AACA,UAAA,IAAA,MAAA;AACF;AAEA,CAPA,iBAOA;AACE,WAAA;AACA,WAAA,OAAA;AACA,kBAAA;AACA,SAAA;AACF;AAEA,CAAA;AACE,WAAA;AACF;AAEA,CAAA;AACE,cAAA,UAAA,MAAA,aAAA,CAAA,EAAA,CAAA,EAAA,GAAA,EAAA;AACF;",
-  "names": []
-}
