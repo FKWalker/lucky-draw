@@ -161,7 +161,7 @@ export class ViewEventComponent {
 
   startDraw() {
     const url = this.router.serializeUrl(
-      this.router.createUrlTree(['/spin', this.eventId])
+      this.router.createUrlTree(['/lucky-draw/spin', this.eventId])
     );
 
     window.open(url, '_blank');
@@ -169,7 +169,7 @@ export class ViewEventComponent {
 
   drawScreen() {
     const url = this.router.serializeUrl(
-      this.router.createUrlTree(['/draw', this.eventId])
+      this.router.createUrlTree(['/lucky-draw/draw', this.eventId])
     );
 
     window.open(url, '_blank');
