@@ -3,7 +3,7 @@ name: Deploy Angular
 on:
   push:
     branches:
-      - main
+      - staging
 
 permissions:
   contents: read
