@@ -1,36 +1,39 @@
+// @ts-check
 import Graphics from './Graphics'
 import Filters from './Filters'
 import Utils from '../utils/Utils'
 
 class Crosshairs {
-  constructor(ctx) {
-    this.ctx = ctx
-    this.w = ctx.w
+  /**
+   * @param {import('../types/internal').ChartStateW} w
+   */
+  constructor(w) {
+    this.w = w
   }
 
   drawXCrosshairs() {
     const w = this.w
 
-    let graphics = new Graphics(this.ctx)
-    let filters = new Filters(this.ctx)
+    const graphics = new Graphics(this.w)
+    const filters = new Filters(this.w)
 
-    let crosshairGradient = w.config.xaxis.crosshairs.fill.gradient
-    let crosshairShadow = w.config.xaxis.crosshairs.dropShadow
+    const crosshairGradient = w.config.xaxis.crosshairs.fill.gradient
+    const crosshairShadow = w.config.xaxis.crosshairs.dropShadow
 
-    let fillType = w.config.xaxis.crosshairs.fill.type
-    let gradientFrom = crosshairGradient.colorFrom
-    let gradientTo = crosshairGradient.colorTo
-    let opacityFrom = crosshairGradient.opacityFrom
-    let opacityTo = crosshairGradient.opacityTo
-    let stops = crosshairGradient.stops
+    const fillType = w.config.xaxis.crosshairs.fill.type
+    const gradientFrom = crosshairGradient.colorFrom
+    const gradientTo = crosshairGradient.colorTo
+    const opacityFrom = crosshairGradient.opacityFrom
+    const opacityTo = crosshairGradient.opacityTo
+    const stops = crosshairGradient.stops
 
-    let shadow = 'none'
-    let dropShadow = crosshairShadow.enabled
-    let shadowLeft = crosshairShadow.left
-    let shadowTop = crosshairShadow.top
-    let shadowBlur = crosshairShadow.blur
-    let shadowColor = crosshairShadow.color
-    let shadowOpacity = crosshairShadow.opacity
+    const shadow = 'none'
+    const dropShadow = crosshairShadow.enabled
+    const shadowLeft = crosshairShadow.left
+    const shadowTop = crosshairShadow.top
+    const shadowBlur = crosshairShadow.blur
+    const shadowColor = crosshairShadow.color
+    const shadowOpacity = crosshairShadow.opacity
 
     let xcrosshairsFill = w.config.xaxis.crosshairs.fill.color
 
@@ -44,22 +47,22 @@ class Crosshairs {
           opacityTo,
           null,
           stops,
-          null
+          [],
         )
       }
 
       let xcrosshairs = graphics.drawRect()
       if (w.config.xaxis.crosshairs.width === 1) {
         // to prevent drawing 2 lines, convert rect to line
-        xcrosshairs = graphics.drawLine()
+        xcrosshairs = graphics.drawLine(0, 0, 0, 0)
       }
 
-      let gridHeight = w.globals.gridHeight
+      let gridHeight = w.layout.gridHeight
       if (!Utils.isNumber(gridHeight) || gridHeight < 0) {
         gridHeight = 0
       }
       let crosshairsWidth = w.config.xaxis.crosshairs.width
-      if (!Utils.isNumber(crosshairsWidth) || crosshairsWidth < 0) {
+      if (!Utils.isNumber(crosshairsWidth) || Number(crosshairsWidth) < 0) {
         crosshairsWidth = 0
       }
 
@@ -75,7 +78,7 @@ class Crosshairs {
         'fill-opacity': w.config.xaxis.crosshairs.opacity,
         stroke: w.config.xaxis.crosshairs.stroke.color,
         'stroke-width': w.config.xaxis.crosshairs.stroke.width,
-        'stroke-dasharray': w.config.xaxis.crosshairs.stroke.dashArray
+        'stroke-dasharray': w.config.xaxis.crosshairs.stroke.dashArray,
       })
 
       if (dropShadow) {
@@ -84,54 +87,54 @@ class Crosshairs {
           top: shadowTop,
           blur: shadowBlur,
           color: shadowColor,
-          opacity: shadowOpacity
+          opacity: shadowOpacity,
         })
       }
 
-      w.globals.dom.elGraphical.add(xcrosshairs)
+      w.dom.elGraphical.add(xcrosshairs)
     }
   }
 
   drawYCrosshairs() {
     const w = this.w
 
-    let graphics = new Graphics(this.ctx)
+    const graphics = new Graphics(this.w)
 
-    let crosshair = w.config.yaxis[0].crosshairs
+    const crosshair = /** @type {any[]} */ (w.config.yaxis)[0].crosshairs
     const offX = w.globals.barPadForNumericAxis
 
-    if (w.config.yaxis[0].crosshairs.show) {
-      let ycrosshairs = graphics.drawLine(
+    if (/** @type {any[]} */ (w.config.yaxis)[0].crosshairs.show) {
+      const ycrosshairs = graphics.drawLine(
         -offX,
         0,
-        w.globals.gridWidth + offX,
+        w.layout.gridWidth + offX,
         0,
         crosshair.stroke.color,
         crosshair.stroke.dashArray,
-        crosshair.stroke.width
+        crosshair.stroke.width,
       )
       ycrosshairs.attr({
-        class: 'apexcharts-ycrosshairs'
+        class: 'apexcharts-ycrosshairs',
       })
 
-      w.globals.dom.elGraphical.add(ycrosshairs)
+      w.dom.elGraphical.add(ycrosshairs)
     }
 
     // draw an invisible crosshair to help in positioning the yaxis tooltip
-    let ycrosshairsHidden = graphics.drawLine(
+    const ycrosshairsHidden = graphics.drawLine(
       -offX,
       0,
-      w.globals.gridWidth + offX,
+      w.layout.gridWidth + offX,
       0,
       crosshair.stroke.color,
       0,
-      0
+      0,
     )
     ycrosshairsHidden.attr({
-      class: 'apexcharts-ycrosshairs-hidden'
+      class: 'apexcharts-ycrosshairs-hidden',
     })
 
-    w.globals.dom.elGraphical.add(ycrosshairsHidden)
+    w.dom.elGraphical.add(ycrosshairsHidden)
   }
 }
 

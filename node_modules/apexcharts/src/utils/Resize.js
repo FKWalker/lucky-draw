@@ -1,9 +1,20 @@
+// @ts-check
 // Helpers to react to element resizes, regardless of what caused them
 // TODO Currently this creates a new ResizeObserver every time we want to observe an element for resizes
 // Ideally, we should be able to use a single observer for all elements
-let ros = new WeakMap() // Map callbacks to ResizeObserver instances for easy removal
 
+import { Environment } from './Environment.js'
+
+const ros = new WeakMap() // Map callbacks to ResizeObserver instances for easy removal
+
+/**
+ * @param {HTMLElement} el
+ * @param {Function} fn
+ */
 export function addResizeListener(el, fn) {
+  // No-op in SSR environment
+  if (Environment.isSSR()) return
+
   let called = false
 
   if (el.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) {
@@ -18,7 +29,7 @@ export function addResizeListener(el, fn) {
     }
   }
 
-  let ro = new ResizeObserver((r) => {
+  const ro = new ResizeObserver((r) => {
     // ROs fire immediately after being created,
     // per spec: https://drafts.csswg.org/resize-observer/#ref-for-element%E2%91%A3
     // we don't want that so we just discard the first run
@@ -38,8 +49,15 @@ export function addResizeListener(el, fn) {
   ros.set(fn, ro)
 }
 
+/**
+ * @param {Element} el
+ * @param {Function} fn
+ */
 export function removeResizeListener(el, fn) {
-  let ro = ros.get(fn)
+  // No-op in SSR environment
+  if (Environment.isSSR()) return
+
+  const ro = ros.get(fn)
   if (ro) {
     ro.disconnect()
     ros.delete(fn)

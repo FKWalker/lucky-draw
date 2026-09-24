@@ -1,6 +1,8 @@
+// @ts-check
 import Graphics from '../Graphics'
-import Utils from '../../utils/Utils'
 import AxesUtils from './AxesUtils'
+import { BrowserAPIs } from '../../ssr/BrowserAPIs.js'
+import { SVGNS } from '../../svg/math'
 
 /**
  * ApexCharts YAxis Class for drawing Y-Axis.
@@ -9,11 +11,13 @@ import AxesUtils from './AxesUtils'
  **/
 
 export default class YAxis {
-  constructor(ctx, elgrid) {
-    this.ctx = ctx
+  /**
+   * @param {import('../../types/internal').ChartStateW} w
+   * @param {any} [elgrid]
+   */
+  constructor(w, { theme = null, timeScale = null } = {}, elgrid) {
+    this.w = w
     this.elgrid = elgrid
-    this.w = ctx.w
-    const w = this.w
 
     this.xaxisFontSize = w.config.xaxis.labels.style.fontSize
     this.axisFontFamily = w.config.xaxis.labels.style.fontFamily
@@ -21,14 +25,18 @@ export default class YAxis {
     this.isCategoryBarHorizontal =
       w.config.chart.type === 'bar' && w.config.plotOptions.bar.horizontal
     this.xAxisoffX =
-      w.config.xaxis.position === 'bottom' ? w.globals.gridHeight : 0
+      w.config.xaxis.position === 'bottom' ? w.layout.gridHeight : 0
+    /** @type {any} */
     this.drawnLabels = []
-    this.axesUtils = new AxesUtils(ctx)
+    this.axesUtils = new AxesUtils(w, { theme, timeScale })
   }
 
+  /**
+   * @param {number} realIndex
+   */
   drawYaxis(realIndex) {
     const w = this.w
-    const graphics = new Graphics(this.ctx)
+    const graphics = new Graphics(this.w)
     const yaxisStyle = w.config.yaxis[realIndex].labels.style
     const {
       fontSize: yaxisFontSize,
@@ -48,39 +56,40 @@ export default class YAxis {
     elYaxis.add(elYaxisTexts)
 
     const tickAmount = w.globals.yAxisScale[realIndex].result.length - 1
-    const labelsDivider = w.globals.gridHeight / tickAmount
-    const lbFormatter = w.globals.yLabelFormatters[realIndex]
-    let labels = this.axesUtils.checkForReversedLabels(
+    const labelsDivider = w.layout.gridHeight / tickAmount
+    const lbFormatter = w.formatters.yLabelFormatters[realIndex]
+    const labels = this.axesUtils.checkForReversedLabels(
       realIndex,
-      w.globals.yAxisScale[realIndex].result.slice()
+      w.globals.yAxisScale[realIndex].result.slice(),
     )
 
     if (w.config.yaxis[realIndex].labels.show) {
-      let lY = w.globals.translateY + w.config.yaxis[realIndex].labels.offsetY
+      let lY = w.layout.translateY + w.config.yaxis[realIndex].labels.offsetY
       if (w.globals.isBarHorizontal) lY = 0
       else if (w.config.chart.type === 'heatmap') lY -= labelsDivider / 2
       lY += parseInt(yaxisFontSize, 10) / 3
 
+      let firstLabel = null
       for (let i = tickAmount; i >= 0; i--) {
-        let val = lbFormatter(labels[i], i, w)
+        const val = lbFormatter(labels[i], i, w)
         let xPad = w.config.yaxis[realIndex].labels.padding
         if (w.config.yaxis[realIndex].opposite && w.config.yaxis.length !== 0)
           xPad *= -1
 
         const textAnchor = this.getTextAnchor(
           w.config.yaxis[realIndex].labels.align,
-          w.config.yaxis[realIndex].opposite
+          w.config.yaxis[realIndex].opposite,
         )
         const yColors = this.axesUtils.getYAxisForeColor(
           yaxisStyle.colors,
-          realIndex
+          realIndex,
         )
         const foreColor = Array.isArray(yColors) ? yColors[i] : yColors
 
-        const existingYLabels = Utils.listToArray(
-          w.globals.dom.baseEl.querySelectorAll(
-            `.apexcharts-yaxis[rel='${realIndex}'] .apexcharts-yaxis-label tspan`
-          )
+        const existingYLabels = Array.from(
+          w.dom.baseEl.querySelectorAll(
+            `.apexcharts-yaxis[rel='${realIndex}'] .apexcharts-yaxis-label tspan`,
+          ),
         ).map((label) => label.textContent)
 
         const label = graphics.drawText({
@@ -104,12 +113,16 @@ export default class YAxis {
         elYaxisTexts.add(label)
         this.addTooltip(label, val)
 
+        if (firstLabel === null) {
+          firstLabel = label
+        }
+
         if (w.config.yaxis[realIndex].labels.rotate !== 0) {
           this.rotateLabel(
             graphics,
             label,
             firstLabel,
-            w.config.yaxis[realIndex].labels.rotate
+            w.config.yaxis[realIndex].labels.rotate,
           )
         }
 
@@ -123,6 +136,10 @@ export default class YAxis {
     return elYaxis
   }
 
+  /**
+   * @param {string} align
+   * @param {boolean} opposite
+   */
   getTextAnchor(align, opposite) {
     if (align === 'left') return 'start'
     if (align === 'center') return 'middle'
@@ -130,24 +147,36 @@ export default class YAxis {
     return opposite ? 'start' : 'end'
   }
 
+  /**
+   * @param {any} label
+   * @param {any} val
+   */
   addTooltip(label, val) {
-    const elTooltipTitle = document.createElementNS(
-      this.w.globals.SVGNS,
-      'title'
-    )
+    const elTooltipTitle = BrowserAPIs.createElementNS(SVGNS, 'title')
     elTooltipTitle.textContent = Array.isArray(val) ? val.join(' ') : val
     label.node.appendChild(elTooltipTitle)
   }
 
+  /**
+   * @param {import('../Graphics').default} graphics
+   * @param {any} label
+   * @param {any} firstLabel
+   * @param {number} rotate
+   */
   rotateLabel(graphics, label, firstLabel, rotate) {
     const firstLabelCenter = graphics.rotateAroundCenter(firstLabel.node)
     const labelCenter = graphics.rotateAroundCenter(label.node)
     label.node.setAttribute(
       'transform',
-      `rotate(${rotate} ${firstLabelCenter.x} ${labelCenter.y})`
+      `rotate(${rotate} ${firstLabelCenter.x} ${labelCenter.y})`,
     )
   }
 
+  /**
+   * @param {import('../Graphics').default} graphics
+   * @param {any} elYaxis
+   * @param {number} realIndex
+   */
   addYAxisTitle(graphics, elYaxis, realIndex) {
     const w = this.w
     if (w.config.yaxis[realIndex].title.text !== undefined) {
@@ -158,8 +187,8 @@ export default class YAxis {
       const elYAxisTitleText = graphics.drawText({
         x,
         y:
-          w.globals.gridHeight / 2 +
-          w.globals.translateY +
+          w.layout.gridHeight / 2 +
+          w.layout.translateY +
           w.config.yaxis[realIndex].title.offsetY,
         text: w.config.yaxis[realIndex].title.text,
         textAnchor: 'end',
@@ -174,6 +203,13 @@ export default class YAxis {
     }
   }
 
+  /**
+   * @param {import('../Graphics').default} graphics
+   * @param {any} elYaxis
+   * @param {number} realIndex
+   * @param {number} tickAmount
+   * @param {number} labelsDivider
+   */
   addAxisBorder(graphics, elYaxis, realIndex, tickAmount, labelsDivider) {
     const w = this.w
     const axisBorder = w.config.yaxis[realIndex].axisBorder
@@ -183,12 +219,12 @@ export default class YAxis {
     if (axisBorder.show) {
       const elVerticalLine = graphics.drawLine(
         x,
-        w.globals.translateY + axisBorder.offsetY - 2,
+        w.layout.translateY + axisBorder.offsetY - 2,
         x,
-        w.globals.gridHeight + w.globals.translateY + axisBorder.offsetY + 2,
+        w.layout.gridHeight + w.layout.translateY + axisBorder.offsetY + 2,
         axisBorder.color,
         0,
-        axisBorder.width
+        axisBorder.width,
       )
       elYaxis.add(elVerticalLine)
     }
@@ -201,14 +237,17 @@ export default class YAxis {
         w.config.yaxis[realIndex].axisTicks,
         realIndex,
         labelsDivider,
-        elYaxis
+        elYaxis,
       )
     }
   }
 
+  /**
+   * @param {number} realIndex
+   */
   drawYaxisInversed(realIndex) {
     const w = this.w
-    const graphics = new Graphics(this.ctx)
+    const graphics = new Graphics(this.w)
 
     const elXaxis = graphics.group({
       class: 'apexcharts-xaxis apexcharts-yaxis-inversed',
@@ -216,20 +255,20 @@ export default class YAxis {
 
     const elXaxisTexts = graphics.group({
       class: 'apexcharts-xaxis-texts-g',
-      transform: `translate(${w.globals.translateXAxisX}, ${w.globals.translateXAxisY})`,
+      transform: `translate(${w.layout.translateXAxisX}, ${w.layout.translateXAxisY})`,
     })
 
     elXaxis.add(elXaxisTexts)
 
     let tickAmount = w.globals.yAxisScale[realIndex].result.length - 1
-    const labelsDivider = w.globals.gridWidth / tickAmount + 0.1
+    const labelsDivider = w.layout.gridWidth / tickAmount + 0.1
     let l = labelsDivider + w.config.xaxis.labels.offsetX
-    const lbFormatter = w.globals.xLabelFormatter
+    const lbFormatter = w.formatters.xLabelFormatter
     let labels = this.axesUtils.checkForReversedLabels(
       realIndex,
-      w.globals.yAxisScale[realIndex].result.slice()
+      w.globals.yAxisScale[realIndex].result.slice(),
     )
-    const timescaleLabels = w.globals.timescaleLabels
+    const timescaleLabels = w.labelData.timescaleLabels
 
     if (timescaleLabels.length > 0) {
       this.xaxisLabels = timescaleLabels.slice()
@@ -243,9 +282,9 @@ export default class YAxis {
         timescaleLabels.length ? i < timescaleLabels.length : i >= 0;
         timescaleLabels.length ? i++ : i--
       ) {
-        let val = lbFormatter(labels[i], i, w)
+        let val = lbFormatter?.(labels[i], i, w)
         let x =
-          w.globals.gridWidth +
+          w.layout.gridWidth +
           w.globals.padHorizontal -
           (l - labelsDivider + w.config.xaxis.labels.offsetX)
 
@@ -256,7 +295,7 @@ export default class YAxis {
             x,
             i,
             this.drawnLabels,
-            this.xaxisFontSize
+            this.xaxisFontSize,
           )
           x = label.x
           val = label.text
@@ -273,7 +312,7 @@ export default class YAxis {
             w.config.xaxis.labels.offsetY +
             30 -
             (w.config.xaxis.position === 'top'
-              ? w.globals.xAxisHeight + w.config.xaxis.axisTicks.height - 2
+              ? w.layout.xAxisHeight + w.config.xaxis.axisTicks.height - 2
               : 0),
           text: val,
           textAnchor: 'middle',
@@ -281,14 +320,13 @@ export default class YAxis {
             ? this.xaxisForeColors[realIndex]
             : this.xaxisForeColors,
           fontSize: this.xaxisFontSize,
-          fontFamily: this.xaxisFontFamily,
+          fontFamily: this.axisFontFamily,
           fontWeight: w.config.xaxis.labels.style.fontWeight,
           isPlainText: false,
           cssClass: `apexcharts-xaxis-label ${w.config.xaxis.labels.style.cssClass}`,
         })
 
         elXaxisTexts.add(elTick)
-        elTick.tspan(val)
         this.addTooltip(elTick, val)
         l += labelsDivider
       }
@@ -300,24 +338,27 @@ export default class YAxis {
     return elXaxis
   }
 
+  /**
+   * @param {any} parent
+   */
   inversedYAxisBorder(parent) {
     const w = this.w
-    const graphics = new Graphics(this.ctx)
+    const graphics = new Graphics(this.w)
     const axisBorder = w.config.xaxis.axisBorder
 
     if (axisBorder.show) {
       let lineCorrection = 0
-      if (w.config.chart.type === 'bar' && w.globals.isXNumeric)
+      if (w.config.chart.type === 'bar' && w.axisFlags.isXNumeric)
         lineCorrection -= 15
 
       const elHorzLine = graphics.drawLine(
         w.globals.padHorizontal + lineCorrection + axisBorder.offsetX,
         this.xAxisoffX,
-        w.globals.gridWidth,
+        w.layout.gridWidth,
         this.xAxisoffX,
         axisBorder.color,
         0,
-        axisBorder.height
+        axisBorder.height,
       )
 
       if (this.elgrid && this.elgrid.elGridBorders && w.config.grid.show) {
@@ -328,16 +369,19 @@ export default class YAxis {
     }
   }
 
+  /**
+   * @param {any} parent
+   */
   inversedYAxisTitleText(parent) {
     const w = this.w
-    const graphics = new Graphics(this.ctx)
+    const graphics = new Graphics(this.w)
 
     if (w.config.xaxis.title.text !== undefined) {
       const elYaxisTitle = graphics.group({
         class: 'apexcharts-xaxis-title apexcharts-yaxis-title-inversed',
       })
       const elYAxisTitleText = graphics.drawText({
-        x: w.globals.gridWidth / 2 + w.config.xaxis.title.offsetX,
+        x: w.layout.gridWidth / 2 + w.config.xaxis.title.offsetX,
         y:
           this.xAxisoffX +
           parseFloat(this.xaxisFontSize) +
@@ -358,17 +402,21 @@ export default class YAxis {
     }
   }
 
+  /**
+   * @param {number} realIndex
+   * @param {boolean} yAxisOpposite
+   */
   yAxisTitleRotate(realIndex, yAxisOpposite) {
     const w = this.w
-    const graphics = new Graphics(this.ctx)
-    const elYAxisLabelsWrap = w.globals.dom.baseEl.querySelector(
-      `.apexcharts-yaxis[rel='${realIndex}'] .apexcharts-yaxis-texts-g`
+    const graphics = new Graphics(this.w)
+    const elYAxisLabelsWrap = w.dom.baseEl.querySelector(
+      `.apexcharts-yaxis[rel='${realIndex}'] .apexcharts-yaxis-texts-g`,
     )
     const yAxisLabelsCoord = elYAxisLabelsWrap
       ? elYAxisLabelsWrap.getBoundingClientRect()
       : { width: 0, height: 0 }
-    const yAxisTitle = w.globals.dom.baseEl.querySelector(
-      `.apexcharts-yaxis[rel='${realIndex}'] .apexcharts-yaxis-title text`
+    const yAxisTitle = w.dom.baseEl.querySelector(
+      `.apexcharts-yaxis[rel='${realIndex}'] .apexcharts-yaxis-title text`,
     )
     const yAxisTitleCoord = yAxisTitle
       ? yAxisTitle.getBoundingClientRect()
@@ -379,9 +427,9 @@ export default class YAxis {
         realIndex,
         yAxisLabelsCoord,
         yAxisTitleCoord,
-        yAxisOpposite
+        yAxisOpposite,
       )
-      yAxisTitle.setAttribute('x', x.xPos - (yAxisOpposite ? 10 : 0))
+      yAxisTitle.setAttribute('x', String(x.xPos - (yAxisOpposite ? 10 : 0)))
       const titleRotatingCenter = graphics.rotateAroundCenter(yAxisTitle)
       yAxisTitle.setAttribute(
         'transform',
@@ -389,16 +437,22 @@ export default class YAxis {
           yAxisOpposite
             ? w.config.yaxis[realIndex].title.rotate * -1
             : w.config.yaxis[realIndex].title.rotate
-        } ${titleRotatingCenter.x} ${titleRotatingCenter.y})`
+        } ${titleRotatingCenter.x} ${titleRotatingCenter.y})`,
       )
     }
   }
 
+  /**
+   * @param {number} realIndex
+   * @param {{width: number, height: number}} yAxisLabelsCoord
+   * @param {{width: number, height: number}} yAxisTitleCoord
+   * @param {boolean} yAxisOpposite
+   */
   xPaddingForYAxisTitle(
     realIndex,
     yAxisLabelsCoord,
     yAxisTitleCoord,
-    yAxisOpposite
+    yAxisOpposite,
   ) {
     const w = this.w
     let x = 0
@@ -432,6 +486,10 @@ export default class YAxis {
     return { xPos: x, padd }
   }
 
+  /**
+   * @param {Array<{width: number, height: number}>} yaxisLabelCoords
+   * @param {Array<{width: number, height: number}>} yTitleCoords
+   */
   setYAxisXPosition(yaxisLabelCoords, yTitleCoords) {
     const w = this.w
     let xLeft = 0
@@ -441,6 +499,10 @@ export default class YAxis {
 
     if (w.config.yaxis.length > 1) this.multipleYs = true
 
+    /**
+     * @param {ApexYAxis} yaxe
+     * @param {number} index
+     */
     w.config.yaxis.forEach((yaxe, index) => {
       const shouldNotDrawAxis =
         w.globals.ignoreYAxisIndexes.includes(index) ||
@@ -451,15 +513,15 @@ export default class YAxis {
         yaxisLabelCoords[index].width + yTitleCoords[index].width
 
       if (!yaxe.opposite) {
-        xLeft = w.globals.translateX - leftOffsetX
+        xLeft = w.layout.translateX - leftOffsetX
         if (!shouldNotDrawAxis) leftOffsetX += axisWidth + 20
         w.globals.translateYAxisX[index] = xLeft + yaxe.labels.offsetX
       } else {
         if (w.globals.isBarHorizontal) {
-          xRight = w.globals.gridWidth + w.globals.translateX - 1
+          xRight = w.layout.gridWidth + w.layout.translateX - 1
           w.globals.translateYAxisX[index] = xRight - yaxe.labels.offsetX
         } else {
-          xRight = w.globals.gridWidth + w.globals.translateX + rightOffsetX
+          xRight = w.layout.gridWidth + w.layout.translateX + rightOffsetX
           if (!shouldNotDrawAxis) rightOffsetX += axisWidth + 20
           w.globals.translateYAxisX[index] = xRight - yaxe.labels.offsetX + 20
         }
@@ -469,36 +531,42 @@ export default class YAxis {
 
   setYAxisTextAlignments() {
     const w = this.w
-    const yaxis = Utils.listToArray(
-      w.globals.dom.baseEl.getElementsByClassName('apexcharts-yaxis')
+    const yaxis = Array.from(
+      w.dom.baseEl.getElementsByClassName('apexcharts-yaxis'),
     )
 
     yaxis.forEach((y, index) => {
       const yaxe = w.config.yaxis[index]
       if (yaxe && !yaxe.floating && yaxe.labels.align !== undefined) {
-        const yAxisInner = w.globals.dom.baseEl.querySelector(
-          `.apexcharts-yaxis[rel='${index}'] .apexcharts-yaxis-texts-g`
+        const yAxisInner = w.dom.baseEl.querySelector(
+          `.apexcharts-yaxis[rel='${index}'] .apexcharts-yaxis-texts-g`,
         )
-        const yAxisTexts = Utils.listToArray(
-          w.globals.dom.baseEl.querySelectorAll(
-            `.apexcharts-yaxis[rel='${index}'] .apexcharts-yaxis-label`
-          )
+        const yAxisTexts = Array.from(
+          w.dom.baseEl.querySelectorAll(
+            `.apexcharts-yaxis[rel='${index}'] .apexcharts-yaxis-label`,
+          ),
         )
-        const rect = yAxisInner.getBoundingClientRect()
+        const rect = /** @type {Element} */ (yAxisInner).getBoundingClientRect()
 
         yAxisTexts.forEach((label) => {
           label.setAttribute('text-anchor', yaxe.labels.align)
         })
 
         if (yaxe.labels.align === 'left' && !yaxe.opposite) {
-          yAxisInner.setAttribute('transform', `translate(-${rect.width}, 0)`)
-        } else if (yaxe.labels.align === 'center') {
-          yAxisInner.setAttribute(
+          ;/** @type {Element} */ (yAxisInner).setAttribute(
             'transform',
-            `translate(${(rect.width / 2) * (!yaxe.opposite ? -1 : 1)}, 0)`
+            `translate(-${rect.width}, 0)`,
+          )
+        } else if (yaxe.labels.align === 'center') {
+          ;/** @type {Element} */ (yAxisInner).setAttribute(
+            'transform',
+            `translate(${(rect.width / 2) * (!yaxe.opposite ? -1 : 1)}, 0)`,
           )
         } else if (yaxe.labels.align === 'right' && yaxe.opposite) {
-          yAxisInner.setAttribute('transform', `translate(${rect.width}, 0)`)
+          ;/** @type {Element} */ (yAxisInner).setAttribute(
+            'transform',
+            `translate(${rect.width}, 0)`,
+          )
         }
       }
     })

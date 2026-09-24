@@ -1,24 +1,35 @@
+// @ts-check
 import Helpers from './Helpers'
 import AxesUtils from '../axes/AxesUtils'
 
 export default class YAnnotations {
+  /**
+   * @param {import('./Annotations').default} annoCtx
+   */
   constructor(annoCtx) {
     this.w = annoCtx.w
     this.annoCtx = annoCtx
 
     this.helpers = new Helpers(this.annoCtx)
-    this.axesUtils = new AxesUtils(this.annoCtx)
-
+    this.axesUtils = new AxesUtils(this.annoCtx.w, {
+      theme: this.annoCtx.theme,
+      timeScale: this.annoCtx.timeScale,
+    })
   }
 
+  /**
+   * @param {YAxisAnnotations} anno
+   * @param {Element} parent
+   * @param {number} index
+   */
   addYaxisAnnotation(anno, parent, index) {
-    let w = this.w
+    const w = this.w
 
-    let strokeDashArray = anno.strokeDashArray
+    const strokeDashArray = anno.strokeDashArray
 
     let result = this.helpers.getY1Y2('y1', anno)
     let y1 = result.yP
-    let clipY1 = result.clipped
+    const clipY1 = result.clipped
     let y2
     let clipY2 = true
     let drawn = false
@@ -28,14 +39,14 @@ export default class YAnnotations {
     if (anno.y2 === null || typeof anno.y2 === 'undefined') {
       if (!clipY1) {
         drawn = true
-        let line = this.annoCtx.graphics.drawLine(
+        const line = this.annoCtx.graphics.drawLine(
           0 + anno.offsetX, // x1
           y1 + anno.offsetY, // y1
           this._getYAxisAnnotationWidth(anno), // x2
           y1 + anno.offsetY, // y2
           anno.borderColor, // lineColor
           strokeDashArray, // dashArray
-          anno.borderWidth
+          anno.borderWidth,
         )
         parent.appendChild(line.node)
         if (anno.id) {
@@ -48,14 +59,14 @@ export default class YAnnotations {
       clipY2 = result.clipped
 
       if (y2 > y1) {
-        let temp = y1
+        const temp = y1
         y1 = y2
         y2 = temp
       }
 
       if (!(clipY1 && clipY2)) {
         drawn = true
-        let rect = this.annoCtx.graphics.drawRect(
+        const rect = this.annoCtx.graphics.drawRect(
           0 + anno.offsetX, // x1
           y2 + anno.offsetY, // y1
           this._getYAxisAnnotationWidth(anno), // x2
@@ -65,7 +76,7 @@ export default class YAnnotations {
           anno.opacity, // opacity,
           1, // strokeWidth
           anno.borderColor, // strokeColor
-          strokeDashArray // stokeDashArray
+          strokeDashArray, // stokeDashArray
         )
         rect.node.classList.add('apexcharts-annotation-rect')
         rect.attr('clip-path', `url(#gridRectMask${w.globals.cuid})`)
@@ -77,14 +88,14 @@ export default class YAnnotations {
       }
     }
     if (drawn) {
-      let textX =
+      const textX =
         anno.label.position === 'right'
-          ? w.globals.gridWidth
+          ? w.layout.gridWidth
           : anno.label.position === 'center'
-          ? w.globals.gridWidth / 2
-          : 0
+            ? w.layout.gridWidth / 2
+            : 0
 
-      let elText = this.annoCtx.graphics.drawText({
+      const elText = this.annoCtx.graphics.drawText({
         x: textX + anno.label.offsetX,
         y: (y2 != null ? y2 : y1) + anno.label.offsetY - 3,
         text,
@@ -95,23 +106,26 @@ export default class YAnnotations {
         foreColor: anno.label.style.color,
         cssClass: `apexcharts-yaxis-annotation-label ${
           anno.label.style.cssClass
-        } ${anno.id ? anno.id : ''}`
+        } ${anno.id ? anno.id : ''}`,
       })
 
       elText.attr({
-        rel: index
+        rel: index,
       })
 
       parent.appendChild(elText.node)
     }
   }
 
+  /**
+   * @param {YAxisAnnotations} anno
+   */
   _getYAxisAnnotationWidth(anno) {
     // issue apexcharts.js#2009
     const w = this.w
-    let width = w.globals.gridWidth
+    let width = w.layout.gridWidth
     if (anno.width.indexOf('%') > -1) {
-      width = (w.globals.gridWidth * parseInt(anno.width, 10)) / 100
+      width = (w.layout.gridWidth * parseInt(anno.width, 10)) / 100
     } else {
       width = parseInt(anno.width, 10)
     }
@@ -121,19 +135,27 @@ export default class YAnnotations {
   drawYAxisAnnotations() {
     const w = this.w
 
-    let elg = this.annoCtx.graphics.group({
-      class: 'apexcharts-yaxis-annotations'
+    const elg = this.annoCtx.graphics.group({
+      class: 'apexcharts-yaxis-annotations',
     })
 
-    w.config.annotations.yaxis.forEach((anno, index) => {
-      anno.yAxisIndex = this.axesUtils.translateYAxisIndex(anno.yAxisIndex)
-      if (
-            !(this.axesUtils.isYAxisHidden(anno.yAxisIndex)
-            && this.axesUtils.yAxisAllSeriesCollapsed(anno.yAxisIndex))
-      ) {
-        this.addYaxisAnnotation(anno, elg.node, index)
-      }
-    })
+    /**
+     * @param {YAxisAnnotations} anno
+     * @param {number} index
+     */
+    w.config.annotations.yaxis.forEach(
+      (/** @type {any} */ anno, /** @type {any} */ index) => {
+        anno.yAxisIndex = this.axesUtils.translateYAxisIndex(anno.yAxisIndex)
+        if (
+          !(
+            this.axesUtils.isYAxisHidden(anno.yAxisIndex) &&
+            this.axesUtils.yAxisAllSeriesCollapsed(anno.yAxisIndex)
+          )
+        ) {
+          this.addYaxisAnnotation(anno, elg.node, index)
+        }
+      },
+    )
 
     return elg
   }

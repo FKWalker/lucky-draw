@@ -1,39 +1,59 @@
-import Utils from '../utils/Utils'
-
+// @ts-check
 export default class Events {
-  constructor(ctx) {
-    this.ctx = ctx
-    this.w = ctx.w
+  /**
+   * @param {import('../types/internal').ChartStateW} w
+   * @param {import('../types/internal').ChartContext} ctx
+   */
+  constructor(w, ctx) {
+    this.w = w
+    this.ctx = ctx // needed: eventList, keyboardNavigation, core.setupBrushHandler, fireEvent args
 
-    this.documentEvent = Utils.bind(this.documentEvent, this)
+    this.documentEvent = this.documentEvent.bind(this)
   }
 
+  /**
+   * @param {string} name
+   * @param {Function} handler
+   */
   addEventListener(name, handler) {
     const w = this.w
 
-    if (w.globals.events.hasOwnProperty(name)) {
-      w.globals.events[name].push(handler)
+    if (Object.prototype.hasOwnProperty.call(w.globals.events, name)) {
+      ;/** @type {Record<string,any>} */ (w.globals.events)[name].push(handler)
     } else {
-      w.globals.events[name] = [handler]
+      ;/** @type {Record<string,any>} */ (w.globals.events)[name] = [handler]
     }
   }
 
+  /**
+   * @param {string} name
+   * @param {Function} handler
+   */
   removeEventListener(name, handler) {
     const w = this.w
-    if (!w.globals.events.hasOwnProperty(name)) {
+    if (!Object.prototype.hasOwnProperty.call(w.globals.events, name)) {
       return
     }
 
-    let index = w.globals.events[name].indexOf(handler)
+    const index = /** @type {Record<string,any>} */ (w.globals.events)[
+      name
+    ].indexOf(handler)
     if (index !== -1) {
-      w.globals.events[name].splice(index, 1)
+      ;/** @type {Record<string,any>} */ (w.globals.events)[name].splice(
+        index,
+        1,
+      )
     }
   }
 
+  /**
+   * @param {string} name
+   * @param {any[]} args
+   */
   fireEvent(name, args) {
     const w = this.w
 
-    if (!w.globals.events.hasOwnProperty(name)) {
+    if (!Object.prototype.hasOwnProperty.call(w.globals.events, name)) {
       return
     }
 
@@ -41,8 +61,8 @@ export default class Events {
       args = []
     }
 
-    let evs = w.globals.events[name]
-    let l = evs.length
+    const evs = /** @type {Record<string,any>} */ (w.globals.events)[name]
+    const l = evs.length
 
     for (let i = 0; i < l; i++) {
       evs[i].apply(null, args)
@@ -53,21 +73,27 @@ export default class Events {
     const w = this.w
     const me = this.ctx
 
-    let clickableArea = w.globals.dom.baseEl.querySelector(w.globals.chartClass)
+    const clickableArea = w.dom.baseEl.querySelector(w.globals.chartClass)
 
+    /**
+     * @param {Event} event
+     */
     this.ctx.eventList.forEach((event) => {
-      clickableArea.addEventListener(
+      /**
+       * @param {Event} e
+       */
+      clickableArea?.addEventListener(
         event,
-        (e) => {
-          let capturedSeriesIndex =
+        (/** @type {any} */ e) => {
+          const capturedSeriesIndex =
             e.target.getAttribute('i') === null &&
-            w.globals.capturedSeriesIndex !== -1
-              ? w.globals.capturedSeriesIndex
+            w.interact.capturedSeriesIndex !== -1
+              ? w.interact.capturedSeriesIndex
               : e.target.getAttribute('i')
-          let capturedDataPointIndex =
+          const capturedDataPointIndex =
             e.target.getAttribute('j') === null &&
-            w.globals.capturedDataPointIndex !== -1
-              ? w.globals.capturedDataPointIndex
+            w.interact.capturedDataPointIndex !== -1
+              ? w.interact.capturedDataPointIndex
               : e.target.getAttribute('j')
 
           const opts = Object.assign({}, w, {
@@ -75,7 +101,30 @@ export default class Events {
             dataPointIndex: capturedDataPointIndex,
           })
 
-          if (e.type === 'mousemove' || e.type === 'touchmove') {
+          if (e.type === 'keydown') {
+            if (
+              w.config.chart.accessibility.enabled &&
+              w.config.chart.accessibility.keyboard.enabled
+            ) {
+              if (me.ctx.keyboardNavigation) {
+                me.ctx.keyboardNavigation.handleKey(e)
+              }
+              if (typeof w.config.chart.events.keyDown === 'function') {
+                w.config.chart.events.keyDown(e, me, opts)
+              }
+              me.ctx.events.fireEvent('keydown', [e, me, opts])
+            }
+          } else if (e.type === 'keyup') {
+            if (
+              w.config.chart.accessibility.enabled &&
+              w.config.chart.accessibility.keyboard.enabled
+            ) {
+              if (typeof w.config.chart.events.keyUp === 'function') {
+                w.config.chart.events.keyUp(e, me, opts)
+              }
+              me.ctx.events.fireEvent('keyup', [e, me, opts])
+            }
+          } else if (e.type === 'mousemove' || e.type === 'touchmove') {
             if (typeof w.config.chart.events.mouseMove === 'function') {
               w.config.chart.events.mouseMove(e, me, opts)
             }
@@ -93,12 +142,15 @@ export default class Events {
             me.ctx.events.fireEvent('click', [e, me, opts])
           }
         },
-        { capture: false, passive: true }
+        { capture: false, passive: true },
       )
     })
 
+    /**
+     * @param {Event} event
+     */
     this.ctx.eventList.forEach((event) => {
-      w.globals.dom.baseEl.addEventListener(event, this.documentEvent, {
+      w.dom.baseEl.addEventListener(event, this.documentEvent, {
         passive: true,
       })
     })
@@ -106,12 +158,15 @@ export default class Events {
     this.ctx.core.setupBrushHandler()
   }
 
+  /**
+   * @param {any} e
+   */
   documentEvent(e) {
     const w = this.w
     const target = e.target.className
 
     if (e.type === 'click') {
-      let elMenu = w.globals.dom.baseEl.querySelector('.apexcharts-menu')
+      const elMenu = w.dom.baseEl.querySelector('.apexcharts-menu')
       if (
         elMenu &&
         elMenu.classList.contains('apexcharts-menu-open') &&
@@ -121,9 +176,9 @@ export default class Events {
       }
     }
 
-    w.globals.clientX =
+    w.interact.clientX =
       e.type === 'touchmove' ? e.touches[0].clientX : e.clientX
-    w.globals.clientY =
+    w.interact.clientY =
       e.type === 'touchmove' ? e.touches[0].clientY : e.clientY
   }
 }
