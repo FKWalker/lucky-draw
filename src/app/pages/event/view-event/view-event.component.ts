@@ -159,8 +159,20 @@ export class ViewEventComponent {
     this.fetchParticipants(this.eventId);
   }
 
-  goSpin() {
-    this.router.navigate(['/spin/', this.eventId]); 
+  startDraw() {
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree(['/spin', this.eventId])
+    );
+
+    window.open(url, '_blank');
+  }
+
+  drawScreen() {
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree(['/draw', this.eventId])
+    );
+
+    window.open(url, '_blank');
   }
 
 }
