@@ -61,11 +61,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                     <app-label for="input">Name</app-label>
-                    <app-input-field type="text" id="input" placeholder="Enter a release year" [value]="participantForm.name" (valueChange)="participantForm.name = $event"/>
+                    <app-input-field type="text" id="input" placeholder="Enter name" [value]="participantForm.name" (valueChange)="participantForm.name = $event"/>
                 </div>
                 <div>
                     <app-label for="input">Member Code</app-label>
-                    <app-input-field type="text" id="input" placeholder="Enter a filter" [value]="participantForm.member_code" (valueChange)="participantForm.member_code = $event"/>
+                    <app-input-field type="text" id="input" placeholder="Enter member code" [value]="participantForm.member_code" (valueChange)="participantForm.member_code = $event"/>
                 </div>
             </div>
             <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Search</app-button>

@@ -5,11 +5,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                     <app-label for="input">Event Name</app-label>
-                    <app-input-field type="text" id="input" placeholder="Enter a release year" [value]="eventForm.event_name" (valueChange)="eventForm.event_name = $event"/>
+                    <app-input-field type="text" id="input" placeholder="Enter event name" [value]="eventForm.event_name" (valueChange)="eventForm.event_name = $event"/>
                 </div>
                 <div>
                     <app-label for="input">Event Code</app-label>
-                    <app-input-field type="text" id="input" placeholder="Enter a filter" [value]="eventForm.event_code" (valueChange)="eventForm.event_code = $event"/>
+                    <app-input-field type="text" id="input" placeholder="Enter event code" [value]="eventForm.event_code" (valueChange)="eventForm.event_code = $event"/>
                 </div>
             </div>
             <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Search</app-button>

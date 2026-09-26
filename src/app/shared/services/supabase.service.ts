@@ -69,7 +69,6 @@ export class SupabaseService {
   }
 
   async getParticipantsFiltered(from: number, to: number, options: any, eventId: any) {
-    console.log(options);
     let query = this.supabase
       .from('participants')
       .select('*', { count: 'exact' })
@@ -279,6 +278,22 @@ export class SupabaseService {
     if (channel) {
       this.supabase.removeChannel(channel);
     }
+  }
+
+  async getParticipantByMemberCodeAndEventIdAndEligible(memberCode: string | number, eventId: string | number) {
+    const { data, error } = await this.supabase
+      .from('participants')
+      .select('*')
+      .eq('member_code', memberCode)
+      .eq('event_id', eventId)
+      .eq('eligible', true);
+
+    if (error) {
+      console.error('Error fetching event by id:', error);
+      throw error;
+    }
+    
+    return data;
   }
 
 }

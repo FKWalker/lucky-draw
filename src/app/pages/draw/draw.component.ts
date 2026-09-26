@@ -32,7 +32,6 @@ export class DrawComponent implements OnInit, OnDestroy {
     if (this.eventId) {
       // 🎧 Listen for broadcasts coming from the admin page
       this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, (payload) => {
-        console.log('Broadcast received on display page:', payload);
         this.showWinnerModal = false;
         // Safe extraction using bracket notation
         const data = payload?.['payload'] || payload;

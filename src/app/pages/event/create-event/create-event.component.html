@@ -26,14 +26,21 @@
         </div>
         <div>
             <app-label for="input">Event Code</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a release year" [value]="eventForm.event_code" (valueChange)="eventForm.event_code = $event" [error]="errors.event_code" [hint]="errors.event_code ? 'This is an invalid event code.' : ''"/>
+            <app-input-field type="text" id="input" placeholder="Enter event code" [value]="eventForm.event_code" (valueChange)="eventForm.event_code = $event" [error]="errors.event_code" [hint]="errors.event_code ? 'This is an invalid event code.' : ''"/>
         </div>
         <div>
             <app-label for="input">Password</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter a filter" [value]="eventForm.password" (valueChange)="eventForm.password = $event" [error]="errors.password" [hint]="errors.password ? 'This is an invalid password.' : ''"/>
+            <app-input-field type="text" id="input" placeholder="Enter password" [value]="eventForm.password" (valueChange)="eventForm.password = $event" [error]="errors.password" [hint]="errors.password ? 'This is an invalid password.' : ''"/>
         </div>
         <div>
-            <app-label for="input">Draw Step</app-label>
+            <div class="mb-4 text-left">
+                <div class="flex items-baseline gap-2">
+                    <app-label for="input">Draw Step</app-label>
+                    <p class="text-xs text-gray-400 italic">
+                        # For contest draw, please fill in this field.
+                    </p>
+                </div>
+            </div>
             <!-- Add Button -->
             <app-button type="button" size="sm" variant="primary" (btnClick)="addDraw()" [disabled]="disabled">+ Add More</app-button>
             <div class="mt-3">

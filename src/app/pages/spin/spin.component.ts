@@ -2,10 +2,14 @@ import { truncateTextWithEllipsis } from '@amcharts/amcharts5/.internal/core/uti
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SupabaseService } from 'app/shared/services/supabase.service';
+import { ButtonComponent } from 'app/shared/components/ui/button/button.component';
+import { LabelComponent } from 'app/shared/components/form/label/label.component';
+import { InputFieldComponent } from 'app/shared/components/form/input/input-field.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-spin',
-  imports: [],
+  imports: [ButtonComponent, FormsModule],
   templateUrl: './spin.component.html',
   styleUrl: './spin.component.css'
 })
@@ -21,6 +25,11 @@ export class SpinComponent {
   currentWinners: any[] = [];
 
   drawChannel: any;
+
+  showHiddenModal = false;
+  disabled: boolean = false;
+  memberCode: any = '';
+  invalidMemberCode: boolean = false;
 
   constructor(private supabaseService: SupabaseService,
     private router: Router,
@@ -72,9 +81,8 @@ export class SpinComponent {
 
   async triggerDraw() {
     this.isDrawing = true;
-
     try {
-      // 1. Fetch eligible participants (which may contain duplicates for higher weight)
+      await this.fetchEventDetails(this.eventId);
       const data = await this.supabaseService.getEligibleParticipants(this.eventId);
 
       if (!data || data.length === 0) {
@@ -159,17 +167,16 @@ export class SpinComponent {
           winners: selectedWinners,
           draws: this.draws
         });
-
-        this.currentWinners = selectedWinners;
-        this.showWinnerModal = true;
+        
+        setTimeout(() => {
+          this.isDrawing = false;
+        }, 2500);
 
       }
       
 
     } catch (error) {
       console.error('Error during lucky draw execution:', error);
-    } finally {
-      this.isDrawing = false;
     }
   }
 
@@ -177,6 +184,48 @@ export class SpinComponent {
   closeWinnerModal() {
     this.showWinnerModal = false;
     this.isDrawing = false;
+  }
+
+  async submitHiddenModal() {
+    // 1. Await the async service call
+    const data = await this.supabaseService.getParticipantByMemberCodeAndEventIdAndEligible(this.memberCode, this.eventId);
+    console.log(data);
+
+    // 2. Check if data is null/undefined or if the array is empty
+    if (!data || data.length === 0) {
+      this.invalidMemberCode = true;
+      return;
+    }
+
+    this.invalidMemberCode = false;
+    this.showHiddenModal = false;
+
+    this.isDrawing = true;
+    await this.supabaseService.updateParticipantWon(data[0].id, 0);
+    await this.supabaseService.updateParticipantEligible(data[0].member_code);
+
+    // Trigger the popup modal states
+    const selectedWinners = [];
+    selectedWinners.push(data[0]);
+
+    await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+      type: 'NEW_WINNERS',
+      eventId: this.eventId,
+      winners: selectedWinners,
+      draws: this.draws
+    });
+    
+    setTimeout(() => {
+      this.isDrawing = false;
+    }, 2500);
+  }
+
+  openSettings() {
+    this.showHiddenModal = true;
+  }
+
+  closeHiddenModal(){
+    this.showHiddenModal = false;
   }
 
 }

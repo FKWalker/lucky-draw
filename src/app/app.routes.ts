@@ -8,9 +8,6 @@ import { DrawComponent } from './pages/draw/draw.component';
 import { ListingEventComponent } from './pages/event/listing-event/listing-event.component';
 import { CreateEventComponent } from './pages/event/create-event/create-event.component';
 import { EditEventComponent } from './pages/event/edit-event/edit-event.component';
-import { AddDiscographyComponent } from './pages/discography/add-discography/add-discography.component';
-import { FormElementsComponent } from './pages/forms/form-elements/form-elements.component';
-import { BasicTablesComponent } from './pages/tables/basic-tables/basic-tables.component';
 import { ViewEventComponent } from './pages/event/view-event/view-event.component';
 import { SpinComponent } from './pages/spin/spin.component';
 
@@ -23,72 +20,57 @@ export const routes: Routes = [
       {
         path: '',
         redirectTo: 'event/listing',
-        pathMatch: 'full'   // 🔑 Important: prevents partial match issues
+        pathMatch: 'full'  
       },
       {
         path:'event/listing',
         component:ListingEventComponent,
-        title:'Team Member Listing | Flashbang'
+        title:'Listing Event | Lucky Draw'
       },
       {
         path:'event/create',
         component:CreateEventComponent,
-        title:'Add Team Member | Flashbang'
+        title:'Create Event | Lucky Draw'
       },
       {
         path:'event/edit/:id',
         component:EditEventComponent,
-        title:'Edit Team Member | Flashbang'
+        title:'Edit Event | Lucky Draw'
       },
       {
         path:'event/view/:id',
         component:ViewEventComponent,
-        title:'Edit Team Member | Flashbang'
-      },
-      {
-        path:'event/test',
-        component:AddDiscographyComponent,
-        title:'Add Team Member | Flashbang'
-      },
-      {
-        path:'event/form',
-        component:FormElementsComponent,
-        title:'Add Team Member | Flashbang'
-      },
-      {
-        path:'event/table',
-        component:BasicTablesComponent,
-        title:'Add Team Member | Flashbang'
-      },
+        title:'View Event | Lucky Draw'
+      }
     ]
   },
   // auth pages
   {
     path:'sign-in',
     component:SignInComponent,
-    title:'Sign In | Flashbang'
+    title:'Sign In | Lucky Draw'
   },
   {
     path:'sign-up',
     component:SignUpComponent,
-    title:'Sign Up | Flashbang'
+    title:'Sign Up | Lucky Draw'
   },
 
   {
     path:'draw/:id',
     component:DrawComponent,
-    title:'Draw | Flashbang'
+    title:'Draw | Lucky Draw'
   },
   {
     path:'spin/:id',
     component:SpinComponent,
-    title:'Draw | Flashbang'
+    title:'Spin | Lucky Draw'
   },
   // error pages
   {
     path:'**',
     component:NotFoundComponent,
-    title:'Page Not Found | Flashbang'
+    title:'Page Not Found | Lucky Draw'
   },
   
 ];

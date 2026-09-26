@@ -50,6 +50,8 @@ export class ViewEventComponent {
 
   eventId: any;
 
+  drawChannel: any;
+
   constructor(private supabaseService: SupabaseService,
     private router: Router,
     private route: ActivatedRoute
@@ -62,6 +64,18 @@ export class ViewEventComponent {
     if (this.eventId) {
       this.fetchParticipants(this.eventId); 
       this.fetchWinnersDetails(this.eventId);
+
+      // 🎧 Listen for broadcasts coming from the admin page
+      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, (payload) => {
+        // Safe extraction using bracket notation
+        const data = payload?.['payload'] || payload;
+
+        if (data && data.type === 'NEW_WINNERS') {
+          if(data.eventId == this.eventId){
+            this.fetchWinnersDetails(this.eventId);
+          }
+        }
+      });
     }
   }
 
@@ -99,6 +113,7 @@ export class ViewEventComponent {
 
   async fetchWinnersDetails(id: string) {
     try {
+      this.winners = [];
       // 2. Fetch the data from Supabase
       const data = await this.supabaseService.getEventById(id);
 
@@ -134,8 +149,6 @@ export class ViewEventComponent {
         
       }
 
-      console.log(this.winners);
-
     } catch (error) {
       console.error('Failed to load event details:', error);
       this.router.navigate(['event/listing']); // 👈 Adjust this path to match your actual event listing route
@@ -160,16 +173,24 @@ export class ViewEventComponent {
   }
 
   startDraw() {
+    // Grab the current active base path segments dynamically
+    const currentPathSegments = this.router.url.split('/').filter(Boolean);
+    // If the first segment is 'lucky-draw', keep it dynamic; otherwise, use root
+    const prefix = currentPathSegments[0] === 'lucky-draw' ? '/lucky-draw' : '';
+
     const url = this.router.serializeUrl(
-      this.router.createUrlTree(['/lucky-draw/spin', this.eventId])
+      this.router.createUrlTree([`${prefix}/spin`, this.eventId])
     );
 
     window.open(url, '_blank');
   }
 
   drawScreen() {
+    const currentPathSegments = this.router.url.split('/').filter(Boolean);
+    const prefix = currentPathSegments[0] === 'lucky-draw' ? '/lucky-draw' : '';
+
     const url = this.router.serializeUrl(
-      this.router.createUrlTree(['/lucky-draw/draw', this.eventId])
+      this.router.createUrlTree([`${prefix}/draw`, this.eventId])
     );
 
     window.open(url, '_blank');

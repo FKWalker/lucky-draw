@@ -102,6 +102,7 @@ export class CreateEventComponent {
           ...participant,
           event_id: newEventId
         }));
+        console.log(participantsWithEvent);
         await this.supabaseService.addBatchParticipants(participantsWithEvent);
         this.eventForm = {
           event_name: '',

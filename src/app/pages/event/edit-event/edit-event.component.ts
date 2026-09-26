@@ -221,4 +221,8 @@ export class EditEventComponent {
     return isValid;
   }
 
+  onCancel(){
+     this.router.navigate(['/event/listing']);
+  }
+
 }

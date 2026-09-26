@@ -33,7 +33,14 @@
             <app-input-field type="text" id="input" placeholder="Enter a filter" [value]="eventForm.password" (valueChange)="eventForm.password = $event" [error]="errors.password" [hint]="errors.password ? 'This is an invalid password.' : ''" [disabled]="disabled"/>
         </div>
         <div>
-            <app-label for="input">Draw Step</app-label>
+            <div class="mb-4 text-left">
+                <div class="flex items-baseline gap-2">
+                    <app-label for="input">Draw Step</app-label>
+                    <p class="text-xs text-gray-400 italic">
+                        # For contest draw, please fill in this field.
+                    </p>
+                </div>
+            </div>
             <!-- Add Button -->
             <app-button type="button" size="sm" variant="primary" (btnClick)="addDraw()" [disabled]="disabled">+ Add More</app-button>
             <div class="mt-3">
@@ -83,8 +90,9 @@
             <app-file-input #fileUpload (fileSelected)="handleFileChange($event)" className="custom-class" [error]="errors.file" [hint]="errors.file ? 'This is an invalid file.' : ''"></app-file-input>
             <p class="text-sm font-medium text-blue-600 dark:text-blue-400">{{eventForm.file_name}}</p>
         </div>
-        <div>
+        <div class="flex gap-3">
             <app-button type="submit" size="sm" variant="primary" (btnClick)="onSubmit()" [disabled]="disabled">Edit</app-button>
+            <app-button type="submit" size="sm" variant="outline" (btnClick)="onCancel()" [disabled]="disabled">Back</app-button>
         </div>
     </div>
 </app-component-card>
