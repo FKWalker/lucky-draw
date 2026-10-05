@@ -9,6 +9,8 @@ import { LoadingSpinnerComponent } from 'app/shared/components/ui/loading-spinne
 import { CustomTableComponent } from 'app/shared/components/tables/basic-tables/custom-table/custom-table.component';
 import { ParticipantService } from 'app/shared/services/participant.service';
 import { EventService } from 'app/shared/services/event.service';
+import { ToastService } from 'app/shared/services/toast.service';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-view-event',
@@ -54,11 +56,15 @@ export class ViewEventComponent {
 
   drawChannel: any;
 
+  drawScreenUrl: string = '';
+  startDrawUrl: string = '';
+
   constructor(private supabaseService: SupabaseService,
     private participantService: ParticipantService,
     private eventService: EventService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -68,6 +74,8 @@ export class ViewEventComponent {
     if (this.eventId) {
       this.fetchParticipants(this.eventId); 
       this.fetchWinnersDetails(this.eventId);
+      this.drawScreenUrl = environment.baseUrl + 'draw/' + this.eventId;
+      this.startDrawUrl = environment.baseUrl + 'spin/' + this.eventId;
 
       // 🎧 Listen for broadcasts coming from the admin page
       this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, (payload) => {
@@ -198,6 +206,24 @@ export class ViewEventComponent {
     );
 
     window.open(url, '_blank');
+  }
+
+  copyDrawScreenUrl(){
+    navigator.clipboard.writeText(this.drawScreenUrl);
+    this.toastService.success(
+      'URL Copied',
+      'Draw Screen URL has been copied successfully.',
+      3000
+    );        
+  }
+
+  copyStartDrawUrl(){
+    navigator.clipboard.writeText(this.startDrawUrl);
+    this.toastService.success(
+      'URL Copied',
+      'Start Draw URL has been copied successfully.',
+      3000
+    );   
   }
 
 }
