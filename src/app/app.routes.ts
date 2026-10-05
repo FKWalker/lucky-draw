@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from './pages/other-page/not-found/not-found.component';
 import { AppLayoutComponent } from './shared/layout/app-layout/app-layout.component';
-import { SignInComponent } from './pages/auth-pages/sign-in/sign-in.component';
-import { SignUpComponent } from './pages/auth-pages/sign-up/sign-up.component';
+import { SignInComponent } from './pages/auth/sign-in/sign-in.component';
+import { SignUpComponent } from './pages/auth/sign-up/sign-up.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { DrawComponent } from './pages/draw/draw.component';
 import { ListingEventComponent } from './pages/event/listing-event/listing-event.component';
@@ -64,6 +64,7 @@ export const routes: Routes = [
   {
     path:'spin/:id',
     component:SpinComponent,
+    canActivate: [AuthGuard],
     title:'Spin | Lucky Draw'
   },
   // error pages

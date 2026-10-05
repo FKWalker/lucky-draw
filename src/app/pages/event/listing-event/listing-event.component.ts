@@ -9,6 +9,7 @@ import { LoadingSpinnerComponent } from 'app/shared/components/ui/loading-spinne
 import { CustomTableComponent } from 'app/shared/components/tables/basic-tables/custom-table/custom-table.component';
 import { SupabaseService } from 'app/shared/services/supabase.service';
 import { Router } from '@angular/router';
+import { EventService } from 'app/shared/services/event.service';
 
 @Component({
   selector: 'app-listing-event',
@@ -49,6 +50,7 @@ export class ListingEventComponent implements OnInit {
   ];
 
   constructor(private supabaseService: SupabaseService,
+    private eventService: EventService,
     private router: Router
   ) {}
 
@@ -72,7 +74,7 @@ export class ListingEventComponent implements OnInit {
       };
 
       // Call your service method (make sure to implement `getEventsWithFilters` in your service)
-      const { data, count, error } = await this.supabaseService.getEventsFiltered(from, to, options);
+      const { data, count, error } = await this.eventService.getEventsFiltered(from, to, options);
 
       if (error) throw error;
 

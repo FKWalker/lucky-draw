@@ -4386,7 +4386,7 @@ var WebSocketFactory = _WebSocketFactory;
 var websocket_factory_default = WebSocketFactory;
 
 // node_modules/@supabase/realtime-js/dist/module/lib/version.js
-var version = "2.117.1";
+var version = "2.117.2";
 
 // node_modules/@supabase/realtime-js/dist/module/lib/constants.js
 var DEFAULT_VERSION = `realtime-js/${version}`;
@@ -10549,7 +10549,7 @@ var StorageFileApi = (_a24 = class extends BaseApiClient {
     return query;
   }
 }, __name(_a24, "StorageFileApi"), _a24);
-var version2 = "2.117.1";
+var version2 = "2.117.2";
 var DEFAULT_HEADERS = { "X-Client-Info": `storage-js/${version2}` };
 var _a25;
 var StorageBucketApi = (_a25 = class extends BaseApiClient {
@@ -12196,7 +12196,7 @@ var StorageClient = (_a33 = class extends StorageBucketApi {
 }, __name(_a33, "StorageClient"), _a33);
 
 // node_modules/@supabase/auth-js/dist/module/lib/version.js
-var version3 = "2.117.1";
+var version3 = "2.117.2";
 
 // node_modules/@supabase/auth-js/dist/module/lib/constants.js
 var AUTO_REFRESH_TICK_DURATION_MS = 30 * 1e3;
@@ -20860,7 +20860,7 @@ var AuthClient = GoTrueClient_default;
 var AuthClient_default = AuthClient;
 
 // node_modules/@supabase/supabase-js/dist/index.mjs
-var version4 = "2.117.1";
+var version4 = "2.117.2";
 var JS_ENV = "";
 var JS_RUNTIME_VERSION;
 if (typeof Deno !== "undefined") {

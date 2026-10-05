@@ -8,6 +8,8 @@ import { FileInputComponent } from 'app/shared/components/form/input/file-input.
 import * as XLSX from 'xlsx';
 import { SupabaseService } from 'app/shared/services/supabase.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ParticipantService } from 'app/shared/services/participant.service';
+import { EventService } from 'app/shared/services/event.service';
 
 @Component({
   selector: 'app-edit-event',
@@ -52,7 +54,11 @@ export class EditEventComponent {
 
   fileName: any;
 
-  constructor(private supabaseService: SupabaseService, private route: ActivatedRoute, private router: Router) {
+  constructor(private supabaseService: SupabaseService, 
+    private participantService: ParticipantService,
+    private eventService: EventService,
+    private route: ActivatedRoute, 
+    private router: Router) {
   }
 
   ngOnInit() {
@@ -67,7 +73,7 @@ export class EditEventComponent {
   async fetchEventDetails(id: string) {
     try {
       // 2. Fetch the data from Supabase
-      const data = await this.supabaseService.getEventById(id);
+      const data = await this.eventService.getEventById(id);
 
       if (!data) {
         console.warn('Event not found, redirecting...');
@@ -134,14 +140,14 @@ export class EditEventComponent {
     if(this.validation()){
       try{
         this.eventForm.file_name = this.fileName;
-        await this.supabaseService.updateEvent(this.eventId, this.eventForm, this.draws);
-        await this.supabaseService.deleteParticipantsByEvent(this.eventId);
+        await this.eventService.updateEvent(this.eventId, this.eventForm, this.draws);
+        await this.participantService.deleteParticipantsByEvent(this.eventId);
         if(this.participantsToInsert > 0){
           const participantsWithEvent = this.participantsToInsert.map((participant:any) => ({
             ...participant,
             event_id : this.eventId
           }));
-          await this.supabaseService.addBatchParticipants(participantsWithEvent);
+          await this.participantService.addBatchParticipants(participantsWithEvent);
         }
         
         this.participantsToInsert = [];

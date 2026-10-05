@@ -6,6 +6,8 @@ import { ButtonComponent } from 'app/shared/components/ui/button/button.componen
 import { LabelComponent } from 'app/shared/components/form/label/label.component';
 import { InputFieldComponent } from 'app/shared/components/form/input/input-field.component';
 import { FormsModule } from '@angular/forms';
+import { ParticipantService } from 'app/shared/services/participant.service';
+import { EventService } from 'app/shared/services/event.service';
 
 @Component({
   selector: 'app-spin',
@@ -32,6 +34,8 @@ export class SpinComponent {
   invalidMemberCode: boolean = false;
 
   constructor(private supabaseService: SupabaseService,
+    private participantService: ParticipantService,
+    private eventService: EventService, 
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -50,7 +54,7 @@ export class SpinComponent {
   async fetchEventDetails(id: string) {
     try {
       // 2. Fetch the data from Supabase
-      const data = await this.supabaseService.getEventById(id);
+      const data = await this.eventService.getEventById(id);
 
       if (!data) {
         console.warn('Event not found, redirecting...');
@@ -83,7 +87,7 @@ export class SpinComponent {
     this.isDrawing = true;
     try {
       await this.fetchEventDetails(this.eventId);
-      const data = await this.supabaseService.getEligibleParticipants(this.eventId);
+      const data = await this.participantService.getEligibleParticipants(this.eventId);
 
       if (!data || data.length === 0) {
         console.warn('No eligible participants found for the draw.');
@@ -125,11 +129,11 @@ export class SpinComponent {
           // Save to your draw object
           draw.drew = true;
           drawCount++;
-          await this.supabaseService.updateEventDrawSetupById(this.eventId, this.draws);
+          await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
 
           for(let sw of selectedWinners){
-            await this.supabaseService.updateParticipantWon(sw.id, index+1);
-            await this.supabaseService.updateParticipantEligible(sw.member_code);
+            await this.participantService.updateParticipantWon(sw.id, index+1);
+            await this.participantService.updateParticipantEligible(sw.member_code);
           }
 
           await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
@@ -154,8 +158,8 @@ export class SpinComponent {
         const randomIndex = Math.floor(Math.random() * pool.length);
         const selectedWinner = pool[randomIndex];
 
-        await this.supabaseService.updateParticipantWon(selectedWinner.id, 0);
-        await this.supabaseService.updateParticipantEligible(selectedWinner.member_code);
+        await this.participantService.updateParticipantWon(selectedWinner.id, 0);
+        await this.participantService.updateParticipantEligible(selectedWinner.member_code);
 
         // Trigger the popup modal states
         const selectedWinners = [];
@@ -188,7 +192,7 @@ export class SpinComponent {
 
   async submitHiddenModal() {
     // 1. Await the async service call
-    const data = await this.supabaseService.getParticipantByMemberCodeAndEventIdAndEligible(this.memberCode, this.eventId);
+    const data = await this.participantService.getParticipantByMemberCodeAndEventIdAndEligible(this.memberCode, this.eventId);
     console.log(data);
 
     // 2. Check if data is null/undefined or if the array is empty
@@ -201,8 +205,8 @@ export class SpinComponent {
     this.showHiddenModal = false;
 
     this.isDrawing = true;
-    await this.supabaseService.updateParticipantWon(data[0].id, 0);
-    await this.supabaseService.updateParticipantEligible(data[0].member_code);
+    await this.participantService.updateParticipantWon(data[0].id, 0);
+    await this.participantService.updateParticipantEligible(data[0].member_code);
 
     // Trigger the popup modal states
     const selectedWinners = [];

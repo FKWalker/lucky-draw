@@ -7,6 +7,8 @@ import { SupabaseService } from 'app/shared/services/supabase.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinnerComponent } from 'app/shared/components/ui/loading-spinner/loading-spinner.component';
 import { CustomTableComponent } from 'app/shared/components/tables/basic-tables/custom-table/custom-table.component';
+import { ParticipantService } from 'app/shared/services/participant.service';
+import { EventService } from 'app/shared/services/event.service';
 
 @Component({
   selector: 'app-view-event',
@@ -53,6 +55,8 @@ export class ViewEventComponent {
   drawChannel: any;
 
   constructor(private supabaseService: SupabaseService,
+    private participantService: ParticipantService,
+    private eventService: EventService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -95,7 +99,7 @@ export class ViewEventComponent {
       };
 
       // Call your service method (make sure to implement `getEventsWithFilters` in your service)
-      const { data, count, error } = await this.supabaseService.getParticipantsFiltered(from, to, options, id);
+      const { data, count, error } = await this.participantService.getParticipantsFiltered(from, to, options, id);
 
       if (error) throw error;
 
@@ -115,7 +119,7 @@ export class ViewEventComponent {
     try {
       this.winners = [];
       // 2. Fetch the data from Supabase
-      const data = await this.supabaseService.getEventById(id);
+      const data = await this.eventService.getEventById(id);
 
       if (!data) {
         console.warn('Event not found, redirecting...');
@@ -131,7 +135,7 @@ export class ViewEventComponent {
           drawObj.name = d.drawName;
 
           // Pass the index (or d.number) into your service call
-          const data = await this.supabaseService.getParticipantByEventIdAndWon(id, index+1);
+          const data = await this.participantService.getParticipantByEventIdAndWon(id, index+1);
 
           drawObj.winnersList = data;
 
@@ -141,7 +145,7 @@ export class ViewEventComponent {
         let drawObj: any = {};
         drawObj.name = '';
 
-        const data = await this.supabaseService.getParticipantByEventIdAndWon(id, 0);
+        const data = await this.participantService.getParticipantByEventIdAndWon(id, 0);
 
         drawObj.winnersList = data;
 

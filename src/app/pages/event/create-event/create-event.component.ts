@@ -8,6 +8,8 @@ import { FileInputComponent } from 'app/shared/components/form/input/file-input.
 import * as XLSX from 'xlsx';
 import { SupabaseService } from 'app/shared/services/supabase.service';
 import { isPlatformBrowser } from '@angular/common';
+import { ParticipantService } from 'app/shared/services/participant.service';
+import { EventService } from 'app/shared/services/event.service';
 
 @Component({
   selector: 'app-create-event',
@@ -48,8 +50,10 @@ export class CreateEventComponent {
   success: any;
   error: any;
 
-  constructor(private supabaseService: SupabaseService) {
-  }
+  constructor(private supabaseService: SupabaseService,
+    private eventService: EventService,
+    private participantService: ParticipantService,
+  ) {}
 
   addDraw() {
     this.draws.push({ drawName: '', number: '1', drew: false });
@@ -96,14 +100,14 @@ export class CreateEventComponent {
       console.log(this.eventForm);
       console.log(this.draws);
       try{
-        const data : any = await this.supabaseService.addEvent(this.eventForm, this.draws);
+        const data : any = await this.eventService.addEvent(this.eventForm, this.draws);
         const newEventId = data[0]?.id;
         const participantsWithEvent = this.participantsToInsert.map((participant:any) => ({
           ...participant,
           event_id: newEventId
         }));
         console.log(participantsWithEvent);
-        await this.supabaseService.addBatchParticipants(participantsWithEvent);
+        await this.participantService.addBatchParticipants(participantsWithEvent);
         this.eventForm = {
           event_name: '',
           event_code: '',

@@ -107,7 +107,7 @@ export class AppSidebarComponent {
   }
 
   ngOnInit() {
-    this.checkAdminRole();
+    //this.checkAdminRole();
 
     // Subscribe to router events
     this.subscription.add(
@@ -213,8 +213,8 @@ export class AppSidebarComponent {
     }).unsubscribe();
   }  
 
-  private checkAdminRole(): void {
-    this.isAdmin = this.authService.isAdmin();
-  }
+  // private checkAdminRole(): void {
+  //   this.isAdmin = this.authService.isAdmin();
+  // }
 
 }

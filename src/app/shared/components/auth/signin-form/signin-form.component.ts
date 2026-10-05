@@ -7,7 +7,7 @@ import { InputFieldComponent } from '../../form/input/input-field.component';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 //import { UserApiService } from 'app/shared/services/user-api.service';
-import { AuthService, LoginResponse } from 'app/shared/services/auth.service';
+import { AuthService } from 'app/shared/services/auth.service';
 import { ToastService } from 'app/shared/services/toast.service';
 
 @Component({

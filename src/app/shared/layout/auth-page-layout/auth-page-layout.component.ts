@@ -7,7 +7,6 @@ import { ToastContainerComponent } from '../../components/ui/toast/toast-contain
 @Component({
   selector: 'app-auth-page-layout',
   imports: [
-    GridShapeComponent,
     RouterModule,
     ThemeToggleTwoComponent,
     ToastContainerComponent,
