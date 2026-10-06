@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonComponent } from '../../../ui/button/button.component';
 import { TableDropdownComponent } from '../../../common/table-dropdown/table-dropdown.component';
 import { ModalComponent } from "app/shared/components/ui/modal/modal.component";
+import { Router } from '@angular/router';
 
 interface Transaction {
   image: string;
@@ -170,6 +171,10 @@ export class CustomTableComponent {
   //   return Math.ceil(this.transactionData.length / this.itemsPerPage);
   // }
 
+  constructor(
+    private router: Router,
+  ) {}
+
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -236,6 +241,8 @@ export class CustomTableComponent {
   closeModal() { this.isOpen = false; }
 
   getUrl(row: any, url: any): string {
+    const currentPathSegments = this.router.url.split('/').filter(Boolean);
+    const prefix = currentPathSegments[0] === 'lucky-draw' ? '/lucky-draw' : '';
     return `/event/${url}/${row.id}`;
   }
 }
