@@ -26,7 +26,7 @@
         </div>
         <div>
             <app-label for="input">Event Code</app-label>
-            <app-input-field type="text" id="input" placeholder="Enter event code" [value]="eventForm.event_code" (valueChange)="eventForm.event_code = $event" [error]="errors.event_code" [hint]="errors.event_code ? 'This is an invalid event code.' : ''"/>
+            <app-input-field type="text" id="input" placeholder="Enter event code" [value]="eventForm.event_code" (valueChange)="eventForm.event_code = $event" [error]="errors.event_code" [hint]="errors.event_code ? eventCodeHint : ''"/>
         </div>
         <div>
             <app-label for="input">Password</app-label>

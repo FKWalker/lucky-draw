@@ -54,6 +54,8 @@ export class EditEventComponent {
 
   fileName: any;
 
+  drawChannel: any;
+
   constructor(private supabaseService: SupabaseService, 
     private participantService: ParticipantService,
     private eventService: EventService,
@@ -67,6 +69,17 @@ export class EditEventComponent {
 
     if (this.eventId) {
       this.fetchEventDetails(this.eventId);
+      // 🎧 Listen for broadcasts coming from the admin page
+      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, (payload) => {
+        // Safe extraction using bracket notation
+        const data = payload?.['payload'] || payload;
+
+        if (data && data.type === 'NEW_WINNERS') {
+          if(data.eventId == this.eventId){
+            this.fetchEventDetails(this.eventId);
+          }
+        }
+      });
     }
   }
 

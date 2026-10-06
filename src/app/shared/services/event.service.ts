@@ -103,5 +103,35 @@ export class EventService {
     }
     return data;
   }
+
+  async getEventByEventCode(eventCode: string | number) {
+    const { data, error } = await this.supabase
+      .from('events')
+      .select('*')
+      .eq('event_code', eventCode)
+      .maybeSingle(); 
+
+    if (error) {
+      console.error('Error fetching event by event code:', error);
+      throw error;
+    }
+    
+    return data;
+  }
+
+  async setEventDrewById(id: string | number, drew: boolean) {
+    const { data, error } = await this.supabase
+      .from('events')
+      .update({
+        drew: drew,
+      })
+      .eq('id', id); // 👈 Targets the exact row using its unique ID
+
+    if (error) {
+      console.error('Error updating event with draws:', error);
+      throw error;
+    }
+    return data;
+  }
   
 }

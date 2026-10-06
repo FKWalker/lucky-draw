@@ -58,4 +58,13 @@ export class DrawComponent implements OnInit, OnDestroy {
       this.supabaseService.leaveChannel(this.drawChannel);
     }
   }
+
+  closeWinnerModal(){
+    this.showWinnerModal = false;
+  }
+
+  openSettings(){
+    
+  }
+  
 }

@@ -50,6 +50,8 @@ export class CreateEventComponent {
   success: any;
   error: any;
 
+  eventCodeHint = 'This is an invalid event code.';
+
   constructor(private supabaseService: SupabaseService,
     private eventService: EventService,
     private participantService: ParticipantService,
@@ -96,9 +98,7 @@ export class CreateEventComponent {
 
   async onSubmit() {
     this.disabled = true;
-    if(this.validation()){
-      console.log(this.eventForm);
-      console.log(this.draws);
+    if(await this.validation()){
       try{
         const data : any = await this.eventService.addEvent(this.eventForm, this.draws);
         const newEventId = data[0]?.id;
@@ -106,7 +106,6 @@ export class CreateEventComponent {
           ...participant,
           event_id: newEventId
         }));
-        console.log(participantsWithEvent);
         await this.participantService.addBatchParticipants(participantsWithEvent);
         this.eventForm = {
           event_name: '',
@@ -134,7 +133,7 @@ export class CreateEventComponent {
     }
   }
 
-  validation(){
+  async validation(){
     // reset errors
     this.errors = {
       event_name: false,
@@ -151,8 +150,17 @@ export class CreateEventComponent {
     }
 
     if (!String(this.eventForm.event_code).trim()) {
+      this.eventCodeHint = 'This is an invalid event code.';
       this.errors.event_code = true;
       valid = false;
+    }else{
+      const event = await this.eventService.getEventByEventCode(this.eventForm.event_code);
+      if (event) {
+        // Event code already exists
+        this.eventCodeHint = 'Event code is already in use.';
+        this.errors.event_code = true;
+        valid = false;
+      }
     }
 
     if (!String(this.eventForm.password).trim()) {

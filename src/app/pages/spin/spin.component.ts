@@ -130,6 +130,7 @@ export class SpinComponent {
           draw.drew = true;
           drawCount++;
           await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
+          await this.eventService.setEventDrewById(this.eventId, true);
 
           for(let sw of selectedWinners){
             await this.participantService.updateParticipantWon(sw.id, index+1);
@@ -160,6 +161,7 @@ export class SpinComponent {
 
         await this.participantService.updateParticipantWon(selectedWinner.id, 0);
         await this.participantService.updateParticipantEligible(selectedWinner.member_code);
+        await this.eventService.setEventDrewById(this.eventId, true);
 
         // Trigger the popup modal states
         const selectedWinners = [];

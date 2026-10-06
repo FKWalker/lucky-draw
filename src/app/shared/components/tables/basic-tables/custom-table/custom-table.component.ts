@@ -234,4 +234,8 @@ export class CustomTableComponent {
   isOpen = false;
   openModal() { this.isOpen = true; }
   closeModal() { this.isOpen = false; }
+
+  getUrl(row: any, url: any): string {
+    return `/event/${url}/${row.id}`;
+  }
 }
