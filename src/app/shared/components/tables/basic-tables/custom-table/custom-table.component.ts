@@ -243,6 +243,6 @@ export class CustomTableComponent {
   getUrl(row: any, url: any): string {
     const currentPathSegments = this.router.url.split('/').filter(Boolean);
     const prefix = currentPathSegments[0] === 'lucky-draw' ? '/lucky-draw' : '';
-    return `/event/${url}/${row.id}`;
+    return `${prefix}/event/${url}/${row.id}`;
   }
 }
