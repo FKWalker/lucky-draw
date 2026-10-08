@@ -2,8 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonComponent } from '../../../ui/button/button.component';
 import { TableDropdownComponent } from '../../../common/table-dropdown/table-dropdown.component';
-import { ModalComponent } from "app/shared/components/ui/modal/modal.component";
-import { Router } from '@angular/router';
 import { environment } from '@env/environment';
 
 interface Transaction {
@@ -19,8 +17,7 @@ interface Transaction {
   selector: 'app-custom-table',
   imports: [
     CommonModule,
-    ButtonComponent,
-    TableDropdownComponent
+    ButtonComponent
 ],
   templateUrl: './custom-table.component.html',
   styles: ``
@@ -172,6 +169,10 @@ export class CustomTableComponent {
   //   return Math.ceil(this.transactionData.length / this.itemsPerPage);
   // }
 
+  constructor(){
+    console.log(environment.baseHref);
+  }
+
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -196,6 +197,7 @@ export class CustomTableComponent {
   }
 
   onSearchChange(event: Event) {
+    console.log(environment.baseHref);
     const value = (event.target as HTMLInputElement).value;
     this.searchValue = value;
     this.searchChange.emit(value);

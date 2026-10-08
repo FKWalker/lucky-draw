@@ -21,8 +21,8 @@
               "zone.js"
             ],
             "allowedCommonJsDependencies": [
-               "prismjs",
-               "polylabel"
+              "prismjs",
+              "polylabel"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -40,6 +40,11 @@
             ]
           },
           "configurations": {
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
             "production": {
               "budgets": [
                 {
@@ -72,6 +77,9 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
+            "development": {
+              "buildTarget": "luckydraw:build:development"
+            },
             "production": {
               "buildTarget": "luckydraw:build:production"
             },
@@ -79,7 +87,7 @@
               "buildTarget": "luckydraw:build:staging"
             }
           },
-          "defaultConfiguration": "staging"
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
