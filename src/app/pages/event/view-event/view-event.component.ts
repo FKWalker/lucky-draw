@@ -185,24 +185,16 @@ export class ViewEventComponent {
   }
 
   startDraw() {
-    // Grab the current active base path segments dynamically
-    const currentPathSegments = this.router.url.split('/').filter(Boolean);
-    // If the first segment is 'lucky-draw', keep it dynamic; otherwise, use root
-    const prefix = currentPathSegments[0] === 'lucky-draw' ? '/lucky-draw' : '';
-
     const url = this.router.serializeUrl(
-      this.router.createUrlTree([`${prefix}/spin`, this.eventId])
+      this.router.createUrlTree([environment.baseHref + '/spin', this.eventId])
     );
 
     window.open(url, '_blank');
   }
 
   drawScreen() {
-    const currentPathSegments = this.router.url.split('/').filter(Boolean);
-    const prefix = currentPathSegments[0] === 'lucky-draw' ? '/lucky-draw' : '';
-
     const url = this.router.serializeUrl(
-      this.router.createUrlTree([`${prefix}/draw`, this.eventId])
+      this.router.createUrlTree([environment.baseHref + '/draw', this.eventId])
     );
 
     window.open(url, '_blank');
