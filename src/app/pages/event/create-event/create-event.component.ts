@@ -163,10 +163,10 @@ export class CreateEventComponent {
       }
     }
 
-    if (!String(this.eventForm.password).trim()) {
-      this.errors.password = true;
-      valid = false;
-    }
+    // if (!String(this.eventForm.password).trim()) {
+    //   this.errors.password = true;
+    //   valid = false;
+    // }
 
     if(!this.validateDrawSetup()){
       valid = false;

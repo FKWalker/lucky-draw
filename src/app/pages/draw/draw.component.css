@@ -1,4 +1,6 @@
-/* draw.component.css */
-.animate-spin {
-  animation: spin 0.6s linear infinite !important;
+.custom-bg-layout {
+  background-image: url('/images/draw/lucky-draw-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }

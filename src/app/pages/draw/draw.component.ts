@@ -26,6 +26,14 @@ export class DrawComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
+  participants = [
+    { id: 1, name: 'TONY MC' },
+    { id: 2, name: 'TARMIZI' },
+    { id: 3, name: 'ELAINE' },
+    { id: 4, name: 'THILAGA' },
+    { id: 5, name: 'MALAR' }
+  ];
+
   ngOnInit() {
     this.eventId = this.route.snapshot.paramMap.get('id');
 

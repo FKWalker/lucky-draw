@@ -28,10 +28,10 @@
             <app-label for="input">Event Code</app-label>
             <app-input-field type="text" id="input" placeholder="Enter event code" [value]="eventForm.event_code" (valueChange)="eventForm.event_code = $event" [error]="errors.event_code" [hint]="errors.event_code ? eventCodeHint : ''"/>
         </div>
-        <div>
+        <!-- <div>
             <app-label for="input">Password</app-label>
             <app-input-field type="text" id="input" placeholder="Enter password" [value]="eventForm.password" (valueChange)="eventForm.password = $event" [error]="errors.password" [hint]="errors.password ? 'This is an invalid password.' : ''"/>
-        </div>
+        </div> -->
         <div>
             <div class="mb-4 text-left">
                 <div class="flex items-baseline gap-2">
