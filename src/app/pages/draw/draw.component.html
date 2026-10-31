@@ -1,141 +1,54 @@
 <div class="relative flex flex-col items-center justify-center min-h-screen text-white overflow-hidden p-6 select-none"
   style="background-image: url('images/draw/lucky-draw-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
 
-  <div class="reel-wrapper">
+<div class="picker-section">
 
-    <!-- Smooth Barrel SVG Clip Path -->
-    <svg class="reel-svg-defs" width="0" height="0">
-      <defs>
-        <clipPath id="barrelClip" clipPathUnits="objectBoundingBox">
-          <path d="M 0.1,0 
-                   C 0.02,0.28 0.02,0.72 0.1,1 
-                   L 0.9,1 
-                   C 0.98,0.72 0.98,0.28 0.9,0 
-                   Z" />
-        </clipPath>
-      </defs>
-    </svg>
+  <!-- 3D Carousel Scene -->
+  <div class="scene">
 
-    <div class="name-reel-viewport">
+    <div class="center-light"></div>
 
-      <!-- Glassmorphism ambient sheen overlays -->
-      <div class="reel-sheen-top"></div>
-      <div class="reel-sheen-bottom"></div>
+    <!-- Rotating carousel -->
+    <div class="carousel" [style.transform]="carouselRotation">
 
-      <!-- Reel Track -->
-      <div class="barrel-content">
-        <div class="name-reel-track" [class.spinning]="isSpinning">
+      <div class="student-card" *ngFor="let student of students; let i = index" [class.selected]="selectedIndex === i"
+        [style.transform]="getCardTransform(i)">
 
-          @for (participant of participants; track participant.id) {
-          <div class="name-reel-row">
-            <span class="participant-name">{{ participant.name }}</span>
+        <div class="card-inner">
+          <div class="card-name">
+            {{ student }}
           </div>
-          }
-
-          @for (participant of participants; track participant.id + '-duplicate') {
-          <div class="name-reel-row">
-            <span class="participant-name">{{ participant.name }}</span>
-          </div>
-          }
-
         </div>
-      </div>
 
-      <!-- Glowing Center Selection Bar -->
-      <div class="reel-center-highlight">
-        <div class="highlight-glow-line top"></div>
-        <div class="highlight-glow-line bottom"></div>
       </div>
-
-      <!-- Elegant Glossy Pointers -->
-      <div class="reel-pointer reel-pointer-left">
-        <div class="pointer-gem"></div>
-      </div>
-      <div class="reel-pointer reel-pointer-right">
-        <div class="pointer-gem"></div>
-      </div>
-
     </div>
 
+    <!-- Fixed selection frame -->
+    <div class="selector">
+      <span class="selector-arrow top-arrow">▶</span>
+      <span class="selector-arrow bottom-arrow">▶</span>
+    </div>
   </div>
-</div>
 
-
-<!-- ========================================== -->
-<!-- WINNER POPUP MODAL                         -->
-<!-- ========================================== -->
-@if (showWinnerModal && currentWinners) {
-<div class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-  <div
-    class="relative w-full max-w-6xl bg-gray-900 border border-gray-800 rounded-3xl shadow-2xl p-6 md:p-8 overflow-hidden">
-
-    <div class="absolute -top-32 -right-32 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-32 -left-32 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-
-    <button type="button" (click)="closeWinnerModal()"
-      class="absolute top-5 right-5 z-30 w-10 h-10 flex items-center justify-center rounded-full bg-gray-800/80 border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white transition"
-      title="Close">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-        stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
+  <!-- Draw button -->
+  <div class="controls">
+    <button class="draw-button" [disabled]="isDrawing" (click)="spin()">
+      {{ isDrawing ? 'DRAWING...' : 'SPIN' }}
     </button>
-
-    <div class="relative z-10 text-center">
-      <div
-        class="mx-auto w-20 h-20 md:w-24 md:h-24 bg-gradient-to-tr from-amber-500 to-purple-600 rounded-3xl flex items-center justify-center text-4xl md:text-5xl shadow-xl shadow-purple-500/30 mb-5 animate-bounce">
-        🎉
-      </div>
-
-      <span
-        class="inline-flex px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-        Round Winner Revealed!
-      </span>
-
-      <h3 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight mt-4">
-        Congratulations! 🎊
-      </h3>
-
-      <p class="text-gray-400 text-sm md:text-base mt-2">
-        The lucky winner(s) selected for this round
-      </p>
-
-      <div
-        class="inline-flex items-center mt-4 px-3 py-1 rounded-full bg-gray-800 border border-gray-700 text-xs text-gray-300">
-        {{ currentWinners.length }} Winner{{ currentWinners.length > 1 ? 's' : '' }}
-      </div>
-    </div>
-
-    <div class="relative z-10 mt-7 flex flex-wrap justify-center gap-3">
-      @for (winner of currentWinners; track winner.id; let i = $index) {
-      <div
-        class="w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(25%-0.5625rem)] p-3 md:p-4 rounded-2xl bg-gradient-to-r from-gray-800/90 to-indigo-950/50 border border-indigo-500/30 shadow-lg hover:border-indigo-400/50 transition flex items-center gap-3">
-        <div
-          class="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-sm font-extrabold text-white shadow-md">
-          {{ i + 1 }}
-        </div>
-        <div class="min-w-0 flex-1">
-          <p class="font-bold text-sm md:text-base text-white truncate">
-            {{ winner.name || 'Participant #' + winner.id }}
-          </p>
-          @if (winner.member_code) {
-          <p class="text-xs text-indigo-300 font-mono mt-0.5 truncate">
-            {{ winner.member_code }}
-          </p>
-          }
-        </div>
-        <div class="text-xl flex-shrink-0">🏆</div>
-      </div>
-      }
-    </div>
-
-    <div class="relative z-10 flex justify-center mt-7 pt-5 border-t border-gray-800">
-      <button type="button" (click)="closeWinnerModal()"
-        class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/20 transition">
-        Close
-      </button>
-    </div>
-
   </div>
+
+  <!-- Spotlight overlay -->
+  <div class="spotlight-overlay" [class.active]="showSpotlight">
+  </div>
+  
+  <!-- Particles -->
+  <div class="particles">
+    <span class="particle" *ngFor="let particle of particles" [style.left.px]="particle.x" [style.top.px]="particle.y"
+      [style.--tx]="particle.tx + 'px'" [style.--ty]="particle.ty + 'px'">
+    </span>
+  </div> 
+
 </div>
-}
+
+
+</div>

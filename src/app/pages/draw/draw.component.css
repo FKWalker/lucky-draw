@@ -1,6 +1,404 @@
-.custom-bg-layout {
-  background-image: url('/images/draw/lucky-draw-bg.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Main container */
+.picker-section {
+  position: relative;
+  width: 100%;
+  min-height: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: transparent;
+  color: #ffffff;
+}
+
+/* 3D carousel scene */
+.scene {
+  position: relative;
+  width: min(1100px, 95vw);
+  height: 400px;
+  perspective: 1500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Centre lighting */
+.center-light {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(147, 197, 253, 0.1) 45%,
+      transparent 70%);
+  filter: blur(25px);
+  pointer-events: none;
+}
+
+/* Rotating carousel */
+.carousel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Student card */
+.student-card {
+  position: absolute;
+  width: 500px;
+  height: 70px;
+  left: 0;
+  top: 0;
+  margin-left: -250px;
+  margin-top: -35px;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  background: linear-gradient(135deg,
+      #f8fbff 0%,
+      #dceaff 50%,
+      #c5dcf7 100%);
+
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 7px;
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.28),
+    0 2px 5px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Card content */
+.card-inner {
+  width: 100%;
+  height: 100%;
+  padding: 6px 18px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+}
+
+/* Student name */
+.card-name {
+  font-size: 23px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #123b75;
+  text-align: center;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Selected card */
+.student-card.selected {
+  background: linear-gradient(135deg,
+      #fff9e6 0%,
+      #ffedb3 50%,
+      #fbd879 100%);
+
+  border: 2px solid #f59e0b;
+
+  box-shadow:
+    0 0 20px rgba(251, 191, 36, 0.8),
+    0 0 40px rgba(251, 191, 36, 0.4),
+    inset 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+/* Selector arrows only - no rectangle */
+.selector {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 560px;
+  height: 70px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Shared arrow styling */
+.selector-arrow {
+  position: absolute;
+  top: 50%;
+  color: #fbbf24;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow:
+    0 0 8px rgba(251, 191, 36, 0.9),
+    0 0 16px rgba(251, 191, 36, 0.5);
+}
+
+/* Left arrow points right */
+.top-arrow {
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* Right arrow points left */
+.bottom-arrow {
+  right: 0;
+  transform: translate(50%, -50%) rotate(180deg);
+}
+
+/* Controls */
+.controls {
+  position: relative;
+  z-index: 20;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Start button */
+.draw-button {
+  min-width: 200px;
+  padding: 15px 35px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1769c2, #0b3b78);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow:
+    0 8px 20px rgba(0, 25, 70, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.draw-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 25, 70, 0.45);
+}
+
+.draw-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.draw-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Participant count */
+.student-count {
+  margin-top: 18px;
+  position: relative;
+  z-index: 20;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+}
+
+/* Spotlight overlay */
+.spotlight-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: radial-gradient(circle at center,
+      transparent 0%,
+      rgba(0, 0, 0, 0.15) 45%,
+      rgba(0, 0, 0, 0.55) 100%);
+}
+
+.spotlight-overlay.active {
+  opacity: 1;
+}
+
+/* Winner popup */
+.winner-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(5, 20, 50, 0.65);
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.35s ease;
+}
+
+.winner-card {
+  width: min(500px, 90vw);
+  padding: 40px 30px;
+  text-align: center;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #ffffff, #eaf3ff);
+  border: 2px solid #fbbf24;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 0 35px rgba(251, 191, 36, 0.25);
+  animation: winnerPop 0.5s ease;
+}
+
+.winner-caption {
+  color: #d97706;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
+.winner-name {
+  margin: 20px 0;
+  color: #123b75;
+  font-size: clamp(30px, 6vw, 48px);
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.winner-subtitle {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+/* Particles */
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+  animation: particleBurst 1.2s ease-out forwards;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes winnerPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  70% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes particleBurst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) scale(0);
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .picker-section {
+    min-height: 580px;
+  }
+
+  .scene {
+    width: 100%;
+    height: 420px;
+    transform: scale(0.75);
+    margin: -45px 0;
+  }
+
+  .student-card {
+    width: 500px;
+    height: 70px;
+    margin-left: -250px;
+    margin-top: -35px;
+  }
+
+  .card-name {
+    font-size: 21px;
+  }
+
+  .selector {
+    width: 560px;
+    height: 70px;
+  }
+
+  .selector-arrow {
+    font-size: 26px;
+  }
+
+  .draw-button {
+    min-width: 180px;
+    padding: 13px 25px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .scene {
+    transform: scale(0.58);
+    margin: -80px 0;
+  }
+
+  .picker-section {
+    min-height: 520px;
+  }
+
+  .student-count {
+    font-size: 10px;
+  }
+
+  .selector {
+    width: 560px;
+  }
+
+  .selector-arrow {
+    font-size: 24px;
+  }
 }
