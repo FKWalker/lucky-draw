@@ -10,10 +10,12 @@ import { SupabaseService } from 'app/shared/services/supabase.service';
 import { isPlatformBrowser } from '@angular/common';
 import { ParticipantService } from 'app/shared/services/participant.service';
 import { EventService } from 'app/shared/services/event.service';
+import { RadioButtonsComponent } from 'app/shared/components/form/form-elements/radio-buttons/radio-buttons.component';
+import { RadioComponent } from 'app/shared/components/form/input/radio.component';
 
 @Component({
   selector: 'app-create-event',
-  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ButtonComponent, FileInputComponent],
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ButtonComponent, FileInputComponent, RadioComponent],
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.css'
 })
@@ -21,7 +23,7 @@ export class CreateEventComponent {
 
   disabled: boolean = false;
 
-  draws: { drawName: string | number; number: string | number; drew: boolean}[] = [];
+  draws: { drawName: string | number; number: string | number; drew: boolean, disabled: boolean, winner: string | number}[] = [];
   drawsErrors: { drawName?: string; number?: string }[] = [];
 
   @ViewChild('fileUpload') fileUpload!: FileInputComponent;
@@ -31,11 +33,13 @@ export class CreateEventComponent {
     event_code: any;
     password: any;
     file_name: any;
+    draw_type: any;
   } = {
     event_name: '',
     event_code: '',
     password: '',
-    file_name: ''
+    file_name: '',
+    draw_type: 'S'
   }
 
   participantsToInsert: any;
@@ -58,13 +62,31 @@ export class CreateEventComponent {
   ) {}
 
   addDraw() {
-    this.draws.push({ drawName: '', number: '1', drew: false });
+    if (this.eventForm.draw_type === 'S'){
+      this.draws.push({ drawName: '', number: '1', drew: false, disabled: true, winner: '' });
+    }else{
+      this.draws.push({ drawName: '', number: '1', drew: false, disabled: false, winner: '' });
+    }
     this.drawsErrors.push({});
   }
 
   removeDraw(index: number) {
     this.draws.splice(index, 1);
     this.drawsErrors.splice(index, 1);
+  }
+
+  handleDrawTypeChange(event: any){
+    this.eventForm.draw_type = event;
+    if (this.eventForm.draw_type === 'S') {
+      for(let draw of this.draws){
+        draw.number = 1;
+        draw.disabled = true;
+      }
+    }else{
+      for (let draw of this.draws) {
+        draw.disabled = false;
+      }
+    }
   }
 
   // Change parameter type from 'File' to 'any'
@@ -111,7 +133,8 @@ export class CreateEventComponent {
           event_name: '',
           event_code: '',
           password: '',
-          file_name: ''
+          file_name: '',
+          draw_type: 'S'
         }
         this.draws = [];
         this.participantsToInsert = [];

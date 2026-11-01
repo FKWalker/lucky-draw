@@ -33,6 +33,15 @@
             <app-input-field type="text" id="input" placeholder="Enter password" [value]="eventForm.password" (valueChange)="eventForm.password = $event" [error]="errors.password" [hint]="errors.password ? 'This is an invalid password.' : ''"/>
         </div> -->
         <div>
+            <app-label for="input">Draw Type</app-label>
+            <div class="flex flex-wrap items-center gap-8">
+                <app-radio [id]="'S'" [name]="'group1'" [value]="'S'" [checked]="this.eventForm.draw_type === 'S'"
+                    [label]="'Single'" [disabled]="false" (valueChange)="handleDrawTypeChange($event)" />
+                <app-radio [id]="'M'" [name]="'group1'" [value]="'M'" [checked]="this.eventForm.draw_type === 'M'"
+                    [label]="'Multiple'" [disabled]="false" (valueChange)="handleDrawTypeChange($event)" />
+            </div>
+        </div>
+        <div>
             <div class="mb-4 text-left">
                 <div class="flex items-baseline gap-2">
                     <app-label for="input">Draw Step</app-label>
@@ -70,15 +79,24 @@
                             [value]="d.number"
                             (valueChange)="d.number = $event"
                             [error]="!!drawsErrors[$index]?.number"
-                            [hint]="drawsErrors[$index]?.number || ''">
+                            [hint]="drawsErrors[$index]?.number || ''"
+                            [disabled] = d.disabled>
                             </app-input-field>
-                            <button
-                                type="button"
-                                class="px-2 py-1 text-white bg-red-500 rounded mt-2"
-                                (click)="removeDraw($index)">
-                                Delete
-                            </button>
                         </div>
+
+                        <div>
+                            <app-label>Winner</app-label>
+                            <app-input-field
+                            type="text"
+                            placeholder="Enter winner name"
+                            [value]="d.winner"
+                            (valueChange)="d.winner = $event">
+                            </app-input-field>
+                        </div>
+
+                        <button type="button" class="px-2 py-1 text-white bg-red-500 rounded mt-2" (click)="removeDraw($index)">
+                            Delete
+                        </button>
                     </div>
                 </div>
                 
