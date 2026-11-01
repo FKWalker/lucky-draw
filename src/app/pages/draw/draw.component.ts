@@ -52,6 +52,7 @@ export class DrawComponent implements OnInit, OnDestroy {
   drawChannel: any;
 
   draws: { drawName: string | number; number: string | number; drew: boolean }[] = [];
+  drawCount: number = 0;
 
   constructor(private supabaseService: SupabaseService,
     private participantService: ParticipantService,
@@ -80,7 +81,7 @@ export class DrawComponent implements OnInit, OnDestroy {
       console.log('Eligible participants:', this.participants);
       console.log('Total participants:', this.participants.length);
 
-      this.updateVisibleParticipants();
+      await this.updateVisibleParticipants();
 
     } catch (error) {
 
@@ -116,6 +117,8 @@ export class DrawComponent implements OnInit, OnDestroy {
         }
       }
 
+      this.drawCount = drawCount;
+
       this.eventCode = data.event_code;
 
     } catch (error) {
@@ -125,7 +128,7 @@ export class DrawComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateVisibleParticipants(): void {
+  async updateVisibleParticipants() {
     if (this.participants.length === 0) {
       this.visibleParticipants = [];
       return;
@@ -191,7 +194,13 @@ export class DrawComponent implements OnInit, OnDestroy {
   }
 
   // Start drawing
-  spin(): void {
+  async spin() {
+    await this.loadParticipants();
+    await this.fetchEventDetails(this.eventId);
+
+    if (this.drawCount == this.draws.length) {
+      this.isDone = true;
+    }
 
     if (this.isDrawing || !this.visibleParticipants.length) {
       return;
@@ -213,6 +222,11 @@ export class DrawComponent implements OnInit, OnDestroy {
     const targetIndex = Math.floor(
       Math.random() * this.visibleParticipants.length
     );
+    this.draws[this.drawCount].drew = true;
+    await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
+    await this.eventService.setEventDrewById(this.eventId, true);
+    await this.participantService.updateParticipantWon(this.visibleParticipants[targetIndex].id, this.drawCount+1);
+    await this.participantService.updateParticipantEligible(this.visibleParticipants[targetIndex].member_code);
 
     const targetRotation = targetIndex * this.angleStep;
     const startRotation = this.currentRotation;

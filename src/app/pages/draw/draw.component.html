@@ -34,8 +34,15 @@
 
   <!-- Draw button -->
   <div class="controls">
-    <button class="draw-button" [disabled]="isDrawing" (click)="spin()">
+    <button class="draw-button" [disabled]="isDrawing || isDone" (click)="spin()">
       {{ isDrawing ? 'DRAWING...' : 'SPIN' }}
+      @if (isDrawing) {
+        DRAWING...
+      } @else if(isDone){
+        All draw rounds have been completed!
+      }@else {
+        SPIN
+      }
     </button>
   </div>
 
