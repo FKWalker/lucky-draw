@@ -54,7 +54,7 @@
 }
 
 /* Student card */
-.student-card {
+.participant-card {
   position: absolute;
   width: 500px;
   height: 70px;
@@ -109,7 +109,7 @@
 }
 
 /* Selected card */
-.student-card.selected {
+.participant-card.selected {
   background: linear-gradient(135deg,
       #fff9e6 0%,
       #ffedb3 50%,
@@ -202,18 +202,6 @@
 .draw-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-/* Participant count */
-.student-count {
-  margin-top: 18px;
-  position: relative;
-  z-index: 20;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
 }
 
 /* Spotlight overlay */
@@ -353,7 +341,7 @@
     margin: -45px 0;
   }
 
-  .student-card {
+  .participant-card {
     width: 500px;
     height: 70px;
     margin-left: -250px;

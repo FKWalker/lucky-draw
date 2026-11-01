@@ -11,16 +11,14 @@
     <!-- Rotating carousel -->
     <div class="carousel" [style.transform]="carouselRotation">
 
-      <div class="student-card" *ngFor="let student of students; let i = index" [class.selected]="selectedIndex === i"
+      <div class="participant-card" *ngFor="let participant of visibleParticipants; let i = index" [class.selected]="selectedIndex === i"
         [style.transform]="getCardTransform(i)">
-
         <div class="card-inner">
           <div class="card-name">
-            {{ student }}
+            {{ participant.name }}
           </div>
         </div>
-
-      </div>
+      </div> 
     </div>
 
     <!-- Fixed selection frame -->
@@ -28,6 +26,10 @@
       <span class="selector-arrow top-arrow">▶</span>
       <span class="selector-arrow bottom-arrow">▶</span>
     </div>
+  </div>
+
+  <div>
+    {{ winner }}
   </div>
 
   <!-- Draw button -->

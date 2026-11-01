@@ -2,6 +2,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SupabaseService } from 'app/shared/services/supabase.service';
+import { ParticipantService } from 'app/shared/services/participant.service';
+import { EventService } from 'app/shared/services/event.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface DrawParticle {
   x: number;
@@ -19,21 +23,9 @@ interface DrawParticle {
 })
 export class DrawComponent implements OnInit, OnDestroy {
 
-  // Dummy student names
-  students: string[] = [
-    'TONY',
-    'TARMIZI',
-    'ELAINE',
-    'THILAGA',
-    'MALAR',
-    'JASON',
-    'MICHELLE',
-    'DANIEL',
-    'SARAH',
-    'ANDREW',
-    'JESSICA',
-    'BRIAN'
-  ];
+  participants: any[] = [];
+
+  visibleParticipants: any[] = [];
 
   // Carousel configuration
   readonly radius = 135;
@@ -43,6 +35,7 @@ export class DrawComponent implements OnInit, OnDestroy {
 
   // Draw state
   isDrawing = false;
+  isDone = false;
   selectedIndex = -1;
 
   winner = '';
@@ -54,20 +47,124 @@ export class DrawComponent implements OnInit, OnDestroy {
   private animationId?: number;
   private winnerTimeout?: ReturnType<typeof setTimeout>;
 
+  eventId: any;
+  eventCode: any;
+  drawChannel: any;
+
+  draws: { drawName: string | number; number: string | number; drew: boolean }[] = [];
+
+  constructor(private supabaseService: SupabaseService,
+    private participantService: ParticipantService,
+    private eventService: EventService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
+
   ngOnInit(): void {
+    // 1. Grab the ID from the route parameter (:id)
+    this.eventId = this.route.snapshot.paramMap.get('id');
+    if (this.eventId) {
+      this.fetchEventDetails(this.eventId);
+      this.loadParticipants();
+      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, () => {
+        // Empty callback because this admin page only sends updates, it doesn't listen to others
+      });
+    }
+  }
+
+  async loadParticipants(): Promise<void> {
+    try {
+      this.participants =
+        await this.participantService.getEligibleParticipants(this.eventId);
+
+      console.log('Eligible participants:', this.participants);
+      console.log('Total participants:', this.participants.length);
+
+      this.updateVisibleParticipants();
+
+    } catch (error) {
+
+      console.error('Failed to load participants:', error);
+
+      this.participants = [];
+      this.visibleParticipants = [];
+
+    }
+    
+  }
+
+  async fetchEventDetails(id: string) {
+    try {
+      // 2. Fetch the data from Supabase
+      const data = await this.eventService.getEventById(id);
+
+      if (!data) {
+        console.warn('Event not found, redirecting...');
+        this.router.navigate(['/event/list']); // 👈 Adjust this path to match your actual event listing route
+        return;
+      }
+      this.draws = data.draw_setup;
+      let drawCount = 0;
+      if (this.draws.length > 0) {
+        for (let draw of this.draws) {
+          if (draw.drew) {
+            drawCount++;
+          }
+        }
+        if (drawCount == this.draws.length) {
+          this.isDone = true;
+        }
+      }
+
+      this.eventCode = data.event_code;
+
+    } catch (error) {
+      console.error('Failed to load event details:', error);
+      this.router.navigate(['event/listing']); // 👈 Adjust this path to match your actual event listing route
+      return;
+    }
+  }
+
+  private updateVisibleParticipants(): void {
+    if (this.participants.length === 0) {
+      this.visibleParticipants = [];
+      return;
+    }
+
+    // Shuffle participants using Fisher-Yates algorithm
+    const shuffled = [...this.participants];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    // Pick up to 12 participants with unique names
+    const uniqueNames = new Set<string>();
+
+    this.visibleParticipants = shuffled.filter(participant => {
+      const name = participant.name?.trim().toLowerCase();
+
+      if (!name || uniqueNames.has(name)) {
+        return false;
+      }
+
+      uniqueNames.add(name);
+      return true;
+    }).slice(0, 12);
+
     this.initRandomPosition();
   }
 
-  // Calculate angle between cards
+  // Angle between each student card
   get angleStep(): number {
-    return this.students.length > 0
-      ? 360 / this.students.length
+    return this.visibleParticipants.length > 0
+      ? 360 / this.visibleParticipants.length
       : 0;
   }
 
-  // Position cards vertically around the 3D wheel
+  // Position cards vertically around the 3D circle
   getCardTransform(index: number): string {
-
     const angle = index * this.angleStep;
     const radian = angle * Math.PI / 180;
 
@@ -81,18 +178,22 @@ export class DrawComponent implements OnInit, OnDestroy {
     `;
   }
 
-  // Initialize carousel
+  // Set initial carousel position
   initRandomPosition(): void {
+    if (!this.visibleParticipants.length) return;
 
-    this.currentRotation = 0;
+    const randomIndex = Math.floor(
+      Math.random() * this.visibleParticipants.length
+    );
 
-    this.carouselRotation = 'rotateX(0deg)';
+    this.currentRotation = randomIndex * this.angleStep;
+    this.carouselRotation = `rotateX(${this.currentRotation}deg)`;
   }
 
-  // Start lucky draw
+  // Start drawing
   spin(): void {
 
-    if (this.isDrawing || !this.students.length) {
+    if (this.isDrawing || !this.visibleParticipants.length) {
       return;
     }
 
@@ -108,37 +209,29 @@ export class DrawComponent implements OnInit, OnDestroy {
       clearTimeout(this.winnerTimeout);
     }
 
-    // Randomly select winner
+    // Randomly select winner from the 12 visible participants
     const targetIndex = Math.floor(
-      Math.random() * this.students.length
+      Math.random() * this.visibleParticipants.length
     );
 
-    // Calculate target angle
-    const targetRotation =
-      targetIndex * this.angleStep;
-
+    const targetRotation = targetIndex * this.angleStep;
     const startRotation = this.currentRotation;
 
-    // Normalize current and target angles
     const currentNormalized =
       ((startRotation % 360) + 360) % 360;
 
     const targetNormalized =
       ((targetRotation % 360) + 360) % 360;
 
-    // Calculate rotation needed to reach target
     const delta =
       (targetNormalized - currentNormalized + 360) % 360;
 
-    // Random 4–5 complete rotations
-    const extraSpins =
-      4 + Math.floor(Math.random() * 2);
+    const extraSpins = 5 + Math.floor(Math.random() * 3);
 
     const endRotation =
       startRotation + extraSpins * 360 + delta;
 
-    // Animation configuration
-    const duration = 4500;
+    const duration = 5000;
     const startTime = performance.now();
 
     const animate = (now: number): void => {
@@ -168,13 +261,12 @@ export class DrawComponent implements OnInit, OnDestroy {
 
       } else {
 
-        // Save final rotation
+        // Save exact final rotation
         this.currentRotation = endRotation;
 
         this.carouselRotation =
           `rotateX(${endRotation}deg)`;
 
-        // Show winner
         this.finishDraw(targetIndex);
       }
     };
@@ -183,12 +275,12 @@ export class DrawComponent implements OnInit, OnDestroy {
       requestAnimationFrame(animate);
   }
 
-  // Finish draw and display winner
+  // Display winner
   finishDraw(index: number): void {
 
     this.selectedIndex = index;
 
-    this.winner = this.students[index];
+    this.winner = this.visibleParticipants[index].name;
 
     this.showSpotlight = true;
     this.showWinner = true;
@@ -197,7 +289,6 @@ export class DrawComponent implements OnInit, OnDestroy {
 
     this.createParticles();
 
-    // Hide celebration after 3 seconds
     this.winnerTimeout = setTimeout(() => {
 
       this.showWinner = false;
@@ -234,7 +325,6 @@ export class DrawComponent implements OnInit, OnDestroy {
     );
   }
 
-  // Clean up animations and timers
   ngOnDestroy(): void {
 
     if (this.animationId !== undefined) {
