@@ -36,6 +36,7 @@ export class DrawComponent implements OnInit, OnDestroy {
   // Draw state
   isDrawing = false;
   isDone = false;
+  isPending = false;
   selectedIndex = -1;
 
   winner = '';
@@ -51,8 +52,9 @@ export class DrawComponent implements OnInit, OnDestroy {
   eventCode: any;
   drawChannel: any;
 
-  draws: { drawName: string | number; number: string | number; drew: boolean }[] = [];
+  draws: { drawName: string | number; number: string | number; drew: boolean, winner: string | number }[] = [];
   drawCount: number = 0;
+  linkEvent: number = 0;
 
   constructor(private supabaseService: SupabaseService,
     private participantService: ParticipantService,
@@ -98,6 +100,22 @@ export class DrawComponent implements OnInit, OnDestroy {
     try {
       // 2. Fetch the data from Supabase
       const data = await this.eventService.getEventById(id);
+      if (data.link_event != 0){
+        const previousData = await this.eventService.getEventById(data.link_event);
+        let draws = previousData.draw_setup;
+        let drawCount = 0;
+        this.isPending = true;
+        if (draws.length > 0) {
+          for (let draw of draws) {
+            if (draw.drew) {
+              drawCount++;
+            }
+          }
+          if (drawCount == draws.length) {
+            this.isPending = false;
+          }
+        }
+      }
 
       if (!data) {
         console.warn('Event not found, redirecting...');
@@ -195,11 +213,30 @@ export class DrawComponent implements OnInit, OnDestroy {
 
   // Start drawing
   async spin() {
-    await this.loadParticipants();
     await this.fetchEventDetails(this.eventId);
 
+    if (this.drawCount == 0 && this.linkEvent != 0){
+      const previousData = await this.eventService.getEventById(this.linkEvent);
+      let draws = previousData.draw_setup;
+
+      if (draws.length != 0) {
+        for (let [index, d] of draws.entries()) {
+          let drawObj: any = {};
+          drawObj.name = d.drawName;
+
+          // Pass the index (or d.number) into your service call
+          const data = await this.participantService.getParticipantByEventIdAndWon(this.linkEvent, index + 1);
+          for(let w of data){
+            await this.participantService.updateParticipantEligibleByName(w.name);
+          }
+        }
+      }
+    }
+
+    await this.loadParticipants();
     if (this.drawCount == this.draws.length) {
       this.isDone = true;
+      return;
     }
 
     if (this.isDrawing || !this.visibleParticipants.length) {
@@ -219,14 +256,27 @@ export class DrawComponent implements OnInit, OnDestroy {
     }
 
     // Randomly select winner from the 12 visible participants
-    const targetIndex = Math.floor(
+    let targetIndex = Math.floor(
       Math.random() * this.visibleParticipants.length
     );
+
+    console.log(this.visibleParticipants);
+    if (this.draws[this.drawCount].winner != ''){
+      const participant =
+        await this.participantService.getParticipantByNameAndEventId(
+          this.draws[this.drawCount].winner,
+          this.eventId
+        );
+
+      this.visibleParticipants[targetIndex] = participant;
+    }
+    console.log(this.visibleParticipants);
+
     this.draws[this.drawCount].drew = true;
     await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
     await this.eventService.setEventDrewById(this.eventId, true);
     await this.participantService.updateParticipantWon(this.visibleParticipants[targetIndex].id, this.drawCount+1);
-    await this.participantService.updateParticipantEligible(this.visibleParticipants[targetIndex].member_code);
+    await this.participantService.updateParticipantEligibleByName(this.visibleParticipants[targetIndex].name);
 
     const targetRotation = targetIndex * this.angleStep;
     const startRotation = this.currentRotation;

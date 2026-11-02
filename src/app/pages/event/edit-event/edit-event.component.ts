@@ -33,12 +33,14 @@ export class EditEventComponent {
     password: any;
     file_name: any;
     draw_type: any;
+    link_event: any;
   } = {
     event_name: '',
     event_code: '',
     password: '',
     file_name: '',
-    draw_type: 'S'
+    draw_type: 'S',
+    link_event: ''
   }
 
   participantsToInsert: any;

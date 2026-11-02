@@ -12,10 +12,11 @@ import { ParticipantService } from 'app/shared/services/participant.service';
 import { EventService } from 'app/shared/services/event.service';
 import { RadioButtonsComponent } from 'app/shared/components/form/form-elements/radio-buttons/radio-buttons.component';
 import { RadioComponent } from 'app/shared/components/form/input/radio.component';
+import { SelectComponent } from 'app/shared/components/form/select/select.component';
 
 @Component({
   selector: 'app-create-event',
-  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ButtonComponent, FileInputComponent, RadioComponent],
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ButtonComponent, FileInputComponent, RadioComponent, SelectComponent],
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.css'
 })
@@ -34,12 +35,14 @@ export class CreateEventComponent {
     password: any;
     file_name: any;
     draw_type: any;
+    link_event: any;
   } = {
     event_name: '',
     event_code: '',
     password: '',
     file_name: '',
-    draw_type: 'S'
+    draw_type: 'S',
+    link_event: ''
   }
 
   participantsToInsert: any;
@@ -56,10 +59,27 @@ export class CreateEventComponent {
 
   eventCodeHint = 'This is an invalid event code.';
 
+  eventOptions: any[] = [];
+
   constructor(private supabaseService: SupabaseService,
     private eventService: EventService,
     private participantService: ParticipantService,
   ) {}
+
+  ngOnInit(): void {
+    this.loadEvents();
+  }
+
+  async loadEvents(): Promise<void> {
+    const events = await this.eventService.getEvents();
+    this.eventOptions.push({ value : '', label: ''})
+    for (const event of events) {
+      this.eventOptions.push({
+        value: event.id,
+        label: `${event.event_name} - ${event.event_code}`
+      });
+    }
+  }
 
   addDraw() {
     if (this.eventForm.draw_type === 'S'){
@@ -87,6 +107,11 @@ export class CreateEventComponent {
         draw.disabled = false;
       }
     }
+  }
+
+  handleLinkEventChange(value: string) {
+    this.eventForm.link_event = value;
+    console.log('Selected value:', value);
   }
 
   // Change parameter type from 'File' to 'any'
@@ -122,6 +147,9 @@ export class CreateEventComponent {
     this.disabled = true;
     if(await this.validation()){
       try{
+        if (this.eventForm.link_event === ''){
+          this.eventForm.link_event = 0;
+        }
         const data : any = await this.eventService.addEvent(this.eventForm, this.draws);
         const newEventId = data[0]?.id;
         const participantsWithEvent = this.participantsToInsert.map((participant:any) => ({
@@ -129,12 +157,42 @@ export class CreateEventComponent {
           event_id: newEventId
         }));
         await this.participantService.addBatchParticipants(participantsWithEvent);
+
+        for (let [index, draw] of this.draws.entries()){
+          if (!draw.winner || draw.winner === '') {
+            continue;
+          }
+
+          const participant =
+            await this.participantService.getParticipantByNameAndEventId(
+              draw.winner,
+              newEventId
+            );
+
+          if (participant === null) {
+            // Participant not found, insert new participant
+            const data : any = await this.participantService.addParticipant({
+              name: draw.winner.toString(),
+              member_code: 'dedicated',
+              event_id: newEventId
+            });
+            const newParticipantId = data[0]?.id;
+            await this.participantService.updateParticipantWon(newParticipantId, index + 1);
+          }else{
+            await this.participantService.updateParticipantWon(participant.id, index + 1);
+          }
+
+          await this.participantService.updateParticipantEligibleByName(draw.winner.toString());
+        }
+
+        this.loadEvents();
         this.eventForm = {
           event_name: '',
           event_code: '',
           password: '',
           file_name: '',
-          draw_type: 'S'
+          draw_type: 'S',
+          link_event: ''
         }
         this.draws = [];
         this.participantsToInsert = [];
@@ -143,7 +201,6 @@ export class CreateEventComponent {
         this.error = null;
         this.disabled = false;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
       }catch (error) {
         this.error = true;
         this.success = null;

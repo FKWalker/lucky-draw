@@ -134,7 +134,7 @@ export class SpinComponent {
 
           for(let sw of selectedWinners){
             await this.participantService.updateParticipantWon(sw.id, index+1);
-            await this.participantService.updateParticipantEligible(sw.member_code);
+            await this.participantService.updateParticipantEligibleByMemberCode(sw.member_code);
           }
 
           await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
@@ -160,7 +160,7 @@ export class SpinComponent {
         const selectedWinner = pool[randomIndex];
 
         await this.participantService.updateParticipantWon(selectedWinner.id, 0);
-        await this.participantService.updateParticipantEligible(selectedWinner.member_code);
+        await this.participantService.updateParticipantEligibleByMemberCode(selectedWinner.member_code);
         await this.eventService.setEventDrewById(this.eventId, true);
 
         // Trigger the popup modal states
@@ -208,7 +208,7 @@ export class SpinComponent {
 
     this.isDrawing = true;
     await this.participantService.updateParticipantWon(data[0].id, 0);
-    await this.participantService.updateParticipantEligible(data[0].member_code);
+    await this.participantService.updateParticipantEligibleByMemberCode(data[0].member_code);
 
     // Trigger the popup modal states
     const selectedWinners = [];

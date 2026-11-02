@@ -12,8 +12,8 @@
     <div class="carousel" [style.transform]="carouselRotation">
 
       <div class="participant-card" *ngFor="let participant of visibleParticipants; let i = index" [class.selected]="selectedIndex === i"
-        [style.transform]="getCardTransform(i)">
-        <div class="card-inner">
+        [style.transform]="getCardTransform(i)" >
+        <div class="card-inner" [ngClass]="'card-color-' + (i % 6)">
           <div class="card-name">
             {{ participant.name }}
           </div>
@@ -34,12 +34,13 @@
 
   <!-- Draw button -->
   <div class="controls">
-    <button class="draw-button" [disabled]="isDrawing || isDone" (click)="spin()">
-      {{ isDrawing ? 'DRAWING...' : 'SPIN' }}
+    <button class="draw-button" [disabled]="isDrawing || isDone || isPending" (click)="spin()">
       @if (isDrawing) {
         DRAWING...
       } @else if(isDone){
         All draw rounds have been completed!
+      }@else if(isPending){
+        Pending
       }@else {
         SPIN
       }

@@ -53,6 +53,36 @@
   will-change: transform;
 }
 
+/* 1. Royal blue */
+.card-color-0 {
+  background: linear-gradient(135deg, #348ACB, #18568D);
+}
+
+/* 2. Royal purple */
+.card-color-1 {
+  background: linear-gradient(135deg, #7546AD, #452477);
+}
+
+/* 3. Floral orange */
+.card-color-2 {
+  background: linear-gradient(135deg, #E78335, #B94F22);
+}
+
+/* 4. Deep blue */
+.card-color-3 {
+  background: linear-gradient(135deg, #1595A5, #086276);
+}
+
+/* 5. Light purple */
+.card-color-4 {
+  background: linear-gradient(135deg, #9255B9, #542B83);
+}
+
+/* 6. Deep orange */
+.card-color-5 {
+  background: linear-gradient(135deg, #D96B2B, #87351E);
+}
+
 /* Student card */
 .participant-card {
   position: absolute;
@@ -66,17 +96,16 @@
   box-sizing: border-box;
 
   background: linear-gradient(135deg,
-      #f8fbff 0%,
-      #dceaff 50%,
-      #c5dcf7 100%);
-
-  border: 1px solid rgba(255, 255, 255, 0.95);
-  border-radius: 7px;
-
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.28),
-    0 2px 5px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+        #1769c2 0%,
+        #0b3b83 55%,
+        #071d50 100%);
+  
+    border: 1px solid rgba(255, 215, 120, 0.65);
+    border-radius: 8px;
+  
+    box-shadow:
+      0 6px 18px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -101,11 +130,11 @@
   line-height: 1.2;
   font-weight: 800;
   letter-spacing: 1px;
-  color: #123b75;
+  color: #ffffff;
   text-align: center;
   overflow-wrap: anywhere;
   max-width: 100%;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* Selected card */

@@ -14,7 +14,7 @@ export class EventService {
     this.supabase = this.supabaseService.client;
   }
 
-  async addEvent(eventData: { event_name: string; event_code: string; password: string, file_name: string }, draws: any) {
+  async addEvent(eventData: { event_name: string; event_code: string; password: string, file_name: string, draw_type: string, link_event: string }, draws: any) {
     const { data, error } = await this.supabase
       .from('events')
       .insert([
@@ -23,7 +23,9 @@ export class EventService {
           event_code: eventData.event_code,
           password: eventData.password,
           draw_setup: draws,
-          file_name: eventData.file_name
+          file_name: eventData.file_name,
+          draw_type: eventData.draw_type,
+          link_event: eventData.link_event
         }
       ]).select();
 
@@ -34,7 +36,7 @@ export class EventService {
     return data;
   }
 
-  async updateEvent(id: string | number, eventData: { event_name: string; event_code: string; password: string, file_name: string }, draws: any) {
+  async updateEvent(id: string | number, eventData: { event_name: string; event_code: string; password: string, file_name: string, draw_type: string, link_event: string }, draws: any) {
     const { data, error } = await this.supabase
       .from('events')
       .update({
@@ -42,7 +44,9 @@ export class EventService {
         event_code: eventData.event_code,
         password: eventData.password,
         draw_setup: draws,
-        file_name: eventData.file_name
+        file_name: eventData.file_name,
+        draw_type: eventData.draw_type,
+        link_event: eventData.link_event
       })
       .eq('id', id); // 👈 Targets the exact row using its unique ID
 
@@ -131,6 +135,19 @@ export class EventService {
       console.error('Error updating event with draws:', error);
       throw error;
     }
+    return data;
+  }
+
+  async getEvents() {
+    const { data, error } = await this.supabase
+      .from('events')
+      .select('*');
+
+    if (error) {
+      console.error('Error fetching events:', error);
+      throw error;
+    }
+
     return data;
   }
   

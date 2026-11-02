@@ -30,10 +30,11 @@ export class ParticipantService {
   }
 
   // Upload/Add a new participant name
-  async addParticipant(name: string) {
+  async addParticipant(participants: { name: string; member_code: string; event_id: string }) {
     const { data, error } = await this.supabase
       .from('participants')
-      .insert([{ name }]);
+      .insert(participants)
+      .select();
 
     if (error) {
       console.error('Error adding participant:', error);
@@ -135,7 +136,7 @@ export class ParticipantService {
     return data;
   }
 
-  async updateParticipantEligible(memberCode: string) {
+  async updateParticipantEligibleByMemberCode(memberCode: string) {
     const { data, error } = await this.supabase
       .from('participants') // Replace with your actual Supabase table name
       .update({
@@ -143,6 +144,21 @@ export class ParticipantService {
       })
       .eq('member_code', memberCode)
     
+    if (error) {
+      console.error('Error fetching participants:', error);
+      return [];
+    }
+    return data;
+  }
+
+  async updateParticipantEligibleByName(name: string) {
+    const { data, error } = await this.supabase
+      .from('participants') // Replace with your actual Supabase table name
+      .update({
+        eligible: false
+      })
+      .eq('name', name)
+
     if (error) {
       console.error('Error fetching participants:', error);
       return [];
@@ -164,6 +180,22 @@ export class ParticipantService {
     }
     
     return data;
+  }
+
+  async getParticipantByNameAndEventId(name: string | number, eventId: string | number) {
+    const { data, error } = await this.supabase
+      .from('participants')
+      .select('*')
+      .eq('name', name)
+      .eq('event_id', eventId)
+      .limit(1);
+
+    if (error) {
+      console.error('Error fetching event by id:', error);
+      throw error;
+    }
+
+    return data?.[0] ?? null;
   }
 
 }

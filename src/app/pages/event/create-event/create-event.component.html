@@ -42,6 +42,11 @@
             </div>
         </div>
         <div>
+            <app-label>Link Event</app-label>
+            <app-select [options]="eventOptions" placeholder="Select Option" [value]="this.eventForm.link_event"
+                (valueChange)="handleLinkEventChange($event)" className="dark:bg-dark-900"></app-select>
+        </div>
+        <div>
             <div class="mb-4 text-left">
                 <div class="flex items-baseline gap-2">
                     <app-label for="input">Draw Step</app-label>
