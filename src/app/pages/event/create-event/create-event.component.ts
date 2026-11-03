@@ -72,6 +72,7 @@ export class CreateEventComponent {
 
   async loadEvents(): Promise<void> {
     const events = await this.eventService.getEvents();
+    this.eventOptions = [];
     this.eventOptions.push({ value : '', label: ''})
     for (const event of events) {
       this.eventOptions.push({

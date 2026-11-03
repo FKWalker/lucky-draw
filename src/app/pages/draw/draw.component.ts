@@ -260,7 +260,6 @@ export class DrawComponent implements OnInit, OnDestroy {
       Math.random() * this.visibleParticipants.length
     );
 
-    console.log(this.visibleParticipants);
     if (this.draws[this.drawCount].winner != ''){
       const participant =
         await this.participantService.getParticipantByNameAndEventId(
@@ -269,14 +268,14 @@ export class DrawComponent implements OnInit, OnDestroy {
         );
 
       this.visibleParticipants[targetIndex] = participant;
+    }else{
+      await this.participantService.updateParticipantWon(this.visibleParticipants[targetIndex].id, this.drawCount + 1);
+      await this.participantService.updateParticipantEligibleByName(this.visibleParticipants[targetIndex].name);
     }
-    console.log(this.visibleParticipants);
 
     this.draws[this.drawCount].drew = true;
     await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
     await this.eventService.setEventDrewById(this.eventId, true);
-    await this.participantService.updateParticipantWon(this.visibleParticipants[targetIndex].id, this.drawCount+1);
-    await this.participantService.updateParticipantEligibleByName(this.visibleParticipants[targetIndex].name);
 
     const targetRotation = targetIndex * this.angleStep;
     const startRotation = this.currentRotation;
