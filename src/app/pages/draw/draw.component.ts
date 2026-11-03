@@ -69,8 +69,18 @@ export class DrawComponent implements OnInit, OnDestroy {
     if (this.eventId) {
       this.fetchEventDetails(this.eventId);
       this.loadParticipants();
-      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, () => {
-        // Empty callback because this admin page only sends updates, it doesn't listen to others
+      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, (payload) => {
+        // Safe extraction using bracket notation
+        const data = payload?.['payload'] || payload;
+
+        if (data && data.type === 'NEW_WINNERS') {
+          this.visibleParticipants = data.visibleParticipants;
+          this.runReel(data.winnerIndex);
+        }
+
+        if (data && data.type === 'IS_DRAWING') {
+          this.isDrawing = true;
+        }
       });
     }
   }
@@ -213,6 +223,10 @@ export class DrawComponent implements OnInit, OnDestroy {
 
   // Start drawing
   async spin() {
+    await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+      type: 'IS_DRAWING',
+      eventId: this.eventId
+    });
     await this.fetchEventDetails(this.eventId);
 
     if (this.drawCount == 0 && this.linkEvent != 0){
@@ -236,6 +250,10 @@ export class DrawComponent implements OnInit, OnDestroy {
     await this.loadParticipants();
     if (this.drawCount == this.draws.length) {
       this.isDone = true;
+      await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+        type: 'IS_DONE',
+        eventId: this.eventId
+      });
       return;
     }
 
@@ -277,6 +295,10 @@ export class DrawComponent implements OnInit, OnDestroy {
     await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
     await this.eventService.setEventDrewById(this.eventId, true);
 
+    this.runReel(targetIndex);
+  }
+
+  runReel(targetIndex: number){
     const targetRotation = targetIndex * this.angleStep;
     const startRotation = this.currentRotation;
 

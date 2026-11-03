@@ -1,0 +1,234 @@
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { EventService } from 'app/shared/services/event.service';
+import { ParticipantService } from 'app/shared/services/participant.service';
+import { SupabaseService } from 'app/shared/services/supabase.service';
+import { ButtonComponent } from 'app/shared/components/ui/button/button.component';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-spin-multiple',
+  imports: [ButtonComponent, FormsModule],
+  templateUrl: './spin-multiple.component.html',
+  styleUrl: './spin-multiple.component.css'
+})
+export class SpinMultipleComponent {
+
+  isDrawing: boolean = false;
+  isDone: boolean = false;
+  eventCode: any; // Bind this from your route or event state
+  eventId: any;
+
+  draws: { drawName: string | number; number: string | number; drew: boolean }[] = [];
+  showWinnerModal = false;
+  currentWinners: any[] = [];
+
+  drawChannel: any;
+
+  showHiddenModal = false;
+  disabled: boolean = false;
+  memberCode: any = '';
+  invalidMemberCode: boolean = false;
+
+  constructor(private supabaseService: SupabaseService,
+    private participantService: ParticipantService,
+    private eventService: EventService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
+
+  ngOnInit() {
+    // 1. Grab the ID from the route parameter (:id)
+    this.eventId = this.route.snapshot.paramMap.get('id');
+    if (this.eventId) {
+      this.fetchEventDetails(this.eventId);
+      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, () => {
+        // Empty callback because this admin page only sends updates, it doesn't listen to others
+      });
+    }
+  }
+
+  async fetchEventDetails(id: string) {
+    try {
+      // 2. Fetch the data from Supabase
+      const data = await this.eventService.getEventById(id);
+
+      if (!data) {
+        console.warn('Event not found, redirecting...');
+        this.router.navigate(['/event/list']); // 👈 Adjust this path to match your actual event listing route
+        return;
+      }
+      this.draws = data.draw_setup;
+      let drawCount = 0;
+      if (this.draws.length > 0) {
+        for (let draw of this.draws) {
+          if (draw.drew) {
+            drawCount++;
+          }
+        }
+        if (drawCount == this.draws.length) {
+          this.isDone = true;
+        }
+      }
+
+      this.eventCode = data.event_code;
+
+    } catch (error) {
+      console.error('Failed to load event details:', error);
+      this.router.navigate(['event/listing']); // 👈 Adjust this path to match your actual event listing route
+      return;
+    }
+  }
+
+  async triggerDraw() {
+    this.isDrawing = true;
+    try {
+      await this.fetchEventDetails(this.eventId);
+      const data = await this.participantService.getEligibleParticipants(this.eventId);
+
+      if (!data || data.length === 0) {
+        console.warn('No eligible participants found for the draw.');
+        this.isDrawing = false;
+        return;
+      }
+
+      let drawCount = 0;
+
+      if (this.draws.length > 0) {
+        for (let [index, draw] of this.draws.entries()) {
+          if (draw.drew) {
+            drawCount++;
+            continue;
+          }
+
+          const countToSelect = Number(draw.number) || 1;
+          const selectedWinners = [];
+          const selectedIdsThisRound = new Set(); // Tracks IDs picked in THIS round to prevent self-duplication
+
+          // Create a working copy so we can pull items out of it
+          let pool = [...data];
+          // Keep picking until we reach the count or run out of unique people
+          while (selectedWinners.length < countToSelect && pool.length > 0) {
+            // Pick a random index from the pool
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            const candidate = pool[randomIndex];
+
+            // Check if this person has ALREADY been picked in this specific round
+            if (!selectedIdsThisRound.has(candidate.member_code)) {
+              selectedWinners.push(candidate);
+              selectedIdsThisRound.add(candidate.member_code); // Mark ID as picked for this round
+            }
+
+            // Remove this specific entry from the pool so it isn't picked again immediately
+            pool.splice(randomIndex, 1);
+          }
+
+          // Save to your draw object
+          draw.drew = true;
+          drawCount++;
+          await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
+          await this.eventService.setEventDrewById(this.eventId, true);
+
+          for (let sw of selectedWinners) {
+            await this.participantService.updateParticipantWon(sw.id, index + 1);
+            await this.participantService.updateParticipantEligibleByMemberCode(sw.member_code);
+          }
+
+          await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+            type: 'NEW_WINNERS',
+            eventId: this.eventId,
+            winners: selectedWinners,
+            draws: this.draws
+          });
+
+          // Trigger the popup modal states
+          this.currentWinners = selectedWinners;
+          this.showWinnerModal = true;
+
+          break; // Stops after processing the next available un-drawn round
+        }
+
+        if (drawCount == this.draws.length) {
+          this.isDone = true;
+        }
+      } else {
+        let pool = [...data];
+        const randomIndex = Math.floor(Math.random() * pool.length);
+        const selectedWinner = pool[randomIndex];
+
+        await this.participantService.updateParticipantWon(selectedWinner.id, 0);
+        await this.participantService.updateParticipantEligibleByMemberCode(selectedWinner.member_code);
+        await this.eventService.setEventDrewById(this.eventId, true);
+
+        // Trigger the popup modal states
+        const selectedWinners = [];
+        selectedWinners.push(selectedWinner);
+
+        await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+          type: 'NEW_WINNERS',
+          eventId: this.eventId,
+          winners: selectedWinners,
+          draws: this.draws
+        });
+
+        setTimeout(() => {
+          this.isDrawing = false;
+        }, 2500);
+
+      }
+
+
+    } catch (error) {
+      console.error('Error during lucky draw execution:', error);
+    }
+  }
+
+  // Method to close the modal and reset loading state
+  closeWinnerModal() {
+    this.showWinnerModal = false;
+    this.isDrawing = false;
+  }
+
+  async submitHiddenModal() {
+    // 1. Await the async service call
+    const data = await this.participantService.getParticipantByMemberCodeAndEventIdAndEligible(this.memberCode, this.eventId);
+    console.log(data);
+
+    // 2. Check if data is null/undefined or if the array is empty
+    if (!data || data.length === 0) {
+      this.invalidMemberCode = true;
+      return;
+    }
+
+    this.invalidMemberCode = false;
+    this.showHiddenModal = false;
+
+    this.isDrawing = true;
+    await this.participantService.updateParticipantWon(data[0].id, 0);
+    await this.participantService.updateParticipantEligibleByMemberCode(data[0].member_code);
+
+    // Trigger the popup modal states
+    const selectedWinners = [];
+    selectedWinners.push(data[0]);
+
+    await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+      type: 'NEW_WINNERS',
+      eventId: this.eventId,
+      winners: selectedWinners,
+      draws: this.draws
+    });
+
+    setTimeout(() => {
+      this.isDrawing = false;
+    }, 2500);
+  }
+
+  openSettings() {
+    this.showHiddenModal = true;
+  }
+
+  closeHiddenModal() {
+    this.showHiddenModal = false;
+  }
+
+}

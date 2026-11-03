@@ -11,7 +11,7 @@ import { EventService } from 'app/shared/services/event.service';
 
 @Component({
   selector: 'app-spin',
-  imports: [ButtonComponent, FormsModule],
+  imports: [FormsModule],
   templateUrl: './spin.component.html',
   styleUrl: './spin.component.css'
 })
@@ -19,11 +19,11 @@ export class SpinComponent {
 
   isDrawing: boolean = false;
   isDone: boolean = false;
+  isPending: boolean = false;
   eventCode: any; // Bind this from your route or event state
   eventId: any;
 
-  draws: { drawName: string | number; number: string | number; drew: boolean}[] = [];
-  showWinnerModal = false;
+  draws: { drawName: string | number; number: string | number; drew: boolean, winner: string | number }[] = [];
   currentWinners: any[] = [];
 
   drawChannel: any;
@@ -32,6 +32,11 @@ export class SpinComponent {
   disabled: boolean = false;
   memberCode: any = '';
   invalidMemberCode: boolean = false;
+
+  drawCount: number = 0;
+  linkEvent: number = 0;
+  participants: any[] = [];
+  visibleParticipants: any[] = [];
 
   constructor(private supabaseService: SupabaseService,
     private participantService: ParticipantService,
@@ -45,16 +50,66 @@ export class SpinComponent {
     this.eventId = this.route.snapshot.paramMap.get('id');
     if(this.eventId){
       this.fetchEventDetails(this.eventId);
-      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, () => {
-        // Empty callback because this admin page only sends updates, it doesn't listen to others
+      this.drawChannel = this.supabaseService.joinDrawChannel(this.eventId, (payload) => {
+        // Safe extraction using bracket notation
+        const data = payload?.['payload'] || payload;
+
+        if (data && data.type === 'NEW_WINNERS') {
+          this.isDrawing = false;
+        }
+
+        if (data && data.type === 'IS_DRAWING') {
+          this.isDrawing = true;
+        }
+
+        if (data && data.type === 'IS_DONE') {
+          this.isDone = true;
+        }
       });
     }
+  }
+
+  async loadParticipants(): Promise<void> {
+    try {
+      this.participants =
+        await this.participantService.getEligibleParticipants(this.eventId);
+
+      console.log('Eligible participants:', this.participants);
+      console.log('Total participants:', this.participants.length);
+
+      await this.updateVisibleParticipants();
+
+    } catch (error) {
+
+      console.error('Failed to load participants:', error);
+
+      this.participants = [];
+      this.visibleParticipants = [];
+
+    }
+
   }
 
   async fetchEventDetails(id: string) {
     try {
       // 2. Fetch the data from Supabase
       const data = await this.eventService.getEventById(id);
+      if (data.link_event != 0) {
+        const previousData = await this.eventService.getEventById(data.link_event);
+        let draws = previousData.draw_setup;
+        let drawCount = 0;
+        this.isPending = true;
+        if (draws.length > 0) {
+          for (let draw of draws) {
+            if (draw.drew) {
+              drawCount++;
+            }
+          }
+          if (drawCount == draws.length) {
+            this.isPending = false;
+          }
+        }
+      }
 
       if (!data) {
         console.warn('Event not found, redirecting...');
@@ -63,19 +118,21 @@ export class SpinComponent {
       }
       this.draws = data.draw_setup;
       let drawCount = 0;
-      if(this.draws.length > 0){
+      if (this.draws.length > 0) {
         for (let draw of this.draws) {
           if (draw.drew) {
             drawCount++;
           }
         }
-        if(drawCount == this.draws.length){
+        if (drawCount == this.draws.length) {
           this.isDone = true;
         }
       }
-      
+
+      this.drawCount = drawCount;
+
       this.eventCode = data.event_code;
-      
+
     } catch (error) {
       console.error('Failed to load event details:', error);
       this.router.navigate(['event/listing']); // 👈 Adjust this path to match your actual event listing route
@@ -83,155 +140,107 @@ export class SpinComponent {
     }
   }
 
-  async triggerDraw() {
-    this.isDrawing = true;
-    try {
-      await this.fetchEventDetails(this.eventId);
-      const data = await this.participantService.getEligibleParticipants(this.eventId);
-
-      if (!data || data.length === 0) {
-        console.warn('No eligible participants found for the draw.');
-        this.isDrawing = false;
-        return;
-      }
-
-      let drawCount = 0;
-
-      if(this.draws.length > 0){
-        for (let[index, draw] of this.draws.entries()) {
-          if (draw.drew) {
-            drawCount++;
-            continue;
-          }
-
-          const countToSelect = Number(draw.number) || 1;
-          const selectedWinners = [];
-          const selectedIdsThisRound = new Set(); // Tracks IDs picked in THIS round to prevent self-duplication
-
-          // Create a working copy so we can pull items out of it
-          let pool = [...data];
-          // Keep picking until we reach the count or run out of unique people
-          while (selectedWinners.length < countToSelect && pool.length > 0) {
-            // Pick a random index from the pool
-            const randomIndex = Math.floor(Math.random() * pool.length);
-            const candidate = pool[randomIndex];
-
-            // Check if this person has ALREADY been picked in this specific round
-            if (!selectedIdsThisRound.has(candidate.member_code)) {
-              selectedWinners.push(candidate);
-              selectedIdsThisRound.add(candidate.member_code); // Mark ID as picked for this round
-            }
-
-            // Remove this specific entry from the pool so it isn't picked again immediately
-            pool.splice(randomIndex, 1);
-          }
-
-          // Save to your draw object
-          draw.drew = true;
-          drawCount++;
-          await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
-          await this.eventService.setEventDrewById(this.eventId, true);
-
-          for(let sw of selectedWinners){
-            await this.participantService.updateParticipantWon(sw.id, index+1);
-            await this.participantService.updateParticipantEligibleByMemberCode(sw.member_code);
-          }
-
-          await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
-            type: 'NEW_WINNERS',
-            eventId: this.eventId,
-            winners: selectedWinners,
-            draws: this.draws
-          });
-
-          // Trigger the popup modal states
-          this.currentWinners = selectedWinners;
-          this.showWinnerModal = true;
-
-          break; // Stops after processing the next available un-drawn round
-        }
-
-        if(drawCount == this.draws.length){
-          this.isDone = true;
-        }
-      }else{
-        let pool = [...data];
-        const randomIndex = Math.floor(Math.random() * pool.length);
-        const selectedWinner = pool[randomIndex];
-
-        await this.participantService.updateParticipantWon(selectedWinner.id, 0);
-        await this.participantService.updateParticipantEligibleByMemberCode(selectedWinner.member_code);
-        await this.eventService.setEventDrewById(this.eventId, true);
-
-        // Trigger the popup modal states
-        const selectedWinners = [];
-        selectedWinners.push(selectedWinner);
-
-        await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
-          type: 'NEW_WINNERS',
-          eventId: this.eventId,
-          winners: selectedWinners,
-          draws: this.draws
-        });
-        
-        setTimeout(() => {
-          this.isDrawing = false;
-        }, 2500);
-
-      }
-      
-
-    } catch (error) {
-      console.error('Error during lucky draw execution:', error);
-    }
-  }
-
-  // Method to close the modal and reset loading state
-  closeWinnerModal() {
-    this.showWinnerModal = false;
-    this.isDrawing = false;
-  }
-
-  async submitHiddenModal() {
-    // 1. Await the async service call
-    const data = await this.participantService.getParticipantByMemberCodeAndEventIdAndEligible(this.memberCode, this.eventId);
-    console.log(data);
-
-    // 2. Check if data is null/undefined or if the array is empty
-    if (!data || data.length === 0) {
-      this.invalidMemberCode = true;
+  async updateVisibleParticipants() {
+    if (this.participants.length === 0) {
+      this.visibleParticipants = [];
       return;
     }
 
-    this.invalidMemberCode = false;
-    this.showHiddenModal = false;
+    // Shuffle participants using Fisher-Yates algorithm
+    const shuffled = [...this.participants];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    // Pick up to 12 participants with unique names
+    const uniqueNames = new Set<string>();
+
+    this.visibleParticipants = shuffled.filter(participant => {
+      const name = participant.name?.trim().toLowerCase();
+
+      if (!name || uniqueNames.has(name)) {
+        return false;
+      }
+
+      uniqueNames.add(name);
+      return true;
+    }).slice(0, 12);
+
+  }
+
+  async spin() {
+    await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+      type: 'IS_DRAWING',
+      eventId: this.eventId
+    });
+
+    await this.fetchEventDetails(this.eventId);
+
+    if (this.drawCount == 0 && this.linkEvent != 0) {
+      const previousData = await this.eventService.getEventById(this.linkEvent);
+      let draws = previousData.draw_setup;
+
+      if (draws.length != 0) {
+        for (let [index, d] of draws.entries()) {
+          let drawObj: any = {};
+          drawObj.name = d.drawName;
+
+          // Pass the index (or d.number) into your service call
+          const data = await this.participantService.getParticipantByEventIdAndWon(this.linkEvent, index + 1);
+          for (let w of data) {
+            await this.participantService.updateParticipantEligibleByName(w.name);
+          }
+        }
+      }
+    }
+
+    await this.loadParticipants();
+    if (this.drawCount == this.draws.length) {
+      this.isDone = true;
+      await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+        type: 'IS_DONE',
+        eventId: this.eventId
+      });
+      return;
+    }
+
+    if (this.isDrawing || !this.visibleParticipants.length) {
+      return;
+    }
 
     this.isDrawing = true;
-    await this.participantService.updateParticipantWon(data[0].id, 0);
-    await this.participantService.updateParticipantEligibleByMemberCode(data[0].member_code);
 
-    // Trigger the popup modal states
-    const selectedWinners = [];
-    selectedWinners.push(data[0]);
+    // Randomly select winner from the 12 visible participants
+    let targetIndex = Math.floor(
+      Math.random() * this.visibleParticipants.length
+    );
+
+    if (this.draws[this.drawCount].winner != '') {
+      const participant =
+        await this.participantService.getParticipantByNameAndEventId(
+          this.draws[this.drawCount].winner,
+          this.eventId
+        );
+
+      this.visibleParticipants[targetIndex] = participant;
+    } else {
+      await this.participantService.updateParticipantWon(this.visibleParticipants[targetIndex].id, this.drawCount + 1);
+      await this.participantService.updateParticipantEligibleByName(this.visibleParticipants[targetIndex].name);
+    }
+
+    this.draws[this.drawCount].drew = true;
+    await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
+    await this.eventService.setEventDrewById(this.eventId, true);
 
     await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
       type: 'NEW_WINNERS',
       eventId: this.eventId,
-      winners: selectedWinners,
-      draws: this.draws
+      visibleParticipants: this.visibleParticipants,
+      winnerIndex: targetIndex
     });
-    
-    setTimeout(() => {
-      this.isDrawing = false;
-    }, 2500);
-  }
 
-  openSettings() {
-    this.showHiddenModal = true;
+    this.isDrawing = false;
   }
-
-  closeHiddenModal(){
-    this.showHiddenModal = false;
-  }
-
 }
