@@ -11,10 +11,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ParticipantService } from 'app/shared/services/participant.service';
 import { EventService } from 'app/shared/services/event.service';
 import { RadioComponent } from 'app/shared/components/form/input/radio.component';
+import { ModalService } from 'app/shared/services/modal.service';
+import { ModalComponent } from 'app/shared/components/ui/modal/modal.component';
+import { ToastService } from 'app/shared/services/toast.service';
 
 @Component({
   selector: 'app-edit-event',
-  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ButtonComponent, FileInputComponent, RadioComponent],
+  imports: [ComponentCardComponent, AlertComponent, LabelComponent, InputFieldComponent, ButtonComponent, FileInputComponent, ModalComponent],
   templateUrl: './edit-event.component.html',
   styleUrl: './edit-event.component.css'
 })
@@ -63,11 +66,15 @@ export class EditEventComponent {
 
   selectedDrawType: string = 'option1';
 
+  isDeleteModalOpen = false;
+
   constructor(private supabaseService: SupabaseService, 
     private participantService: ParticipantService,
     private eventService: EventService,
     private route: ActivatedRoute, 
-    private router: Router) {
+    private router: Router,
+    private modal: ModalService,
+    private toastService: ToastService,) {
   }
 
   ngOnInit() {
@@ -304,6 +311,26 @@ export class EditEventComponent {
 
   onCancel(){
      this.router.navigate(['/event/listing']);
+  }
+
+  openDeleteModal() {
+    this.isDeleteModalOpen = true;
+  }
+
+  closeDeleteModal() {
+    this.isDeleteModalOpen = false;
+  }
+
+  deleteEvent(){
+    this.eventService.deleteEventById(this.eventId);
+    this.participantService.deleteParticipantsByEvent(this.eventId);
+    this.closeDeleteModal();
+    this.router.navigate(['event/listing']);
+    this.toastService.success(
+      'Delete Event',
+      'Event has been deleted successfully.',
+      3000
+    ); 
   }
 
 }

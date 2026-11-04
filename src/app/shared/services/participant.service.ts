@@ -58,7 +58,6 @@ export class ParticipantService {
   }
 
   async deleteParticipantsByEvent(eventId: string | number) {
-    console.log("in");
     const { data, error } = await this.supabase
       .from('participants')
       .delete()
@@ -68,7 +67,7 @@ export class ParticipantService {
       console.error('Error deleting participants for event:', error);
       throw error;
     }
-    console.log(data);
+
     return data;
   }
 

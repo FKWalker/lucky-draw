@@ -128,7 +128,7 @@
                             🏆
                         </div>
                         <div class="overflow-hidden">
-                            <p class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{{ wl.name }} - {{ wl.member_code }}</p>
+                            <p class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{{ wl.name }}</p>
                             <p class="text-xs text-gray-400 dark:text-gray-500">Winner #{{ $index + 1 }}</p>
                         </div>
                         </div>
@@ -195,7 +195,7 @@
         
         <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
             <app-button size="sm" variant="outline" (btnClick)="closeResetModal()">Close</app-button>
-            <app-button size="sm" (btnClick)="handleReset()">Reset</app-button>
+            <app-button size="sm" (btnClick)="handleReset()">Confirm</app-button>
         </div>
     </div>
 </app-modal>

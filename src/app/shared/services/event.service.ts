@@ -150,5 +150,19 @@ export class EventService {
 
     return data;
   }
+
+  async deleteEventById(eventId: string | number) {
+    const { data, error } = await this.supabase
+      .from('events')
+      .delete()
+      .eq('id', eventId);
+
+    if (error) {
+      console.error('Error deleting event:', error);
+      throw error;
+    }
+    
+    return data;
+  }
   
 }

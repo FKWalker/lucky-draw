@@ -136,7 +136,7 @@ export class ViewEventComponent {
 
       if (!data) {
         console.warn('Event not found, redirecting...');
-        this.router.navigate(['/event/list']); // 👈 Adjust this path to match your actual event listing route
+        this.router.navigate(['event/listing']); // 👈 Adjust this path to match your actual event listing route
         return;
       }
 
@@ -269,6 +269,11 @@ export class ViewEventComponent {
     data.drew = false;
     this.eventService.updateEvent(this.eventId, data, this.draws);
     this.closeResetModal();
+    this.toastService.success(
+      'Reset Event',
+      'Event has been reset successfully.',
+      3000
+    );  
     window.location.reload();
   }
 
