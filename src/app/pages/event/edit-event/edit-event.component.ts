@@ -180,15 +180,49 @@ export class EditEventComponent {
     this.disabled = true;
     if(this.validation()){
       try{
-        this.eventForm.file_name = this.fileName;
+        if (this.eventForm.link_event === '') {
+          this.eventForm.link_event = 0;
+        }
+        if (this.fileName){
+          this.eventForm.file_name = this.fileName;
+        }
         await this.eventService.updateEvent(this.eventId, this.eventForm, this.draws);
-        await this.participantService.deleteParticipantsByEvent(this.eventId);
-        if(this.participantsToInsert > 0){
+        if (this.fileName) {
+          await this.participantService.deleteParticipantsByEvent(this.eventId);
+        }
+        if(this.participantsToInsert.length > 0){
           const participantsWithEvent = this.participantsToInsert.map((participant:any) => ({
             ...participant,
             event_id : this.eventId
           }));
           await this.participantService.addBatchParticipants(participantsWithEvent);
+        }
+
+        for (let [index, draw] of this.draws.entries()) {
+          if (!draw.winner || draw.winner === '') {
+            continue;
+          }
+
+          const participant =
+            await this.participantService.getParticipantByNameAndEventId(
+              draw.winner,
+              this.eventId
+            );
+
+          if (participant === null) {
+            // Participant not found, insert new participant
+            const data: any = await this.participantService.addParticipant({
+              name: draw.winner.toString(),
+              member_code: 'dedicated',
+              event_id: this.eventId
+            });
+            const newParticipantId = data[0]?.id;
+            await this.participantService.updateParticipantWon(newParticipantId, index + 1);
+          } else {
+            await this.participantService.updateParticipantWon(participant.id, index + 1);
+          }
+
+          await this.participantService.updateParticipantEligibleByName(draw.winner.toString());
         }
         
         this.participantsToInsert = [];
@@ -231,10 +265,10 @@ export class EditEventComponent {
       valid = false;
     }
 
-    if (!String(this.eventForm.password).trim()) {
-      this.errors.password = true;
-      valid = false;
-    }
+    // if (!String(this.eventForm.password).trim()) {
+    //   this.errors.password = true;
+    //   valid = false;
+    // }
 
     if(!this.validateDrawSetup()){
       valid = false;

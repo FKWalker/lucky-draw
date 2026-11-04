@@ -1,5 +1,12 @@
 <div class="space-y-6">
     <div>
+        <div class="flex flex-col md:flex-row md:justify-end md:items-start gap-4">
+            <app-button type="button" size="sm" variant="primary" (btnClick)="openResetModal()">
+                Reset
+            </app-button>
+        </div>
+    </div>
+    <div>
         <div class="pb-3 flex flex-col md:flex-row md:justify-between md:items-start gap-4">
             <!-- Left Section: URLs and Inputs -->
             <div class="flex flex-col lg:flex-row gap-4 w-full flex-1">
@@ -174,4 +181,22 @@
         ></app-custom-table>
     }
 </div>
+
+<app-modal [isOpen]="isResetModalOpen" (close)="closeResetModal()" className="max-w-[700px] m-4">
+    <div class="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
+        <div class="px-2 pe-14">
+            <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+                Reset Event
+            </h4>
+            <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+                Are you sure to reset?
+            </p>
+        </div>
+        
+        <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+            <app-button size="sm" variant="outline" (btnClick)="closeResetModal()">Close</app-button>
+            <app-button size="sm" (btnClick)="handleReset()">Reset</app-button>
+        </div>
+    </div>
+</app-modal>
 

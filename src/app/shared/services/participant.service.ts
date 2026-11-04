@@ -58,6 +58,7 @@ export class ParticipantService {
   }
 
   async deleteParticipantsByEvent(eventId: string | number) {
+    console.log("in");
     const { data, error } = await this.supabase
       .from('participants')
       .delete()
@@ -67,7 +68,7 @@ export class ParticipantService {
       console.error('Error deleting participants for event:', error);
       throw error;
     }
-    
+    console.log(data);
     return data;
   }
 
@@ -196,6 +197,22 @@ export class ParticipantService {
     }
 
     return data?.[0] ?? null;
+  }
+
+  async resetParticipants(eventId: string) {
+    const { data, error } = await this.supabase
+      .from('participants') // Replace with your actual Supabase table name
+      .update({
+        won: null,
+        eligible: false
+      })
+      .eq('event_id', eventId)
+
+    if (error) {
+      console.error('Error reset participants:', error);
+      return [];
+    }
+    return data;
   }
 
 }

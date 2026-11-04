@@ -11,10 +11,12 @@ import { ParticipantService } from 'app/shared/services/participant.service';
 import { EventService } from 'app/shared/services/event.service';
 import { ToastService } from 'app/shared/services/toast.service';
 import { environment } from 'environments/environment';
+import { ModalService } from 'app/shared/services/modal.service';
+import { ModalComponent } from 'app/shared/components/ui/modal/modal.component';
 
 @Component({
   selector: 'app-view-event',
-  imports: [ComponentCardComponent, LabelComponent, InputFieldComponent, ButtonComponent, LoadingSpinnerComponent, CustomTableComponent],
+  imports: [ComponentCardComponent, LabelComponent, InputFieldComponent, ButtonComponent, LoadingSpinnerComponent, CustomTableComponent, ModalComponent],
   templateUrl: './view-event.component.html',
   styleUrl: './view-event.component.css'
 })
@@ -50,7 +52,7 @@ export class ViewEventComponent {
 
   winners: any[] = [];
 
-  draws: { drawName: string | number; number: string | number; drew: boolean}[] = [];
+  draws: { drawName: string | number; number: string | number; drew: boolean, disabled: boolean, winner: string | number }[] = [];
 
   eventId: any;
 
@@ -59,12 +61,15 @@ export class ViewEventComponent {
   drawScreenUrl: string = '';
   startDrawUrl: string = '';
 
+  isResetModalOpen = false;
+
   constructor(private supabaseService: SupabaseService,
     private participantService: ParticipantService,
     private eventService: EventService,
     private router: Router,
     private route: ActivatedRoute,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private modal: ModalService
   ) {}
 
   ngOnInit() {
@@ -216,6 +221,55 @@ export class ViewEventComponent {
       'Start Draw URL has been copied successfully.',
       3000
     );   
+  }
+
+  openResetModal() { 
+    this.isResetModalOpen = true; 
+  }
+
+  closeResetModal() { 
+    this.isResetModalOpen = false; 
+  }
+
+  async handleReset(){
+    this.participantService.resetParticipants(this.eventId);
+    for (let [index, draw] of this.draws.entries()) {
+      if (!draw.winner || draw.winner === '') {
+        continue;
+      }
+
+      const participant =
+        await this.participantService.getParticipantByNameAndEventId(
+          draw.winner,
+          this.eventId
+        );
+
+      if (participant === null) {
+        // Participant not found, insert new participant
+        const data: any = await this.participantService.addParticipant({
+          name: draw.winner.toString(),
+          member_code: 'dedicated',
+          event_id: this.eventId
+        });
+        const newParticipantId = data[0]?.id;
+        await this.participantService.updateParticipantWon(newParticipantId, index + 1);
+      } else {
+        await this.participantService.updateParticipantWon(participant.id, index + 1);
+      }
+
+      await this.participantService.updateParticipantEligibleByName(draw.winner.toString());
+    }
+
+    const data = await this.eventService.getEventById(this.eventId);
+
+    for (let d of this.draws){
+      d.drew = false;
+    }
+
+    data.drew = false;
+    this.eventService.updateEvent(this.eventId, data, this.draws);
+    this.closeResetModal();
+    window.location.reload();
   }
 
 }

@@ -32,7 +32,7 @@
             <app-label for="input">Password</app-label>
             <app-input-field type="text" id="input" placeholder="Enter password" [value]="eventForm.password" (valueChange)="eventForm.password = $event" [error]="errors.password" [hint]="errors.password ? 'This is an invalid password.' : ''"/>
         </div> -->
-        <div>
+        <!-- <div>
             <app-label for="input">Draw Type</app-label>
             <div class="flex flex-wrap items-center gap-8">
                 <app-radio [id]="'S'" [name]="'group1'" [value]="'S'" [checked]="this.eventForm.draw_type === 'S'"
@@ -40,7 +40,7 @@
                 <app-radio [id]="'M'" [name]="'group1'" [value]="'M'" [checked]="this.eventForm.draw_type === 'M'"
                     [label]="'Multiple'" [disabled]="false" (valueChange)="handleDrawTypeChange($event)" />
             </div>
-        </div>
+        </div> -->
         <div>
             <app-label>Link Event</app-label>
             <app-select [options]="eventOptions" placeholder="Select Option" [value]="this.eventForm.link_event"
@@ -75,7 +75,7 @@
                         </div>
 
                         <!-- URL + Remove Button -->
-                        <div>
+                        <!-- <div>
                             <app-label>Number of Winner</app-label>
                             <app-input-field
                             type="number"
@@ -87,7 +87,7 @@
                             [hint]="drawsErrors[$index]?.number || ''"
                             [disabled] = d.disabled>
                             </app-input-field>
-                        </div>
+                        </div> -->
 
                         <div>
                             <app-label>Winner</app-label>
