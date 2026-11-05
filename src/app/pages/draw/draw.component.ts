@@ -90,9 +90,6 @@ export class DrawComponent implements OnInit, OnDestroy {
       this.participants =
         await this.participantService.getEligibleParticipants(this.eventId);
 
-      console.log('Eligible participants:', this.participants);
-      console.log('Total participants:', this.participants.length);
-
       await this.updateVisibleParticipants();
 
     } catch (error) {
@@ -248,15 +245,17 @@ export class DrawComponent implements OnInit, OnDestroy {
     }
 
     await this.loadParticipants();
-    if (this.drawCount == this.draws.length) {
-      this.isDone = true;
-      await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
-        type: 'IS_DONE',
-        eventId: this.eventId
-      });
-      return;
+    if(this.draws.length > 0){
+      if (this.drawCount == this.draws.length) {
+        this.isDone = true;
+        await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+          type: 'IS_DONE',
+          eventId: this.eventId
+        });
+        return;
+      }
     }
-
+    
     if (this.isDrawing || !this.visibleParticipants.length) {
       return;
     }
@@ -277,21 +276,25 @@ export class DrawComponent implements OnInit, OnDestroy {
     let targetIndex = Math.floor(
       Math.random() * this.visibleParticipants.length
     );
+    if(this.draws.length > 0){
+      if (this.draws[this.drawCount].winner != '') {
+        const participant =
+          await this.participantService.getParticipantByNameAndEventId(
+            this.draws[this.drawCount].winner,
+            this.eventId
+          );
 
-    if (this.draws[this.drawCount].winner != ''){
-      const participant =
-        await this.participantService.getParticipantByNameAndEventId(
-          this.draws[this.drawCount].winner,
-          this.eventId
-        );
-
-      this.visibleParticipants[targetIndex] = participant;
-    }else{
-      await this.participantService.updateParticipantWon(this.visibleParticipants[targetIndex].id, this.drawCount + 1);
+        this.visibleParticipants[targetIndex] = participant;
+      }else {
+        await this.participantService.updateParticipantWon(this.visibleParticipants[targetIndex].id, this.drawCount + 1);
+        await this.participantService.updateParticipantEligibleByName(this.visibleParticipants[targetIndex].name);
+      }
+      this.draws[this.drawCount].drew = true;
+    }else {
+      await this.participantService.updateParticipantWon(this.visibleParticipants[targetIndex].id, 0);
       await this.participantService.updateParticipantEligibleByName(this.visibleParticipants[targetIndex].name);
     }
 
-    this.draws[this.drawCount].drew = true;
     await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
     await this.eventService.setEventDrewById(this.eventId, true);
 
