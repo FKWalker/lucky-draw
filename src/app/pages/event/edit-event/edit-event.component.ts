@@ -35,12 +35,14 @@ export class EditEventComponent {
     event_code: any;
     password: any;
     file_name: any;
+    drew: any;
     draw_type: any;
     link_event: any;
   } = {
     event_name: '',
     event_code: '',
     password: '',
+    drew: true,
     file_name: '',
     draw_type: 'S',
     link_event: ''
@@ -112,6 +114,7 @@ export class EditEventComponent {
       this.eventForm.event_code = data.event_code;
       this.eventForm.password = data.password;
       this.eventForm.file_name = data.file_name;
+      this.eventForm.drew = data.drew;
       this.eventForm.draw_type = data.draw_type;
       this.draws = data.draw_setup;
       this.disabled = data.drew;
@@ -197,7 +200,7 @@ export class EditEventComponent {
         if (this.fileName) {
           await this.participantService.deleteParticipantsByEvent(this.eventId);
         }
-        if(this.participantsToInsert.length > 0){
+        if (this.participantsToInsert && this.participantsToInsert.length > 0){
           const participantsWithEvent = this.participantsToInsert.map((participant:any) => ({
             ...participant,
             event_id : this.eventId
