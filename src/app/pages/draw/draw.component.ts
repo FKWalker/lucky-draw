@@ -295,13 +295,6 @@ export class DrawComponent implements OnInit, OnDestroy {
     await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
     await this.eventService.setEventDrewById(this.eventId, true);
 
-    await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
-      type: 'NEW_WINNERS',
-      eventId: this.eventId,
-      visibleParticipants: this.visibleParticipants,
-      winnerIndex: targetIndex
-    });
-
     this.runReel(targetIndex);
   }
 
@@ -368,7 +361,7 @@ export class DrawComponent implements OnInit, OnDestroy {
   }
 
   // Display winner
-  finishDraw(index: number): void {
+  finishDraw(index: number) {
 
     this.selectedIndex = index;
 
@@ -389,6 +382,15 @@ export class DrawComponent implements OnInit, OnDestroy {
       this.particles = [];
 
     }, 3000);
+
+    setTimeout(() => {
+      this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+        type: 'NEW_WINNERS',
+        eventId: this.eventId,
+        visibleParticipants: this.visibleParticipants,
+        winnerIndex: index
+      });
+    }, 2500); 
   }
 
   // Generate celebration particles
