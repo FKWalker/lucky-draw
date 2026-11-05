@@ -1,64 +1,64 @@
 <div class="relative flex flex-col items-center justify-center min-h-screen text-white overflow-hidden p-6 select-none"
   style="background-image: url('images/draw/lucky-draw-bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
 
-<div class="picker-section">
+  <div class="picker-section pb-30">
+    <img src="/images/logo/logo-sp.png" alt="SP Group Logo" style="width: 150px; height: auto;">
+    <!-- 3D Carousel Scene -->
+    <div class="scene">
 
-  <!-- 3D Carousel Scene -->
-  <div class="scene">
+      <div class="center-light"></div>
 
-    <div class="center-light"></div>
+      <!-- Rotating carousel -->
+      <div class="carousel" [style.transform]="carouselRotation">
 
-    <!-- Rotating carousel -->
-    <div class="carousel" [style.transform]="carouselRotation">
-
-      <div class="participant-card" *ngFor="let participant of visibleParticipants; let i = index" [class.selected]="selectedIndex === i"
-        [style.transform]="getCardTransform(i)" >
-        <div class="card-inner" [ngClass]="'card-color-' + (i % 6)">
-          <div class="card-name">
-            {{ participant.name }}
+        <div class="participant-card" *ngFor="let participant of visibleParticipants; let i = index" [class.selected]="selectedIndex === i"
+          [style.transform]="getCardTransform(i)" >
+          <div class="card-inner" [ngClass]="'card-color-' + (i % 6)">
+            <div class="card-name">
+              {{ participant.name }}
+            </div>
           </div>
-        </div>
-      </div> 
+        </div> 
+      </div>
+
+      <!-- Fixed selection frame -->
+      <div class="selector">
+        <span class="selector-arrow top-arrow">▶</span>
+        <span class="selector-arrow bottom-arrow">▶</span>
+      </div>
     </div>
 
-    <!-- Fixed selection frame -->
-    <div class="selector">
-      <span class="selector-arrow top-arrow">▶</span>
-      <span class="selector-arrow bottom-arrow">▶</span>
+    <div>
+      {{ winner }}
     </div>
-  </div>
 
-  <div>
-    {{ winner }}
-  </div>
+    <!-- Draw button -->
+    <div class="controls">
+      <button class="draw-button" [disabled]="isDrawing || isDone || isPending" (click)="spin()">
+        @if (isDrawing) {
+          DRAWING...
+        } @else if(isDone){
+          All draw rounds have been completed!
+        }@else if(isPending){
+          Pending
+        }@else {
+          SPIN
+        }
+      </button>
+    </div>
 
-  <!-- Draw button -->
-  <div class="controls">
-    <button class="draw-button" [disabled]="isDrawing || isDone || isPending" (click)="spin()">
-      @if (isDrawing) {
-        DRAWING...
-      } @else if(isDone){
-        All draw rounds have been completed!
-      }@else if(isPending){
-        Pending
-      }@else {
-        SPIN
-      }
-    </button>
-  </div>
+    <!-- Spotlight overlay -->
+    <div class="spotlight-overlay" [class.active]="showSpotlight">
+    </div>
+    
+    <!-- Particles -->
+    <div class="particles">
+      <span class="particle" *ngFor="let particle of particles" [style.left.px]="particle.x" [style.top.px]="particle.y"
+        [style.--tx]="particle.tx + 'px'" [style.--ty]="particle.ty + 'px'">
+      </span>
+    </div> 
 
-  <!-- Spotlight overlay -->
-  <div class="spotlight-overlay" [class.active]="showSpotlight">
   </div>
-  
-  <!-- Particles -->
-  <div class="particles">
-    <span class="particle" *ngFor="let particle of particles" [style.left.px]="particle.x" [style.top.px]="particle.y"
-      [style.--tx]="particle.tx + 'px'" [style.--ty]="particle.ty + 'px'">
-    </span>
-  </div> 
-
-</div>
 
 
 </div>

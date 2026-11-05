@@ -1,14 +1,19 @@
 <div class="relative flex flex-col items-center justify-center min-h-screen text-white overflow-hidden p-6 select-none"
   style="background-image: url('images/draw/lucky-draw-bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+  <!-- Logo at top center -->
+  <div class="absolute top-8 left-0 right-0 z-20 flex justify-center">
+    <img src="/images/logo/logo-sp.png" alt="SP Group Logo" class="w-[150px] h-auto">
+  </div>
+
+  <!-- Spin Button at center -->
   <div class="z-10 flex flex-col items-center">
     <button (click)="spin()" [disabled]="isDrawing || isDone"
       class="group relative inline-flex items-center justify-center px-12 py-8 md:px-20 md:py-12 text-2xl md:text-4xl font-black text-white uppercase tracking-wider bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl shadow-2xl shadow-indigo-500/40 hover:shadow-indigo-500/60 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none cursor-pointer border border-white/20">
-  
-      <!-- Button Glow Animation Ring -->
+
       <span
         class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-blue-600 to-purple-600 opacity-30 blur-lg group-hover:opacity-75 transition duration-500"></span>
-  
-      <!-- Button Text / Icon State -->
+
       <span class="relative flex items-center gap-4">
         @if (isDrawing) {
         <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -17,12 +22,12 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
           </path>
         </svg>
-        Spining...
-        } @else if(isDone){
+        Spinning...
+        } @else if (isDone) {
         🎁 All draw rounds have been completed!
-        }@else if(isPending){
+        } @else if (isPending) {
         Pending
-        }@else {
+        } @else {
         🎁 Start Spin!
         }
       </span>
