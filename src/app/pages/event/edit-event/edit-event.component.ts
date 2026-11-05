@@ -328,12 +328,14 @@ export class EditEventComponent {
     this.eventService.deleteEventById(this.eventId);
     this.participantService.deleteParticipantsByEvent(this.eventId);
     this.closeDeleteModal();
-    this.router.navigate(['event/listing']);
     this.toastService.success(
       'Delete Event',
       'Event has been deleted successfully.',
       3000
-    ); 
+    );
+    setTimeout(() => {
+      this.router.navigate(['event/listing']);
+    }, 1000);
   }
 
 }
