@@ -203,7 +203,7 @@ export class ParticipantService {
       .from('participants') // Replace with your actual Supabase table name
       .update({
         won: null,
-        eligible: false
+        eligible: true
       })
       .eq('event_id', eventId)
 

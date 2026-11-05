@@ -267,7 +267,7 @@ export class ViewEventComponent {
     }
 
     data.drew = false;
-    this.eventService.updateEvent(this.eventId, data, this.draws);
+    await this.eventService.updateEvent(this.eventId, data, this.draws);
     this.closeResetModal();
     this.toastService.success(
       'Reset Event',

@@ -295,6 +295,13 @@ export class DrawComponent implements OnInit, OnDestroy {
     await this.eventService.updateEventDrawSetupById(this.eventId, this.draws);
     await this.eventService.setEventDrewById(this.eventId, true);
 
+    await this.supabaseService.sendDrawBroadcast(this.drawChannel, {
+      type: 'NEW_WINNERS',
+      eventId: this.eventId,
+      visibleParticipants: this.visibleParticipants,
+      winnerIndex: targetIndex
+    });
+
     this.runReel(targetIndex);
   }
 
