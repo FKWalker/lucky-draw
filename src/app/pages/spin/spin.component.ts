@@ -241,6 +241,9 @@ export class SpinComponent {
       winnerIndex: targetIndex
     });
 
-    this.isDrawing = false;
+    setTimeout(() => {
+      this.isDrawing = false;
+    }, 2500);
+
   }
 }
