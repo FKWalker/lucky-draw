@@ -153,39 +153,6 @@
 }
 
 /* Selector arrows only - no rectangle */
-/*.selector {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 560px;
-  height: 70px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.selector-arrow {
-  position: absolute;
-  top: 50%;
-  color: #fbbf24;
-  font-size: 30px;
-  font-weight: 900;
-  line-height: 1;
-  text-shadow:
-    0 0 8px rgba(251, 191, 36, 0.9),
-    0 0 16px rgba(251, 191, 36, 0.5);
-}
-
-.top-arrow {
-  left: 0;
-  transform: translate(-50%, -50%);
-}
-
-.bottom-arrow {
-  right: 0;
-  transform: translate(50%, -50%) rotate(180deg);
-} */
-
 .selector {
   position: relative;
   position: absolute;
