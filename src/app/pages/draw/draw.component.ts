@@ -79,6 +79,10 @@ export class DrawComponent implements OnInit, OnDestroy {
 
         if (data && data.type === 'NEW_WINNERS') {
           this.visibleParticipants = data.visibleParticipants;
+          this.showWinner = false;
+          this.showSpotlight = false;
+          this.particles = [];
+          this.selectedIndex = -1;
           this.runReel(data.winnerIndex);
         }
 
