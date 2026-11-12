@@ -6,6 +6,7 @@ import { SupabaseService } from 'app/shared/services/supabase.service';
 import { ParticipantService } from 'app/shared/services/participant.service';
 import { EventService } from 'app/shared/services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from '@env/environment';
 
 interface DrawParticle {
   x: number;
@@ -56,8 +57,8 @@ export class DrawComponent implements OnInit, OnDestroy {
   drawCount: number = 0;
   linkEvent: number = 0;
 
-  private tickSound = new Audio('sound/clock.mp3');
-  private congratulationsSound = new Audio('sound/congratulations.mp3');
+  private tickSound = new Audio(environment.baseHref + '/sound/clock.mp3');
+  private congratulationsSound = new Audio(environment.baseHref + '/sound/congratulations.mp3');
 
   constructor(private supabaseService: SupabaseService,
     private participantService: ParticipantService,
