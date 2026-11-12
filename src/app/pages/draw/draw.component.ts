@@ -56,8 +56,8 @@ export class DrawComponent implements OnInit, OnDestroy {
   drawCount: number = 0;
   linkEvent: number = 0;
 
-  private tickSound = new Audio('/sound/clock.mp3');
-  private congratulationsSound = new Audio('/sound/congratulations.mp3');
+  private tickSound = new Audio('sound/clock.mp3');
+  private congratulationsSound = new Audio('sound/congratulations.mp3');
 
   constructor(private supabaseService: SupabaseService,
     private participantService: ParticipantService,
