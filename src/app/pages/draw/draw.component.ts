@@ -56,6 +56,9 @@ export class DrawComponent implements OnInit, OnDestroy {
   drawCount: number = 0;
   linkEvent: number = 0;
 
+  private tickSound = new Audio('/sound/clock.mp3');
+  private congratulationsSound = new Audio('/sound/congratulations.mp3');
+
   constructor(private supabaseService: SupabaseService,
     private participantService: ParticipantService,
     private eventService: EventService,
@@ -310,7 +313,7 @@ export class DrawComponent implements OnInit, OnDestroy {
     this.runReel(targetIndex);
   }
 
-  runReel(targetIndex: number){
+  runReel(targetIndex: number) {
     const targetRotation = targetIndex * this.angleStep;
     const startRotation = this.currentRotation;
 
@@ -331,6 +334,9 @@ export class DrawComponent implements OnInit, OnDestroy {
     const duration = 5000;
     const startTime = performance.now();
 
+    // Track the last card position
+    let lastCardStep = Math.floor(startRotation / this.angleStep);
+
     const animate = (now: number): void => {
 
       const elapsed = now - startTime;
@@ -350,6 +356,22 @@ export class DrawComponent implements OnInit, OnDestroy {
 
       this.carouselRotation =
         `rotateX(${currentAngle}deg)`;
+
+      // Detect when a card passes
+      const currentCardStep =
+        Math.floor(currentAngle / this.angleStep);
+
+      if (currentCardStep !== lastCardStep) {
+
+        const crossedCards =
+          Math.abs(currentCardStep - lastCardStep);
+
+        for (let i = 0; i < crossedCards; i++) {
+          this.playCardTick();
+        }
+
+        lastCardStep = currentCardStep;
+      }
 
       if (progress < 1) {
 
@@ -378,6 +400,8 @@ export class DrawComponent implements OnInit, OnDestroy {
     this.selectedIndex = index;
 
     this.winner = this.visibleParticipants[index].name;
+
+    this.playCongratulationsSound();
 
     this.showSpotlight = true;
     this.showWinner = true;
@@ -431,5 +455,31 @@ export class DrawComponent implements OnInit, OnDestroy {
     if (this.winnerTimeout) {
       clearTimeout(this.winnerTimeout);
     }
+  }
+
+  private playCardTick(): void {
+
+    const sound = this.tickSound.cloneNode() as HTMLAudioElement;
+
+    sound.volume = 0.4;
+
+    sound.play().catch(error => {
+      console.warn('Unable to play tick sound:', error);
+    });
+
+    sound.onended = () => {
+      sound.remove();
+    };
+  }
+
+  private playCongratulationsSound(): void {
+
+    this.congratulationsSound.pause();
+    this.congratulationsSound.currentTime = 0;
+    this.congratulationsSound.volume = 0.8;
+
+    this.congratulationsSound.play().catch(error => {
+      console.warn('Unable to play congratulations sound:', error);
+    });
   }
 }
