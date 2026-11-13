@@ -243,7 +243,7 @@ export class SpinComponent {
 
     setTimeout(() => {
       this.isDrawing = false;
-    }, 2500);
+    }, 5000);
 
   }
 }
